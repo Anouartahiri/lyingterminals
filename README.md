@@ -94,6 +94,8 @@ Preset hex values were checked against their published sources:
 
 ## Credits
 
+Made by **[@AnouarTahiri](https://x.com/AnouarTahiri)**.
+
 Inspired by **[“There are many themes, but this one is yours”](https://earendil.com/posts/system-theme/)** by Earendil, the post about Pi's system theme. That post covers how the ANSI palette has no rules, how bright colours often have *less* contrast, how bright black fails 3:1 in most dark themes, and how a Catppuccin pink turned hot pink.
 
 Fonts embedded in `index.html`: [Departure Mono](https://departuremono.com) by Helena Zhang and [Newsreader](https://github.com/productiontype/Newsreader) by Production Type, both under the SIL Open Font License 1.1.
