@@ -1,0 +1,11 @@
+name = "lyingterminals"
+compatibility_date = "2026-10-01"
+account_id = "380a58c22429a0d4bb47d37c71802b2c"
+[assets]
+directory = "./site"
+[[routes]]
+pattern = "lyingterminals.com"
+custom_domain = true
+[[routes]]
+pattern = "www.lyingterminals.com"
+custom_domain = true
