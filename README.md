@@ -1,26 +1,83 @@
-# lyingterminals.com
+<p align="center">
+  <a href="https://lyingterminals.com"><img src="docs/hero.webp" alt="lyingterminals.com — Is your terminal theme lying to you?" width="100%"></a>
+</p>
 
-**Is your terminal theme lying to you?** Live at **https://lyingterminals.com**
+<h1 align="center">Is your terminal theme lying to you?</h1>
 
-Pick a terminal theme (or paste your own 16 ANSI colours from Ghostty or kitty) and the page runs real WCAG 2 contrast maths on it: every colour against its own background, 4.5:1 for text, 3:1 for UI. It flags the "bright" colours that are secretly dimmer than the normal ones, the bright colours that are just the normal ones in a trenchcoat, and the bright black that is legally a ghost. Then it roasts the theme, gives it a grade, and draws a shareable 1200×630 verdict card in the theme's own colours.
+<p align="center">
+  <b><a href="https://lyingterminals.com">lyingterminals.com</a></b> · contrast roasts for terminal themes<br>
+  <sub>A single HTML file, with no build step, no tracking and no network requests.</sub>
+</p>
 
-The whole page also switches into the selected theme. Like Pi's system theme, it doesn't take the palette on trust: its own text and accents are nudged in OKLCH until they clear 7:1 (body) and 4.5:1 (accents). The swatches are left exactly as the theme defines them.
+---
+
+Every terminal theme ships 16 ANSI colours and **absolutely no rules**. "Bright" is a suggestion. Bright black, the colour most apps use for secondary text, is often a rumour.
+
+Pick a theme, or paste your own from Ghostty or kitty. The page runs real **WCAG 2** contrast maths on every colour against its own background (4.5:1 for text, 3:1 for UI), catches the bright colours that are secretly *dimmer* than the normal ones, then grades and roasts the theme:
+
+> *"bright black: 2.4:1. Secondary text? More like tertiary vibes."*
+>
+> *"Bright black is literally your background colour (#002b36). 1.0:1. It's not secondary text, it's a secret."*
+>
+> *"6/7 bright colours are dimmer than their regular versions. Your palette has a "bright" mode the way a fridge has a light."*
+
+## The whole page changes into your theme
+
+<img src="docs/themes.webp" alt="The page in Dracula, Catppuccin Latte, Gruvbox Dark and Rosé Pine Dawn" width="100%">
+
+Choose a theme and the background, text, accents and borders all switch to its colours. Like Pi's system theme, the page doesn't take the palette on trust. Its own text and accents are moved in **OKLCH** until they clear 7:1 for body text and 4.5:1 for accents. Only the swatches are left exactly as the theme defines them.
+
+## The evidence
+
+<img src="docs/evidence.webp" alt="Contrast tiles for four themes" width="100%">
+
+Each tile shows a colour as text on the theme's own background, with its contrast ratio. Tiles under 3:1 are marked **GHOST** and tiles between 3:1 and 4.5:1 are marked **UI**. Each bright colour is labelled ↑ brighter, ↓ dimmer, or = same compared with its normal twin.
+
+## 17 defendants, or bring your own
+
+<img src="docs/picker.webp" alt="Theme picker" width="100%">
+
+Gruvbox Dark · Catppuccin Mocha / Latte · Tokyo Night · Nord · Dracula · Solarized Dark / Light · One Dark / Light · Monokai · GitHub Dark / Light · Rosé Pine / Dawn · Kanagawa Wave · Everforest Dark. You can also paste `palette = N=#hex` (Ghostty), `color0 #hex` (kitty), or just 18 hex codes.
+
+## The verdict, and a card to share
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/verdict.webp" alt="Verdict and roast list"></td>
+    <td width="50%"><img src="docs/card-solarized-dark.webp" alt="Verdict card: Solarized Dark, F"><br><br><img src="docs/card-catppuccin-mocha.webp" alt="Verdict card: Catppuccin Mocha, D"><br><br><img src="docs/card-github-light.webp" alt="Verdict card: GitHub Light, C"></td>
+  </tr>
+</table>
+
+The verdict card is drawn by hand on a `<canvas>` at 1200 × 630, in the theme's own colours, using no libraries. Download it as a PNG, copy the roast as text, or copy a link that reopens the same theme.
+
+## On your phone, too
+
+<img src="docs/mobile.webp" alt="Mobile screenshots" width="100%">
+
+## How it works
+
+- **Contrast:** WCAG 2.x relative-luminance ratio, rounded *down* so a fail is never rounded up into a pass.
+- **Findings:** bright vs. normal contrast, identical hex codes ("in a trenchcoat"), bright colours that have lost their chroma and turned grey (measured in OKLCH), bright black against the background, foreground contrast, and any colour under 3:1 or 4.5:1. The findings are scored into a grade from A+ to F.
+- **Page skin:** colours are converted OKLCH → sRGB with gamut clipping. Lightness is moved away from the background until the target contrast is met, with hue kept and chroma capped.
+- **Single file:** `index.html` contains everything: CSS, JS, and subsetted, embedded fonts. It works offline from `file://`.
 
 ## Files
 
-- `index.html` — the entire site. One self-contained file with inline CSS and JS, no build step, no network requests. The fonts are embedded and subsetted. It works offline from `file://`.
-- `og.png` — the 1200×630 social card (the Solarized Dark verdict card, generated by the page itself).
-- `wrangler.toml` — Cloudflare Worker config that serves the files as static assets on `lyingterminals.com`.
+| File | What |
+|---|---|
+| `index.html` | The entire site |
+| `og.png` | 1200×630 social card, generated by the page itself |
+| `wrangler.toml` | Cloudflare Worker config that serves `./site` as static assets on lyingterminals.com |
+| `docs/` | README images |
 
 ## Deploy
 
-Put `index.html` and `og.png` in `./site`, then:
-
 ```sh
+mkdir -p site && cp index.html og.png site/
 npx wrangler deploy
 ```
 
-The Worker named `lyingterminals` serves `./site` as static assets on the `lyingterminals.com` and `www.lyingterminals.com` custom domains. You need to be logged in to Wrangler (`wrangler login`) with access to the account in `wrangler.toml`.
+This needs `wrangler login` with access to the account in `wrangler.toml`. The Worker `lyingterminals` serves `./site` on `lyingterminals.com` and `www.lyingterminals.com`.
 
 ## Theme sources
 
@@ -28,16 +85,16 @@ Preset hex values were checked against their published sources:
 
 - Gruvbox Dark: [morhetz/gruvbox](https://github.com/morhetz/gruvbox)
 - Catppuccin Mocha / Latte: [catppuccin/palette](https://github.com/catppuccin/palette) `ansiColors`
-- Tokyo Night, One Dark, One Light, Monokai, GitHub Dark / Light, Everforest Dark: Ghostty built-in themes ([iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes), `ghostty/`: TokyoNight, Atom One Dark/Light, Monokai Classic, GitHub Dark/Light Default, Everforest Dark Med)
+- Tokyo Night, One Dark / Light, Monokai, GitHub Dark / Light, Everforest Dark: Ghostty built-in themes from [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes) `ghostty/` (TokyoNight, Atom One Dark/Light, Monokai Classic, GitHub Dark/Light Default, Everforest Dark Med)
 - Nord: [nordtheme/alacritty](https://github.com/nordtheme/alacritty)
 - Dracula: [dracula/ghostty](https://github.com/dracula/ghostty)
-- Rosé Pine / Rosé Pine Dawn: [rose-pine/ghostty](https://github.com/rose-pine/ghostty)
+- Rosé Pine / Dawn: [rose-pine/ghostty](https://github.com/rose-pine/ghostty)
 - Kanagawa Wave: [rebelot/kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim) (Ghostty extra)
-- Solarized Dark / Light: [altercation/solarized](https://github.com/altercation/solarized) terminal colour table
+- Solarized Dark / Light: [altercation/solarized](https://github.com/altercation/solarized) terminal table
 
 ## Credits
 
-Inspired by [“There are many themes, but this one is yours”](https://earendil.com/posts/system-theme/) by Earendil, the post about Pi's system theme.
+Inspired by **[“There are many themes, but this one is yours”](https://earendil.com/posts/system-theme/)** by Earendil, the post about Pi's system theme. That post covers how the ANSI palette has no rules, how bright colours often have *less* contrast, how bright black fails 3:1 in most dark themes, and how a Catppuccin pink turned hot pink.
 
 Fonts embedded in `index.html`: [Departure Mono](https://departuremono.com) by Helena Zhang and [Newsreader](https://github.com/productiontype/Newsreader) by Production Type, both under the SIL Open Font License 1.1.
 
