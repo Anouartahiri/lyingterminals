@@ -1,11 +1,24 @@
 name = "lyingterminals"
+main = "src/worker.js"
 compatibility_date = "2026-10-01"
 account_id = "380a58c22429a0d4bb47d37c71802b2c"
+
 [assets]
 directory = "./site"
+binding = "ASSETS"
+# Only the HTML page goes through the Worker (to count a visit); everything else is served straight from assets.
+run_worker_first = ["/"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lyingterminals-stats"
+database_id = "a9f2285b-119e-4798-8728-ab04f5963156"
+migrations_dir = "migrations"
+
 [[routes]]
 pattern = "lyingterminals.com"
 custom_domain = true
+
 [[routes]]
 pattern = "www.lyingterminals.com"
 custom_domain = true

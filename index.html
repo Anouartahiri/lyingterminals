@@ -584,6 +584,8 @@ function run(theme,key){
   document.querySelectorAll("#presets .chip[data-k]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===key)));
   try{ const h=key&&key!=="custom"?"#"+key:"#p="+[theme.bg,theme.fg,...theme.c].map(s=>s.slice(1)).join("-"); history.replaceState(null,"",h); }catch(e){}
 }
+/* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
+function hit(k){ try{ if(!/^https?:$/.test(location.protocol)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
 function toast(msg){ $("toast").textContent=msg; clearTimeout(toast.t); toast.t=setTimeout(()=>$("toast").textContent="",2600); }
 
 // presets
@@ -592,14 +594,14 @@ for(const [k,t] of Object.entries(THEMES)){
   const b=document.createElement("button"); b.className="chip"; b.dataset.k=k; b.setAttribute("aria-pressed","false");
   b.style.background=t.bg; b.style.color=t.fg;
   b.innerHTML=`<span class="mini">${t.c.map(c=>`<i style="background:${c}"></i>`).join("")}</span><span class="nm">${t.name}</span>`;
-  b.onclick=()=>run(t,k); P.appendChild(b);
+  b.onclick=()=>{ run(t,k); hit(k); }; P.appendChild(b);
 }
 const cb=document.createElement("button"); cb.className="chip custom"; cb.id="customToggle"; cb.setAttribute("aria-expanded","false");
 cb.innerHTML=`<span class="plus">+</span><span class="nm">Paste your own</span>`;
 cb.onclick=()=>{ const o=$("customBox").classList.toggle("open"); cb.setAttribute("aria-expanded",String(o)); if(o) $("custom").focus(); };
 P.appendChild(cb);
 
-$("roastBtn").onclick=()=>{ try{ $("err").textContent=""; run(parsePalette($("custom").value),"custom"); $("evidence").scrollIntoView({behavior:"smooth"}); }catch(e){ $("err").textContent=e.message; } };
+$("roastBtn").onclick=()=>{ try{ $("err").textContent=""; run(parsePalette($("custom").value),"custom"); hit("custom"); $("evidence").scrollIntoView({behavior:"smooth"}); }catch(e){ $("err").textContent=e.message; } };
 $("dlBtn").onclick=()=>{
   const name=`lyingterminals-${current.theme.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")}.png`;
   const a=document.createElement("a"); a.download=name; a.href=$("card").toDataURL("image/png"); document.body.appendChild(a); a.click(); a.remove(); toast("Saved "+name);
