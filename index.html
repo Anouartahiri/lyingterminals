@@ -81,7 +81,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .col{width:min(100% - 2*var(--gutter),var(--col));margin-inline:auto}
 .wide{width:min(100% - 2*var(--gutter),var(--wide));margin-inline:auto}
 .intro{max-width:var(--col);margin-inline:auto}
-section{margin-top:clamp(64px,10vw,120px)}
+section{margin-top:clamp(64px,10vw,120px);scroll-margin-top:64px}
+/* floating bar: appears on scroll-up once the real header is gone */
+.fbar{position:fixed;top:0;left:0;right:0;z-index:40;height:44px;display:flex;align-items:center;gap:16px;padding:0 var(--gutter);font-size:14px;letter-spacing:.02em;color:var(--fg);
+  background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid var(--line);
+  transform:translateY(-100%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s}
+.fbar.show{transform:none;visibility:visible;transition:transform .22s ease,visibility 0s}
+html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
+.fbar a{border:0;font-weight:400;color:var(--fg);white-space:nowrap}
+.fbar nav a[aria-current],.top nav a[aria-current]{color:var(--fg);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:currentColor}
+.fbar .dollar{display:none;color:var(--bar-acc,var(--fg));font-weight:700;padding:0 4px}
+.fbar .brand b{color:var(--red);font-weight:400}
+.fbar nav{flex:1;min-width:0;display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
+.fbar nav::-webkit-scrollbar{display:none} .fbar nav a:first-child{margin-left:auto}
+.fbar nav a{color:var(--fg);line-height:44px} .fbar nav a:hover{text-decoration:underline;text-underline-offset:4px}
+@media (max-width:640px){.fbar{gap:12px}.fbar .brand .full{display:none}.fbar .dollar{display:inline}.fbar nav{gap:20px}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
 
 /* hero */
 .hero{margin-top:clamp(56px,11vw,140px)}
@@ -194,6 +208,8 @@ canvas#card{display:block;width:100%;height:auto}
 .swatch-inline{display:inline-block;width:.8em;height:.8em;border-radius:2px;vertical-align:-.05em;margin:0 .15em;border:1px solid var(--line)}
 footer{margin-top:clamp(80px,12vw,140px);padding:28px 0 calc(40px + env(safe-area-inset-bottom));border-top:1px solid var(--line);font-size:var(--small);color:var(--muted);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer a{color:var(--fg);font-weight:400}
+.dedication{font:italic 400 13px/1.6 var(--serif);color:var(--muted);text-align:left;text-wrap:balance;max-width:60ch;margin:-12px 0 0;padding:0 0 calc(36px + env(safe-area-inset-bottom))}
+@media (max-width:640px){.dedication{font-size:14px}}
 .credit{font:italic 400 17px/1.5 var(--serif);color:var(--fg)}
 
 @media (max-width:640px){
@@ -266,9 +282,13 @@ window.__BOOT=k;if(!k)return;var v=S.s[k],r=document.documentElement;for(var n i
 var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",v.v.bg);}catch(e){}})();</script>
 </head>
 <body>
-<header class="top">
+<div class="fbar" id="fbar" inert aria-hidden="true">
+  <a class="brand" href="#top" aria-label="lyingterminals, back to top"><span class="full" aria-hidden="true">lying<b>terminals</b><span class="com">.com</span></span><span class="dollar" aria-hidden="true">$</span></a>
+  <nav aria-label="Sections (floating bar)"><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a></nav>
+</div>
+<header class="top" id="top">
   <a class="brand" href="#">lying<b>terminals</b>.com</a>
-  <nav><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a><a href="#console">Terminal</a></nav>
+  <nav aria-label="Sections"><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a><a href="#console">Terminal</a></nav>
 </header>
 
 <main>
@@ -383,6 +403,7 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
     <div class="links" style="width:100%;display:flex;gap:18px;flex-wrap:wrap"><a href="https://github.com/Anouartahiri/lyingterminals" target="_blank" rel="noopener">Source on GitHub ↗</a><a href="https://x.com/AnouarTahiri" target="_blank" rel="noopener me">by @AnouarTahiri ↗</a></div>
     <div style="width:100%">lyingterminals.com · <span id="srcNote">Sources: morhetz/gruvbox · catppuccin/palette · Ghostty built-ins (TokyoNight, Atom One Dark/Light, Monokai Classic, GitHub Dark/Light Default, Everforest Dark Med) · nordtheme/alacritty · dracula/ghostty · rose-pine/ghostty · rebelot/kanagawa.nvim · altercation/solarized</span></div>
   </footer>
+  <div class="col"><p class="dedication">The floating bar above was envisioned by Seb Van Papple, visionary of navigation, who looked upon a long page and declared: let there be a way back up. Generations of scrollers, as yet unborn, stand forever in his debt.</p></div>
 </main>
 
 <script>
@@ -586,6 +607,7 @@ function applySkin(t){
   const {skin,fixes,light}=deriveSkin(t), R=document.documentElement;
   for(const [k,v] of Object.entries(skin)) R.style.setProperty("--"+k,v);
   R.classList.toggle("is-light",light);
+  R.style.setProperty("--bar-acc", contrast(skin.green,skin.bg)>=4.6?skin.green:skin.fg); // floating-bar "$": accent if it clears 4.6:1, else text colour
   document.querySelector('meta[name="theme-color"]').setAttribute("content",t.bg);
   const n=fixes.length, sw=h=>`<span class="swatch-inline" style="background:${h}"></span>`;
   $("metaNote").innerHTML = `A note on the colours: this page is wearing <b>${esc(t.name)}</b>, but it doesn't take it on trust. Like Pi, it moves each accent in OKLCH until its own text clears 4.6:1 (7:1 for body text). ` +
@@ -690,6 +712,24 @@ function run(theme,key,opts={}){
     document.title = key&&key!=="custom" ? `${theme.name} gets ${/^[AF]/.test(current.grade)?"an":"a"} ${current.grade}. Is your terminal theme lying to you?` : DT; }
   if(!opts.boot) try{ const h=shareURL(key,theme); if(location.pathname+location.hash!==h&&location.hash!==h) history.replaceState(null,"",h); }catch(e){}
 }
+/* floating bar */
+(()=>{
+  const bar=$("fbar"), head=document.querySelector("header.top"); let headIn=true, last=scrollY, acc=0, on=false;
+  const set=v=>{ if(v===on) return; on=v; bar.classList.toggle("show",v); bar.inert=!v; bar.setAttribute("aria-hidden",String(!v)); };
+  new IntersectionObserver(([e])=>{ headIn=e.isIntersecting; if(headIn) set(false); }).observe(head);
+  addEventListener("scroll",()=>{
+    if(document.documentElement.classList.contains("tm-lock")) { last=scrollY; return; }
+    const y=scrollY, d=y-last; last=y; if(headIn||y<8){ set(false); acc=0; return; }
+    acc = (Math.sign(d)===Math.sign(acc)) ? acc+d : d;
+    if(acc>12) set(false); else if(acc<-12) set(true);
+  },{passive:true});
+  // which section are we in: a band just below the bar decides
+  const ids=["pick","evidence","verdict","card-sec","console"], links=[...document.querySelectorAll(".fbar nav a, .top nav a")], vis=new Map();
+  const mark=()=>{ const cur=ids.find(id=>vis.get(id)); links.forEach(a=>{ if(cur&&a.getAttribute("href")==="#"+cur){ a.setAttribute("aria-current","location"); const n=a.parentNode; if(n.scrollWidth>n.clientWidth) n.scrollLeft=Math.max(0,a.offsetLeft-n.offsetLeft-24); } else a.removeAttribute("aria-current"); }); };
+  const io=new IntersectionObserver(es=>{ es.forEach(e=>vis.set(e.target.id,e.isIntersecting)); mark(); },{rootMargin:"-45px 0px -55% 0px"});
+  ids.forEach(id=>{ const s=$(id); if(s) io.observe(s); });
+  const bn=bar.querySelector("nav"), fit=()=>bn.classList.toggle("over",bn.scrollWidth>bn.clientWidth+1); fit(); addEventListener("resize",fit);
+})();
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
 function hit(k){ try{ if(!/^(www\.)?lyingterminals\.com$/.test(location.hostname)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
 function toast(msg){ $("toast").textContent=msg; clearTimeout(toast.t); toast.t=setTimeout(()=>$("toast").textContent="",2600); }
@@ -748,7 +788,7 @@ const TERM=(function(){
   // the terminal's palette: the raw theme, or its `fix`ed version (the page itself always stays raw)
   const active=()=>(fixed&&fixed.src===current.theme)?fixed.A:current;
   function setColours(){
-    if(fixed&&fixed.src!==current.theme) fixed=null;
+    if(fixed&&fixed.src!==current.theme){ fixed=null; }
     const t=active().theme;
     el.style.setProperty("--tbg",t.bg); el.style.setProperty("--tfg",t.fg);
     t.c.forEach((h,i)=>el.style.setProperty("--t"+i,h));
