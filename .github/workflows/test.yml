@@ -1,0 +1,35 @@
+name: tests
+on:
+  push:
+  pull_request:
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Playwright + axe-core
+        run: |
+          pip install playwright==1.48.0
+          python -m playwright install --with-deps chromium
+          npm install --no-save axe-core@4.10.2
+      - name: Serve the site
+        run: |
+          python -m http.server 8000 >/tmp/server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8000/index.html >/dev/null && break; sleep 1; done
+      - name: Playwright suite (desktop + 390px, axe, terminal, fix, scroll)
+        env:
+          AXE_PATH: node_modules/axe-core/axe.min.js
+          SHOTS: shots
+        run: python tests/test_site.py http://localhost:8000/index.html
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: shots

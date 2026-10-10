@@ -7,7 +7,7 @@ account_id = "380a58c22429a0d4bb47d37c71802b2c"
 directory = "./site"
 binding = "ASSETS"
 # Only the HTML page goes through the Worker (to count a visit); everything else is served straight from assets.
-run_worker_first = ["/"]
+run_worker_first = ["/", "/t/*"]
 
 [[d1_databases]]
 binding = "DB"

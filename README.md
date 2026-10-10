@@ -61,7 +61,7 @@ Section VI is a small DOM terminal (no xterm.js) painted in the selected theme's
   </tr>
 </table>
 
-Commands: `help`, `theme <name>` (Tab completes), `judge`, `export ghostty|kitty|iterm`, `ls`, `git diff`, `git log`, `npm test`, `cat error.log`, `lie`, `clear`. `lie` tags every demo output span under 4.6:1 with FAIL, MEH or LIE pills. The terminal's own UI text uses the page's contrast-safe colours; only the fake demo output is allowed to lie.
+Commands: `help`, `theme <name>` (Tab completes), `judge`, `fix` (lift failing colours by OKLCH lightness only; `fix --undo`), `export ghostty|kitty|iterm`, `ls`, `git diff`, `git log`, `npm test`, `cat error.log`, `lie`, `clear`. `lie` tags every demo output span under 4.6:1 with FAIL, MEH or LIE pills. The terminal's own UI text uses the page's contrast-safe colours; only the fake demo output is allowed to lie.
 
 ### Or ask from your actual terminal
 
@@ -106,6 +106,14 @@ npx wrangler deploy
 ```
 
 This needs `wrangler login` with access to the account in `wrangler.toml`. The Worker `lyingterminals` serves `./site` on `lyingterminals.com` and `www.lyingterminals.com`.
+
+### Per-theme share links (staging)
+
+`/t/<slug>` (for example `/t/nord`) serves the page opened on that theme, with its own `og:title`, description and card at `/og/<slug>.png`. It's a Pages Function (`functions/t/[slug].js`, data in `lib/themes.json`); cards are rendered by `og/gen_cards.py` from the built page. Unknown slugs redirect to `/`. **Production note:** lyingterminals.com is served by the Worker, which needs the same `/t/<slug>` route before this ships there.
+
+### Tests
+
+`python tests/test_site.py http://localhost:8000/index.html` (serve the repo root first). Runs desktop + 390px checks, axe-core, the terminal commands, `fix`, focus handling and touch/wheel scrolling. CI runs it on every push and PR.
 
 ## Privacy-friendly analytics
 

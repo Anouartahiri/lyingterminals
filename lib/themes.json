@@ -1,0 +1,104 @@
+{
+ "gruvbox-dark": {
+  "name": "Gruvbox Dark",
+  "grade": "A",
+  "score": 85,
+  "top": "red: 2.6:1. Fails even the 3:1 UI bar. Visible only to cats."
+ },
+ "catppuccin-mocha": {
+  "name": "Catppuccin Mocha",
+  "grade": "D",
+  "score": 60,
+  "top": "6 of your 7 \"bright\" colours have LESS contrast than the normal ones. Bright is a lifestyle brand, not a property."
+ },
+ "catppuccin-latte": {
+  "name": "Catppuccin Latte",
+  "grade": "F",
+  "score": 28,
+  "top": "All 7 of your \"bright\" colours have LESS contrast than the normal ones. Bright is a lifestyle brand, not a property."
+ },
+ "tokyo-night": {
+  "name": "Tokyo Night",
+  "grade": "C",
+  "score": 68,
+  "top": "bright black: 1.9:1. Your comments are whispering. From another room."
+ },
+ "nord": {
+  "name": "Nord",
+  "grade": "D",
+  "score": 56,
+  "top": "bright black: 1.6:1. Your comments are whispering. From another room."
+ },
+ "dracula": {
+  "name": "Dracula",
+  "grade": "A",
+  "score": 94,
+  "top": "bright black: 3.0:1. Fine for a border, a hate crime for a comment."
+ },
+ "solarized-dark": {
+  "name": "Solarized Dark",
+  "grade": "F",
+  "score": 34,
+  "top": "Bright black is literally your background colour (#002b36). 1.0:1. It's not secondary text, it's a secret."
+ },
+ "one-dark": {
+  "name": "One Dark",
+  "grade": "C",
+  "score": 74,
+  "top": "bright red, green, yellow, blue, magenta, cyan, white: same hex as the regular ones. 7 colours, two job titles each, one salary."
+ },
+ "one-light": {
+  "name": "One Light",
+  "grade": "D",
+  "score": 49,
+  "top": "bright red, green, yellow, blue, cyan: same hex as the regular ones. 5 colours, two job titles each, one salary."
+ },
+ "monokai": {
+  "name": "Monokai",
+  "grade": "C",
+  "score": 65,
+  "top": "bright red, green, yellow, blue, magenta, cyan, white: same hex as the regular ones. 7 colours, two job titles each, one salary."
+ },
+ "github-dark": {
+  "name": "GitHub Dark",
+  "grade": "A",
+  "score": 94,
+  "top": "bright black: 4.1:1. Fine for a border, a hate crime for a comment."
+ },
+ "github-light": {
+  "name": "GitHub Light",
+  "grade": "C",
+  "score": 64,
+  "top": "6/7 bright colours are dimmer than their regular versions. Your palette has a \"bright\" mode the way a fridge has a light."
+ },
+ "rose-pine": {
+  "name": "Rosé Pine",
+  "grade": "C",
+  "score": 71,
+  "top": "7 of your bright colours are just the normal ones in a trenchcoat (red, green, yellow, blue, magenta, cyan, white)."
+ },
+ "rose-pine-dawn": {
+  "name": "Rosé Pine Dawn",
+  "grade": "F",
+  "score": 43,
+  "top": "7 of your bright colours are just the normal ones in a trenchcoat (red, green, yellow, blue, magenta, cyan, white)."
+ },
+ "kanagawa-wave": {
+  "name": "Kanagawa Wave",
+  "grade": "A",
+  "score": 91,
+  "top": "bright black: 3.3:1. Fine for a border, a hate crime for a comment."
+ },
+ "solarized-light": {
+  "name": "Solarized Light",
+  "grade": "F",
+  "score": 7,
+  "top": "Foreground: 4.1:1. Every line of code you've ever read in this theme technically failed WCAG."
+ },
+ "everforest-dark": {
+  "name": "Everforest Dark",
+  "grade": "C",
+  "score": 67,
+  "top": "6/7 bright colours are dimmer than their regular versions. Your palette has a \"bright\" mode the way a fridge has a light."
+ }
+}

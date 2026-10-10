@@ -1,6 +1,7 @@
-node_modules/
-.wrangler/
 .dev.vars
 .env
 .stats_key
+.wrangler/
+node_modules/
+shots/
 site/
