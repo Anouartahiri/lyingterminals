@@ -208,7 +208,7 @@ footer a{color:var(--fg);font-weight:400}
 }
 /* ---------- VI. Cross-examination: a tiny DOM terminal in the theme's RAW colours ---------- */
 .tm{--tbg:#282828;--tfg:#ebdbb2;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--tbg);color:var(--tfg);
-  font:15px/1.5 var(--mono);box-shadow:0 24px 60px -30px rgba(0,0,0,.6);transition:background-color var(--t),color var(--t)}
+  font:15px/22px var(--mono);box-shadow:0 24px 60px -30px rgba(0,0,0,.6);transition:background-color var(--t),color var(--t)}
 .tm-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--muted);font-size:var(--small)}
 .tm-bar i{width:12px;height:12px;border-radius:50%;display:block;flex:none}
 .tm-bar .ti{flex:1;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding-right:44px}
@@ -244,7 +244,7 @@ html.tm-lock,html.tm-lock body{overflow:hidden}
 .tm-scrim{position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s}
 .tm-scrim.open{opacity:1;pointer-events:auto}
 kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);border-radius:5px;border-bottom-width:2px}
-@media (max-width:640px){.tm{font-size:14px}.tm-body{height:min(60vh,33em);padding:12px 12px 8px}.tm-bar .ti{padding-right:0}}
+@media (max-width:640px){.tm{font-size:14px;line-height:21px}.tm-body{height:min(45vh,33em);height:min(45svh,33em);height:round(down,min(45svh,33em),1px);padding:12px 12px 8px}.tm-bar .ti{padding-right:0}}
 @media (prefers-reduced-motion:reduce){.tm-cur{animation:none!important}.tm-drop{transition:none}}
 </style>
 </head>
@@ -744,7 +744,8 @@ const TERM=(function(){
     else { out.insertAdjacentHTML("beforeend",renderBlock(b)); scroll(); }
   }
   const COMPACT=matchMedia("(max-width:700px),(pointer:coarse)");
-  const scroll=()=>{ body.scrollTop=body.scrollHeight; };
+  // keep the scroll extent whole pixels and sit exactly at the end, so the first wheel tick at the bottom chains to the page
+  const scroll=()=>{ const max=body.scrollHeight-body.clientHeight; body.scrollTop=max; if(Math.abs(body.scrollTop-max)<1) body.scrollTop=max; };
   /* Touch scroll chaining for the inline terminal: the terminal scrolls first, and whatever it can't take
      (at its top/bottom) goes to the page in the same gesture. Horizontal swipes and taps are left alone.
      v1 has no momentum: the page stops where the finger lifts; onRelease(velocity) is the hook for inertia. */
