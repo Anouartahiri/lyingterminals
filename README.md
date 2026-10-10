@@ -93,6 +93,7 @@ The server can't see your terminal's colours, so there's no grade, just a test c
 | `src/worker.js` | Serves the assets and counts anonymous visits; private `/stats` dashboard |
 | `migrations/` | D1 schema for the daily counters |
 | `docs/` | README images |
+| `functions/_middleware.js` | Pages only: adds `X-Robots-Tag: noindex, nofollow` and a robots meta on `*.pages.dev` (staging/previews). Production is served by the Worker and stays indexable. |
 | `og/og.html` | Source of `og.png` (render at 1200×630 with Playwright) |
 
 ## Deploy
