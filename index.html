@@ -223,10 +223,13 @@ footer a{color:var(--fg);font-weight:400}
 .tm b{font-weight:700}
 .tm .lie-u{text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:3px}
 .tm .lie-u.fail{text-decoration-color:var(--red)} .tm .lie-u.warn{text-decoration-color:var(--yellow)} .tm .lie-u.lol{text-decoration-color:var(--magenta)}
-.tm .lab{display:inline-block;margin:0 .45em;line-height:1.25;vertical-align:1px;white-space:nowrap;background:var(--tbg);text-decoration:none}
-.tm-sugg{display:flex;gap:8px;overflow-x:auto;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel);scrollbar-width:none}
+.tm .lab{display:inline-block;margin:0 .45em;padding:2px 8px;font-size:12px;letter-spacing:.04em;line-height:1.25;vertical-align:1px;white-space:nowrap;background:var(--tbg);text-decoration:none;text-indent:0}
+.tm-sugg{display:flex;gap:8px;overflow-x:auto;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel);scrollbar-width:none;scroll-padding-inline:12px}
+.tm-sugg.more-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
+.tm-sugg.more-l.more-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 48px),transparent)}
+.tm-sugg.more-l:not(.more-r){-webkit-mask-image:linear-gradient(90deg,transparent,#000 32px);mask-image:linear-gradient(90deg,transparent,#000 32px)}
 .tm-sugg::-webkit-scrollbar{display:none}
-.tm-sugg button{flex:none;font:var(--small)/1.2 var(--mono);color:var(--fg);padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent}
+.tm-sugg button{flex:none;min-height:44px;min-width:44px;font:var(--small)/1.2 var(--mono);color:var(--fg);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:transparent}
 .tm-sugg button:hover{border-color:var(--fg)}
 .tm-home{min-height:1px}
 .tm-placeholder{display:none;padding:22px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:var(--small);text-align:center}
@@ -664,7 +667,7 @@ function run(theme,key){
   try{ const h=key&&key!=="custom"?"#"+key:"#p="+[theme.bg,theme.fg,...theme.c].map(s=>s.slice(1)).join("-"); history.replaceState(null,"",h); }catch(e){}
 }
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
-function hit(k){ try{ if(!/^https?:$/.test(location.protocol)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
+function hit(k){ try{ if(!/^(www\.)?lyingterminals\.com$/.test(location.hostname)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
 function toast(msg){ $("toast").textContent=msg; clearTimeout(toast.t); toast.t=setTimeout(()=>$("toast").textContent="",2600); }
 
 // presets
@@ -697,7 +700,9 @@ const TERM=(function(){
   let blocks=[], lieMode=false, hist=[], hIdx=-1, draft="", dropOpen=false, lastFocus=null;
   const S=(t,c,o={})=>Object.assign({t,c},o);          // segment: text, colour (0-15 | "fg"), {b:bold}
   const L=(...segs)=>segs;                              // one line
-  const PROMPT=()=>[S("you@localhost",2,{b:1,x:1}),S(" "),S("~",4,{b:1,x:1}),S(" $ ","fg",{x:1})];
+  const H=(n,...segs)=>Object.assign(segs,{hang:n});     // line with hanging indent of n ch
+  const U=(t,role="muted",o={})=>S(t,"u:"+role,o);      // terminal UI text: contrast-safe page colours (>= 4.6:1)
+  const PROMPT=()=>[U("you@localhost","green",{b:1}),S(" "),U("~","blue",{b:1}),U(" $ ","fg")];
 
   function setColours(){
     const t=current.theme;
@@ -715,10 +720,11 @@ const TERM=(function(){
     return {r, cls:liar?"lol":cls, lab:liar?"LIE":r<3?"FAIL":"MEH"};
   }
   function segHTML(s,seen,judged){
-    const style=s.c===undefined?"":s.c==="fg"?"color:var(--tfg)":`color:var(--t${s.c})`;
-    const txt=esc(s.t); let cls=s.b?"b":"";
+    const ui=typeof s.c==="string"&&s.c.startsWith("u:");
+    const style=s.c===undefined?"":ui?`color:var(--${s.c.slice(2)})`:s.c==="fg"?"color:var(--tfg)":`color:var(--t${s.c})`;
+    const txt=esc(s.t); let cls=ui?"ui":"";
     let pill="";
-    if(lieMode&&judged&&!s.x&&s.c!==undefined&&s.t.trim()){
+    if(lieMode&&judged&&!ui&&!s.x&&s.c!==undefined&&s.t.trim()){
       const j=judgeSpan(s.c);
       if(j){ cls+=` lie-u ${j.cls}`; const key=s.c; if(!seen.has(key)){ seen.add(key); pill=`<span class="lab ${j.cls}" title="${s.c==="fg"?"foreground":cname(s.c)} ${fmt(j.r)}:1">${j.lab} ${fmt(j.r)}</span>`; } }
     }
@@ -727,105 +733,92 @@ const TERM=(function(){
   }
   function renderBlock(b){
     const seen=new Set();
-    return `<div class="blk">${b.lines.map(l=>`<div class="ln">${l.map(s=>segHTML(s,seen,b.judged)).join("")}</div>`).join("")}</div>`;
+    return `<div class="blk${b.judged?" demo":""}">${b.lines.map(l=>`<div class="ln"${l.hang?` style="padding-left:${l.hang}ch;text-indent:-${l.hang}ch"`:""}>${l.map(s=>segHTML(s,seen,b.judged)).join("")}</div>`).join("")}</div>`;
   }
   function renderAll(){ out.innerHTML=blocks.map(renderBlock).join(""); scroll(); }
   function push(lines,echo){
-    const b={lines:echo?[[...PROMPT(),S(echo,"fg",{x:1})],...lines]:lines}; blocks.push(b);
+    const b={lines:echo?[[...PROMPT(),U(echo,"fg")],...lines]:lines}; blocks.push(b);
     if(blocks.length>80) blocks=blocks.slice(-80), renderAll();
     else { out.insertAdjacentHTML("beforeend",renderBlock(b)); scroll(); }
   }
   const scroll=()=>{ body.scrollTop=body.scrollHeight; };
+  function cols(){ const m=document.createElement("span"); m.textContent="0".repeat(20); m.style.visibility="hidden"; out.appendChild(m); const cw=m.getBoundingClientRect().width/20; m.remove();
+    const cs=getComputedStyle(out); return Math.max(20,Math.floor((out.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight))/(cw||8.4))); }
   function drawInput(){
     const v=input.value, p=Math.min(input.selectionStart??v.length,v.length);
     lineEl.innerHTML=`<span style="color:var(--tfg)">${esc(v.slice(0,p))}</span><span class="tm-cur">${esc(v[p]||" ")}</span><span style="color:var(--tfg)">${esc(v.slice(p+1))}</span>`;
   }
   promptEl.innerHTML=PROMPT().map(s=>segHTML(s,new Set(),false)).join("");
 
-  /* ---------- sample output, all in the theme's 16 colours ---------- */
+  /* ---------- sample output, all in the theme's RAW 16 colours (this is what lie mode judges) ---------- */
+  const LS=[["d","192","."],["f","412",".env","# bright black: the colour of secrets"],["d","256",".git"],["x","2.1K","deploy.sh"],["f","31K","error.log"],["l","10","latest","v2.4.1"],["d","384","node_modules","(380 MB, as is tradition)"],["f","1.3K","package.json"],["z","64K","theme.zip"]];
+  const lsName=(e)=>e[0]==="d"?S(e[2],4,{b:1}):e[0]==="x"?S(e[2],2,{b:1}):e[0]==="l"?S(e[2],6):e[0]==="z"?S(e[2],1,{b:1}):e[2].startsWith(".")?S(e[2],8):S(e[2],"fg");
+  const LOG=[["95a2870",[S("HEAD -> ",14,{b:1}),S("main",10,{b:1}),S(", ",3),S("origin/main",9,{b:1})],"You","Sat Oct 10 08:49","Raise secondary text contrast to 4.6:1 because 4.5 felt like a lie"],
+             ["5191a75",null,"You","Sat Oct 10 08:41","Make bright black visible. Again."],
+             ["ef7f459",[S("tag: ",11,{b:1}),S("v0.0.1-ghost",11,{b:1})],"Bright Black","Thu Jan  1 1970","Initial commit (you can't see this one either)",true]];
   const OUT={
-    ls:()=>[
-      L(S("total 48",8)),
-      L(S("drwxr-xr-x  ",8),S(" 6 you staff  192 Oct  9 18:20 ",8),S(".",4,{b:1})),
-      L(S("-rw-r--r--  ",8),S(" 1 you staff  412 Oct  9 18:20 ",8),S(".env",8),S("  # bright black: the colour of secrets",8)),
-      L(S("drwxr-xr-x  ",8),S(" 8 you staff  256 Oct  9 18:21 ",8),S(".git",4,{b:1})),
-      L(S("-rwxr-xr-x  ",8),S(" 1 you staff 2.1K Oct  9 18:22 ",8),S("deploy.sh",2,{b:1})),
-      L(S("-rw-r--r--  ",8),S(" 1 you staff  31K Oct  9 18:23 ",8),S("error.log","fg")),
-      L(S("lrwxr-xr-x  ",8),S(" 1 you staff   10 Oct  9 18:23 ",8),S("latest",6),S(" -> ","fg"),S("v2.4.1",6)),
-      L(S("drwxr-xr-x  ",8),S("12 you staff  384 Oct  9 18:24 ",8),S("node_modules",4,{b:1}),S("  (380 MB, as is tradition)",8)),
-      L(S("-rw-r--r--  ",8),S(" 1 you staff 1.3K Oct  9 18:24 ",8),S("package.json","fg")),
-      L(S("-rw-r--r--  ",8),S(" 1 you staff  64K Oct  9 18:24 ",8),S("theme.zip",1,{b:1})),
-    ],
+    ls:(w)=> w<60
+      ? [L(S("total 48",8)), ...LS.map(e=>H(6,S(e[1].padStart(5)+" ",8),lsName(e),...(e[0]==="l"?[S(" -> ","fg"),S(e[3],6)]:[])))]
+      : [L(S("total 48",8)), ...LS.map(e=>L(S((e[0]==="d"?"drwxr-xr-x":e[0]==="x"?"-rwxr-xr-x":e[0]==="l"?"lrwxr-xr-x":"-rw-r--r--")+"  1 you staff ",8),S(e[1].padStart(4)+" Oct  9 18:2"+(e[2].length%10)+" ",8),lsName(e),...(e[0]==="l"?[S(" -> ","fg"),S(e[3],6)]:[]),...(e[0]!=="l"&&e[3]?[S("  "+e[3],8)]:[])))],
     "git diff":()=>[
-      L(S("diff --git a/src/theme.ts b/src/theme.ts",15,{b:1})),
-      L(S("index 3f2a1c4..9be07d2 100644",15,{b:1})),
+      H(4,S("diff --git a/src/theme.ts b/src/theme.ts",15,{b:1})),
+      H(4,S("index 3f2a1c4..9be07d2 100644",15,{b:1})),
       L(S("--- a/src/theme.ts",15,{b:1})),
       L(S("+++ b/src/theme.ts",15,{b:1})),
-      L(S("@@ -12,9 +12,10 @@",6),S(" export function secondaryText(palette: Palette) {","fg")),
-      L(S("   // TODO: make comments readable (since 2019)",8)),
-      L(S("-  return palette.brightBlack;",1)),
-      L(S("+  // bright black failed 3:1 again, so we pick it by contrast instead",2)),
-      L(S("+  return pickByContrast(palette, { min: 4.6 });",2)),
+      H(2,S("@@ -12,9 +12,10 @@",6),S(" export function secondaryText(palette: Palette) {","fg")),
+      H(5,S("   // TODO: make comments readable (since 2019)",8)),
+      H(3,S("-  return palette.brightBlack;",1)),
+      H(5,S("+  // bright black failed 3:1 again, so we pick it by contrast instead",2)),
+      H(3,S("+  return pickByContrast(palette, { min: 4.6 });",2)),
       L(S("   }","fg")),
-      L(S("@@ -40,6 +41,6 @@",6),S(" const BRIGHT_IS_BRIGHTER = ","fg"),S("true",5),S(";",8)),
-      L(S("-const ACCENT = palette.brightBlue; ",1),S("// \"brighter\", allegedly",9)),
-      L(S("+const ACCENT = palette.blue;       ",2),S("// turns out it was the same colour",10)),
-      L(S(" warning: ",11,{b:1}),S("in the working copy of 'theme.ts', LF will be replaced by CRLF",3)),
+      H(2,S("@@ -40,6 +41,6 @@",6),S(" const BRIGHT_IS_BRIGHTER = ","fg"),S("true",5),S(";",8)),
+      H(1,S("-const ACCENT = palette.brightBlue; ",1),S("// \"brighter\", allegedly",9)),
+      H(1,S("+const ACCENT = palette.blue;       ",2),S("// turns out it was the same colour",10)),
+      H(10,S(" warning: ",11,{b:1}),S("in the working copy of 'theme.ts', LF will be replaced by CRLF",3)),
     ],
-    "git log":()=>[
-      L(S("commit 95a2870",3),S(" (",3),S("HEAD -> ",14,{b:1}),S("main",10,{b:1}),S(", ",3),S("origin/main",9,{b:1}),S(")",3)),
-      L(S("Author: ",8),S("You <you@localhost>","fg")),
-      L(S("Date:   ",8),S("Sat Oct 10 08:49:12 2026 +0200",8)),
-      L(S("")),
-      L(S("    Raise secondary text contrast to 4.6:1 because 4.5 felt like a lie","fg")),
-      L(S("")),
-      L(S("commit 5191a75",3)),
-      L(S("Author: ",8),S("You <you@localhost>","fg")),
-      L(S("Date:   ",8),S("Sat Oct 10 08:41:03 2026 +0200",8)),
-      L(S("")),
-      L(S("    Make bright black visible. Again.","fg")),
-      L(S("")),
-      L(S("commit ef7f459",3),S(" (",3),S("tag: ",11,{b:1}),S("v0.0.1-ghost",11,{b:1}),S(")",3)),
-      L(S("Author: ",8),S("Bright Black <ghost@localhost>","fg")),
-      L(S("Date:   ",8),S("Thu Jan  1 00:00:00 1970 +0000",8)),
-      L(S("")),
-      L(S("    Initial commit (you can't see this one either)",8)),
-    ],
-    "npm test":()=>[
+    "git log":(w)=> w<60
+      ? LOG.map(c=>H(8,S(c[0],3),S(" "),...(c[1]?[S("(",3),...c[1],S(") ",3)]:[]),S(c[4],c[5]?8:"fg")))
+      : LOG.flatMap(c=>[L(S("commit "+c[0],3),...(c[1]?[S(" (",3),...c[1],S(")",3)]:[])),L(S("Author: ",8),S(`${c[2]} <${c[5]?"ghost":"you"}@localhost>`,"fg")),L(S("Date:   ",8),S(c[3]+(c[5]?":00 +0000":":12 2026 +0200"),8)),L(S("")),H(4,S("    "+c[4],c[5]?8:"fg")),L(S(""))]),
+    "npm test":(w)=>[
       L(S("> theme-roast@1.0.0 test",8)),
-      L(S("> vitest run --reporter=verbose",8)),
+      L(S("> vitest run",8)),
       L(S("")),
-      L(S(" RUN ",4,{b:1}),S(" v2.1.3 ",4),S("~/theme-roast",8)),
+      H(5,S(" RUN ",4,{b:1}),S(" v2.1.3 ",4),S("~/theme-roast",8)),
       L(S("")),
-      L(S(" ✓ ",2),S("contrast.test.ts",8),S(" > foreground clears 7:1 ","fg"),S("3ms",8)),
-      L(S(" ✓ ",2),S("contrast.test.ts",8),S(" > accents clear 4.6:1 ","fg"),S("2ms",8)),
-      L(S(" × ",1),S("bright.test.ts",8),S(" > bright colours are brighter ","fg"),S("4ms",8)),
-      L(S("   → expected ",1),S("'#7aa2f7'",2),S(" not to be ",1),S("'#7aa2f7'",1)),
-      L(S(" ↓ ",3),S("ghost.test.ts",8),S(" > bright black is visible ","fg"),S("[skipped: could not find it]",11)),
+      H(3,S(" ✓ ",2),S("contrast.test.ts",8),S(" > foreground clears 7:1 ","fg"),S("3ms",8)),
+      H(3,S(" ✓ ",2),S("contrast.test.ts",8),S(" > accents clear 4.6:1 ","fg"),S("2ms",8)),
+      H(3,S(" × ",1),S("bright.test.ts",8),S(" > bright colours are brighter ","fg"),S("4ms",8)),
+      H(5,S("   → expected ",1),S("'#7aa2f7'",2),S(" not to be ",1),S("'#7aa2f7'",1)),
+      H(3,S(" ↓ ",3),S("ghost.test.ts",8),S(" > bright black is visible ","fg"),S("[skipped: could not find it]",11)),
       L(S("")),
-      L(S(" Test Files  ",8),S("1 failed",1,{b:1}),S(" | ",8),S("1 passed",2,{b:1}),S(" | ",8),S("1 skipped",3),S(" (3)",8)),
-      L(S("      Tests  ",8),S("1 failed",1,{b:1}),S(" | ",8),S("2 passed",2,{b:1}),S(" | ",8),S("1 skipped",3),S(" (4)",8)),
+      H(13,S(" Test Files  ",8),S("1 failed",1,{b:1}),S(" | ",8),S("1 passed",2,{b:1}),S(" | ",8),S("1 skipped",3)),
+      H(13,S("      Tests  ",8),S("1 failed",1,{b:1}),S(" | ",8),S("2 passed",2,{b:1}),S(" | ",8),S("1 skipped",3)),
       L(S("   Duration  ",8),S("412ms",13)),
     ],
-    "cat error.log":()=>[
-      L(S("2026-10-10T08:41:02.113Z ",8),S("INFO ",4,{b:1}),S(" server listening on ","fg"),S(":3000",6)),
-      L(S("2026-10-10T08:41:07.520Z ",8),S("DEBUG",5,{b:1}),S(" palette loaded: 16 colours, 0 rules","fg")),
-      L(S("2026-10-10T08:41:07.522Z ",8),S("WARN ",3,{b:1}),S(" bright black is 1.0:1 against background, rendering anyway","fg")),
-      L(S("2026-10-10T08:41:09.004Z ",8),S("ERROR",1,{b:1}),S(" ContrastError: ","fg"),S("comment text is legally a ghost",9)),
-      L(S("    at secondaryText (",8),S("src/theme.ts:14:10",12),S(")",8)),
-      L(S("    at render (",8),S("src/ui/statusline.ts:88:22",12),S(")",8)),
-      L(S("    at Terminal.paint (",8),S("node_modules/tui/index.js:1204:7",12),S(")",8)),
-      L(S("2026-10-10T08:41:09.005Z ",8),S("WARN ",11,{b:1}),S(" retrying with ","fg"),S("bright",11),S(" yellow (it is not brighter)","fg")),
-      L(S("2026-10-10T08:41:09.006Z ",8),S("FATAL",9,{b:1}),S(" user has opened lyingterminals.com","fg")),
-    ],
+    "cat error.log":(w)=>{
+      const ts=x=>w<60?x.slice(11,19)+" ":x+" ", n=w<60?15:31;
+      return [
+      H(n,S(ts("2026-10-10T08:41:02.113Z"),8),S("INFO ",4,{b:1}),S(" server listening on ","fg"),S(":3000",6)),
+      H(n,S(ts("2026-10-10T08:41:07.520Z"),8),S("DEBUG",5,{b:1}),S(" palette loaded: 16 colours, 0 rules","fg")),
+      H(n,S(ts("2026-10-10T08:41:07.522Z"),8),S("WARN ",3,{b:1}),S(" bright black is 1.0:1 against background, rendering anyway","fg")),
+      H(n,S(ts("2026-10-10T08:41:09.004Z"),8),S("ERROR",1,{b:1}),S(" ContrastError: ","fg"),S("comment text is legally a ghost",9)),
+      H(6,S("    at secondaryText (",8),S("src/theme.ts:14:10",12),S(")",8)),
+      H(6,S("    at render (",8),S("src/ui/statusline.ts:88:22",12),S(")",8)),
+      H(6,S("    at Terminal.paint (",8),S("node_modules/tui/index.js:1204:7",12),S(")",8)),
+      H(n,S(ts("2026-10-10T08:41:09.005Z"),8),S("WARN ",11,{b:1}),S(" retrying with ","fg"),S("bright",11),S(" yellow (it is not brighter)","fg")),
+      H(n,S(ts("2026-10-10T08:41:09.006Z"),8),S("FATAL",9,{b:1}),S(" user has opened lyingterminals.com","fg")),
+    ];},
   };
 
-  function help(){ return [
-    L(S("Cross-examination: available commands",15,{b:1})),
-    ...[["help","this list"],["theme <name>","switch theme (Tab completes; bare 'theme' lists them)"],["judge","the verdict, grade and top roasts"],["export ghostty|kitty|iterm","download this theme as a config file"],
-       ["ls","list files"],["git diff","a diff, in your colours"],["git log","history, including the invisible commit"],["npm test","run the (rigged) test suite"],["cat error.log","logs that look like your logs"],
-       ["lie","toggle lie mode: mark spans under 4.6:1"],["clear","clear the screen (Ctrl+L also works)"]].map(([c,d])=>L(S("  "+c.padEnd(28),2),S(d,8))),
-    L(S("Keys: ",8),S("Tab",6),S(" complete · ",8),S("↑/↓",6),S(" history · ",8),S("`",6),S(" drop-down · ",8),S("Esc",6),S(" close",8)),
+  /* ---------- terminal UI (help, verdicts, messages): contrast-safe colours, never judged ---------- */
+  const HELP=[["help","this list"],["theme <name>","switch theme (Tab completes; bare 'theme' lists them)"],["judge","the verdict, grade and top roasts"],["export ghostty|kitty|iterm","download this theme as a config file"],
+       ["ls","list files"],["git diff","a diff in your colours"],["git log","history, including the invisible commit"],["npm test","run the (rigged) test suite"],["cat error.log","logs that look like your logs"],
+       ["lie","toggle lie mode: mark demo output under 4.6:1"],["clear","clear the screen (Ctrl+L also works)"]];
+  function help(w){ return [
+    L(U("Cross-examination: available commands","fg",{b:1})),
+    ...(w<60 ? HELP.flatMap(([c,d])=>[L(U("  "+c,"green")),H(4,U("    "+d))]) : HELP.map(([c,d])=>H(30,U("  "+c.padEnd(28),"green"),U(d)))),
+    H(6,U("Keys: "),U("Tab","cyan"),U(" complete · "),U("↑/↓","cyan"),U(" history · "),U("`","cyan"),U(" drop-down · "),U("Esc","cyan"),U(" close")),
+    H(2,U("Only the demo commands (ls, git, npm, cat) use your raw colours; lie mode judges those.")),
   ];}
   function findTheme(q){
     q=q.toLowerCase().trim(); if(!q) return null;
@@ -835,15 +828,15 @@ const TERM=(function(){
     const pre=ent.filter(([k,t])=>k.startsWith(q.replace(/\s+/g,"-"))||t.name.toLowerCase().startsWith(q));
     return pre.length===1?pre[0][0]:pre.length?pre.map(p=>p[0]):null;
   }
+  const GRADE_ROLE={"A+":"green","A":"green","B":"blue","C":"yellow","D":"yellow","F":"red"};
   function judge(){
-    const A=current; const col={"A+":2,"A":2,"B":4,"C":3,"D":3,"F":1}[A.grade];
-    const top=A.findings.filter(f=>f.sev!=="ok").slice(0,3);
+    const A=current; const top=A.findings.filter(f=>f.sev!=="ok").slice(0,3);
     return [
-      L(S("Verdict for ",8),S(A.theme.name,15,{b:1})),
-      L(S("  grade  ",8),S(A.grade,col,{b:1}),S("   honesty ",8),S(`${A.score}/100`,"fg")),
-      L(S("  \u201C"+A.verdict+"\u201D",5)),
-      ...top.map(f=>L(S(f.sev==="fail"?"  ✗ ":f.sev==="lol"?"  ? ":"  ! ",{fail:1,lol:5,warn:3}[f.sev],{b:1}),S(f.text,"fg"))),
-      L(S("  (full roast in section III; this court is in session)",8)),
+      L(U("Verdict for "),U(A.theme.name,"fg",{b:1})),
+      L(U("  grade  "),U(A.grade,GRADE_ROLE[A.grade],{b:1}),U("   honesty "),U(`${A.score}/100`,"fg")),
+      H(3,U("  \u201C"+A.verdict+"\u201D","magenta")),
+      ...top.map(f=>H(4,U(f.sev==="fail"?"  ✗ ":f.sev==="lol"?"  ? ":"  ! ",{fail:"red",lol:"magenta",warn:"yellow"}[f.sev],{b:1}),U(f.text,"fg"))),
+      H(2,U("  (The full roast is in section III. This court is in session.)")),
     ];
   }
   /* ---------- exports ---------- */
@@ -865,58 +858,62 @@ const TERM=(function(){
     hist.push(cmd); if(hist.length>50) hist.shift(); hIdx=-1;
     const [w,...rest]=cmd.split(/\s+/); const arg=rest.join(" "); const lower=cmd.toLowerCase().replace(/\s+/g," ");
     const add=(lines,judged)=>{ const b=blocks[blocks.length-1]; b.lines.push(...lines); if(judged) b.judged=true; renderAll(); };
-    if(/^sudo\b/.test(lower)) return add([L(S("[sudo] password for you: ",8)),L(S("Nice try. This terminal has no root, only judgement. ",1),S("This incident will be reported to your bright black, which won't see it.",8))]);
-    if(/^rm\s+-[a-z]*r[a-z]*f|^rm\s+-[a-z]*f[a-z]*r/.test(lower)) return add([L(S("rm: refusing to delete ",1),S(arg.replace(/^-\S+\s*/,"")||"/","fg"),S(". Your bright black already deleted itself visually.",8))]);
-    if(OUT[lower]) return add(OUT[lower](),true);
+    const W=cols();
+    if(/^sudo\b/.test(lower)) return add([L(U("[sudo] password for you: ")),H(2,U("Nice try. This terminal has no root, only judgement. ","red"),U("This incident will be reported to your bright black, which won't see it."))]);
+    if(/^rm\s+-[a-z]*r[a-z]*f|^rm\s+-[a-z]*f[a-z]*r/.test(lower)) return add([H(2,U("rm: refusing to delete ","red"),U(arg.replace(/^-\S+\s*/,"")||"/","fg"),U(". Your bright black already deleted itself visually."))]);
+    if(OUT[lower]) return add(OUT[lower](W),true);
     switch(w.toLowerCase()){
-      case "help": case "?": return add(help());
+      case "help": case "?": return add(help(W));
       case "clear": blocks=[]; return renderAll();
-      case "whoami": return add([L(S("you",2),S(" (defendant's counsel)",8))]);
-      case "exit": if(dropOpen){ close(); return; } return add([L(S("There is no exit. Only ",8),S("Esc",6),S(" in drop-down mode.",8))]);
+      case "whoami": return add([L(U("you","green"),U(" (defendant's counsel)"))]);
+      case "exit": if(dropOpen){ close(); return; } return add([L(U("There is no exit. Only "),U("Esc","cyan"),U(" in drop-down mode."))]);
       case "lie":
         lieMode=!lieMode; renderAll();
-        return add([L(S("lie mode ",15,{b:1}),S(lieMode?"on":"off",lieMode?1:2,{b:1}),S(lieMode?": spans under 4.6:1 are marked FAIL (< 3), MEH (< 4.6) or LIE (a 'bright' that isn't brighter).":". The lies continue, unmarked.",8))]);
-      case "judge": return add(judge(),true);
+        return add([H(2,U("lie mode ","fg",{b:1}),U(lieMode?"on":"off",lieMode?"red":"green",{b:1}),U(lieMode?". Demo output under 4.6:1 is marked FAIL (under 3), MEH (under 4.6) or LIE (a 'bright' colour that isn't brighter).":". The lies continue, unmarked."))]);
+      case "judge": return add(judge());
       case "theme": {
-        if(!arg) return add([L(S("Themes (current marked with *):",8)),...Object.entries(THEMES).map(([k,t])=>L(S(k===currentKey?"* ":"  ",2),S(k.padEnd(18),k===currentKey?2:"fg"),S(t.name,8)))]);
+        if(!arg) return add([L(U("Themes (current marked with *):")),...Object.entries(THEMES).map(([k,t])=>L(U(k===currentKey?"* ":"  ","green"),U(k.padEnd(W<60?17:18),k===currentKey?"green":"fg"),...(W<60?[]:[U(t.name)])))]);
         const k=findTheme(arg);
-        if(Array.isArray(k)) return add([L(S("ambiguous: ",3),S(k.join("  "),"fg"))]);
-        if(!k) return add([L(S(`theme: no such theme '${arg}'. `,1),S("Type 'theme' to list them.",8))]);
+        if(Array.isArray(k)) return add([H(2,U("ambiguous: ","yellow"),U(k.join("  "),"fg"))]);
+        if(!k) return add([H(2,U(`theme: no such theme '${arg}'. `,"red"),U("Type 'theme' to list them."))]);
         run(THEMES[k],k); hit(k);
-        return add([L(S("switched to ",8),S(THEMES[k].name,15,{b:1}),S(" · grade ",8),S(current.grade,{"A+":2,"A":2,"B":4,"C":3,"D":3,"F":1}[current.grade],{b:1}),S(" · URL is now #"+k,8))]);
+        return add([H(2,U("switched to "),U(THEMES[k].name,"fg",{b:1}),U(" · grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}),U(" · URL is now #"+k))]);
       }
       case "export": {
         const f=(arg||"").toLowerCase();
-        if(!FORMATS.includes(f)) return add([L(S("usage: export ghostty|kitty|iterm",3))]);
+        if(!FORMATS.includes(f)) return add([L(U("usage: export ghostty|kitty|iterm","yellow"))]);
         const file=exportText(f,current.theme); download(file);
-        return add([L(S("✓ ",2),S("wrote ",8),S(file.name,"fg",{b:1}),S(` (${file.text.length} bytes, ${f})`,8)),L(S("  Note: it still contains every lie listed above.",8))]);
+        return add([H(2,U("✓ ","green"),U("wrote "),U(file.name,"fg",{b:1}),U(` (${file.text.length} bytes, ${f})`)),H(2,U("  Note: it still contains every lie listed above."))]);
       }
     }
-    if(w.toLowerCase()==="git") return add([L(S(`git: '${rest[0]||""}' is not a git command. Try 'git diff' or 'git log'.`,1))]);
-    if(w.toLowerCase()==="cat") return add([L(S(`cat: ${arg||"(nothing)"}: No such file. Try 'cat error.log'.`,1))]);
-    if(w.toLowerCase()==="npm") return add([L(S("npm ",8),S("ERR!",1,{b:1}),S(` Unknown command: "${rest.join(" ")}". Try 'npm test'.`,"fg"))]);
-    add([L(S(pick(QUIPS,cmd,"q")(w),1))]);
+    if(w.toLowerCase()==="git") return add([H(2,U(`git: '${rest[0]||""}' is not a git command. Try 'git diff' or 'git log'.`,"red"))]);
+    if(w.toLowerCase()==="cat") return add([H(2,U(`cat: ${arg||"(nothing)"}: No such file. Try 'cat error.log'.`,"red"))]);
+    if(w.toLowerCase()==="npm") return add([H(2,U("npm "),U("ERR!","red",{b:1}),U(` Unknown command: "${rest.join(" ")}". Try 'npm test'.`,"fg"))]);
+    add([H(2,U(pick(QUIPS,cmd,"q")(w),"red"))]);
   }
+  // bash-style completion: extend to the common prefix and list the candidates when there are several
   function complete(){
-    const v=input.value, m=v.match(/^(\s*)(\S*)(\s+)?(.*)$/);
-    let cands=[], prefix="", typed=v;
+    const v=input.value; let cands=[], prefix="", typed;
     if(/^theme\s+/i.test(v)){ prefix=v.replace(/\S*$/,""); typed=v.slice(prefix.length).toLowerCase(); cands=Object.keys(THEMES).filter(k=>k.startsWith(typed)); }
     else if(/^export\s+/i.test(v)){ prefix=v.replace(/\S*$/,""); typed=v.slice(prefix.length).toLowerCase(); cands=FORMATS.filter(k=>k.startsWith(typed)); }
     else { typed=v.toLowerCase(); cands=COMMANDS.filter(c=>c.startsWith(typed)); }
     if(!cands.length) return;
     if(cands.length===1){ input.value=prefix+cands[0]+(["theme","export"].includes(cands[0])?" ":""); }
-    else { let lcp=cands[0]; for(const c of cands) while(!c.startsWith(lcp)) lcp=lcp.slice(0,-1);
-      if(lcp.length>typed.length) input.value=prefix+lcp; else { push([L(...cands.map((c,i)=>S(c+(i<cands.length-1?"   ":""),c===currentKey?2:"fg")))],v); } }
+    else {
+      let lcp=cands[0]; for(const c of cands) while(!c.startsWith(lcp)) lcp=lcp.slice(0,-1);
+      if(lcp.length>typed.length) input.value=prefix+lcp;
+      push([H(2,...cands.map((c,i)=>U(c+(i<cands.length-1?"   ":""),c===currentKey?"green":"fg")))],v);
+    }
     input.setSelectionRange(input.value.length,input.value.length); drawInput();
   }
   input.addEventListener("keydown",e=>{
+    if(e.isComposing||e.keyCode===229) return;           // let IME finish
     if(e.key==="Enter"){ e.preventDefault(); const v=input.value; input.value=""; exec(v); drawInput(); }
     else if(e.key==="Tab"){ e.preventDefault(); complete(); }
-    else if(e.key==="ArrowUp"){ if(!hist.length) return; e.preventDefault(); if(hIdx===-1){draft=input.value;hIdx=hist.length;} hIdx=Math.max(0,hIdx-1); input.value=hist[hIdx]; requestAnimationFrame(()=>{input.setSelectionRange(input.value.length,input.value.length);drawInput();}); }
-    else if(e.key==="ArrowDown"){ if(hIdx===-1) return; e.preventDefault(); hIdx++; if(hIdx>=hist.length){hIdx=-1;input.value=draft;} else input.value=hist[hIdx]; requestAnimationFrame(()=>{input.setSelectionRange(input.value.length,input.value.length);drawInput();}); }
+    else if(e.key==="ArrowUp"){ if(!hist.length) return; e.preventDefault(); if(hIdx===-1){draft=input.value;hIdx=hist.length;} hIdx=Math.max(0,hIdx-1); input.value=hist[hIdx]; input.setSelectionRange(input.value.length,input.value.length); drawInput(); }
+    else if(e.key==="ArrowDown"){ if(hIdx===-1) return; e.preventDefault(); hIdx++; if(hIdx>=hist.length){hIdx=-1;input.value=draft;} else input.value=hist[hIdx]; input.setSelectionRange(input.value.length,input.value.length); drawInput(); }
     else if(e.key==="l"&&e.ctrlKey){ e.preventDefault(); blocks=[]; renderAll(); }
     else if(e.key==="c"&&e.ctrlKey&&input.selectionStart===input.selectionEnd){ e.preventDefault(); push([],input.value+"^C"); input.value=""; drawInput(); }
-    else if(e.key==="Escape"&&dropOpen){ e.preventDefault(); close(); }
     else if(e.key==="`"&&dropOpen&&!input.value){ e.preventDefault(); close(); }
   });
   ["input","keyup","click","select"].forEach(ev=>input.addEventListener(ev,drawInput));
@@ -924,31 +921,50 @@ const TERM=(function(){
   input.addEventListener("blur",()=>{el.classList.remove("focus");drawInput();});
   body.addEventListener("mouseup",()=>{ if(!getSelection().toString()) input.focus({preventScroll:true}); });
 
-  // suggestion chips (great on phones)
+  // suggestion chips (great on phones); the row fades at the edge that still scrolls
   const SUG=["help","judge","git diff","lie","npm test","cat error.log","ls","git log","theme ","export ghostty","clear"];
-  $("tmSugg").innerHTML=SUG.map(s=>`<button type="button" data-cmd="${s}">${s.trim()==="theme"?"theme …":s}</button>`).join("");
-  $("tmSugg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; const c=b.dataset.cmd;
-    if(c.endsWith(" ")){ input.value=c; input.focus(); input.setSelectionRange(c.length,c.length); drawInput(); push([L(S("Tip: type a theme name, or press Tab to cycle through them.",8))]); }
+  const sugg=$("tmSugg");
+  sugg.innerHTML=SUG.map(s=>`<button type="button" data-cmd="${s}">${s.trim()==="theme"?"theme …":s}</button>`).join("");
+  const fade=()=>{ const max=sugg.scrollWidth-sugg.clientWidth; sugg.classList.toggle("more-r",sugg.scrollLeft<max-2); sugg.classList.toggle("more-l",sugg.scrollLeft>2); };
+  sugg.addEventListener("scroll",fade,{passive:true}); addEventListener("resize",fade); requestAnimationFrame(fade);
+  sugg.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; const c=b.dataset.cmd;
+    if(c.endsWith(" ")){ input.value=c; input.focus({preventScroll:true}); input.setSelectionRange(c.length,c.length); drawInput(); push([H(2,U("Tip: type a theme name, or press Tab to list them."))]); }
     else { exec(c); input.focus({preventScroll:true}); } });
 
   // drop-down console: the same terminal, moved into a fixed panel
   const home=$("tmHome"), drop=$("tmDrop"), scrim=$("tmScrim");
-  function open(){ if(dropOpen) return; lastFocus=document.activeElement; drop.appendChild(el); home.classList.add("empty"); drop.classList.add("open"); scrim.classList.add("open"); drop.setAttribute("aria-hidden","false"); dropOpen=true; scroll(); setTimeout(()=>input.focus({preventScroll:true}),30); }
-  function close(){ if(!dropOpen) return; home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.setAttribute("aria-hidden","true"); dropOpen=false; scroll(); if(lastFocus&&lastFocus.focus&&lastFocus!==input) lastFocus.focus({preventScroll:true}); else input.blur(); }
+  function open(){
+    if(dropOpen) return;
+    const ae=document.activeElement; lastFocus=(ae&&ae!==document.body&&ae!==input&&!el.contains(ae))?ae:null;
+    drop.appendChild(el); home.classList.add("empty"); drop.classList.add("open"); scrim.classList.add("open"); drop.setAttribute("aria-hidden","false"); dropOpen=true; scroll(); fade();
+    input.focus({preventScroll:true});
+  }
+  function close(){
+    if(!dropOpen) return;
+    const y=scrollY; input.blur();
+    home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.setAttribute("aria-hidden","true"); dropOpen=false; scroll(); fade();
+    if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
+    scrollTo(scrollX,y); lastFocus=null;
+  }
   $("tmClose").addEventListener("click",close); scrim.addEventListener("click",close);
+  // One capture-phase handler owns Esc and the backtick, so nothing inside can swallow them.
   document.addEventListener("keydown",e=>{
-    const tg=e.target, typing=tg&&(tg.tagName==="INPUT"||tg.tagName==="TEXTAREA"||tg.isContentEditable);
-    if(e.key==="`"&&!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey){ e.preventDefault(); dropOpen?close():open(); }
-    else if(e.key==="Escape"&&dropOpen&&tg!==input){ close(); }
-  });
+    if(e.isComposing||e.keyCode===229) return;
+    if(e.key==="Escape"&&dropOpen){ e.preventDefault(); e.stopPropagation(); close(); return; }
+    if(e.key==="`"&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
+      const tg=e.target, typing=tg&&(tg.tagName==="INPUT"||tg.tagName==="TEXTAREA"||tg.tagName==="SELECT"||tg.isContentEditable);
+      if(typing) return;                                   // incl. the terminal's own input: it's just a character there
+      e.preventDefault(); e.stopPropagation(); dropOpen?close():open();
+    }
+  },true);
 
   // welcome
   function welcome(){ blocks=[]; push([
-    L(S(`Last login: ${new Date().toDateString()} on ttys001`,8)),
-    L(S("Cross-examination is now in session. Every colour you see is the theme's own.",15)),
-    L(S("Try ",8),S("help",2),S(", ",8),S("git diff",2),S(", then ",8),S("lie",1,{b:1}),S(". Press ",8),S("`",6),S(" anywhere to open the drop-down.",8)),
+    H(2,U(`Last login: ${new Date().toDateString()} on ttys001`)),
+    H(2,U("Cross-examination is now in session. The demo commands use your theme's own colours.","fg")),
+    H(2,U("Try "),U("help","green"),U(", "),U("git diff","green"),U(", then "),U("lie","red",{b:1}),U(". Press "),U("`","cyan"),U(" anywhere to open the drop-down.")),
   ]); }
-  return {refresh(){ setColours(); renderAll(); drawInput(); }, init(){ setColours(); welcome(); drawInput(); }, exec, open, close, exportText, get lie(){return lieMode;}};
+  return {refresh(){ setColours(); renderAll(); drawInput(); fade(); }, init(){ setColours(); welcome(); drawInput(); }, exec, open, close, exportText, get lie(){return lieMode;}, get isOpen(){return dropOpen;}};
 })();
 
 // boot from hash
