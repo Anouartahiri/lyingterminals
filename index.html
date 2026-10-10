@@ -205,12 +205,48 @@ footer a{color:var(--fg);font-weight:400}
   .chips{grid-template-columns:repeat(2,1fr);gap:10px}
   .sw .aa{padding:10px 10px 2px} .sw .d{padding:0 10px 9px}
 }
+/* ---------- VI. Cross-examination: a tiny DOM terminal in the theme's RAW colours ---------- */
+.tm{--tbg:#282828;--tfg:#ebdbb2;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--tbg);color:var(--tfg);
+  font:15px/1.5 var(--mono);box-shadow:0 24px 60px -30px rgba(0,0,0,.6);transition:background-color var(--t),color var(--t)}
+.tm-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--muted);font-size:var(--small)}
+.tm-bar i{width:12px;height:12px;border-radius:50%;display:block;flex:none}
+.tm-bar .ti{flex:1;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding-right:44px}
+.tm-bar .x{display:none;color:var(--muted);font-size:var(--small);padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
+.tm-body{height:430px;overflow-y:auto;padding:14px 16px 10px;cursor:text;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.tm-out{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.tm-out .ln{min-height:1.5em}
+.tm-in{position:relative;white-space:pre-wrap;overflow-wrap:anywhere;min-height:1.5em}
+.tm-in input{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;font:16px var(--mono);color:transparent;background:transparent;caret-color:transparent}
+.tm-cur{background:var(--tfg);color:var(--tbg);animation:tmblink 1.06s steps(1) infinite}
+.tm:not(.focus) .tm-cur{background:transparent;outline:1px solid var(--tfg);outline-offset:-1px;color:inherit;animation:none}
+@keyframes tmblink{50%{background:transparent;color:inherit}}
+.tm b{font-weight:700}
+.tm .lie-u{text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:3px}
+.tm .lie-u.fail{text-decoration-color:var(--red)} .tm .lie-u.warn{text-decoration-color:var(--yellow)} .tm .lie-u.lol{text-decoration-color:var(--magenta)}
+.tm .lab{display:inline-block;margin:0 .45em;line-height:1.25;vertical-align:1px;white-space:nowrap;background:var(--tbg);text-decoration:none}
+.tm-sugg{display:flex;gap:8px;overflow-x:auto;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel);scrollbar-width:none}
+.tm-sugg::-webkit-scrollbar{display:none}
+.tm-sugg button{flex:none;font:var(--small)/1.2 var(--mono);color:var(--fg);padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:transparent}
+.tm-sugg button:hover{border-color:var(--fg)}
+.tm-home{min-height:1px}
+.tm-placeholder{display:none;padding:22px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:var(--small);text-align:center}
+.tm-home.empty .tm-placeholder{display:block}
+.tm-drop{position:fixed;inset:0 0 auto 0;z-index:50;padding:0 max(12px,env(safe-area-inset-left)) 12px;transform:translateY(-102%);transition:transform .22s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.tm-drop.open{transform:none;pointer-events:auto}
+.tm-drop .tm{border-top:0;border-radius:0 0 14px 14px;max-width:1100px;margin:0 auto}
+.tm-drop .tm-body{height:min(56vh,520px)}
+.tm-drop .tm-bar .x{display:inline-block}
+.tm-scrim{position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s}
+.tm-scrim.open{opacity:1;pointer-events:auto}
+kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);border-radius:5px;border-bottom-width:2px}
+@media (max-width:640px){.tm{font-size:14px}.tm-body{height:380px;padding:12px 12px 8px}.tm-bar .ti{padding-right:0}}
+@media (prefers-reduced-motion:reduce){.tm-cur{animation:none!important}.tm-drop{transition:none}}
 </style>
 </head>
 <body>
 <header class="top">
   <a class="brand" href="#">lying<b>terminals</b>.com</a>
-  <nav><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a></nav>
+  <nav><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a><a href="#console">Terminal</a></nav>
 </header>
 
 <main>
@@ -288,6 +324,29 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
       <li><span class="n">iv.</span><span class="t">Have a coding agent fit a <em>fifth-degree polynomial</em> to the contrast algorithm, ship only the coefficients, and call it "respecting user choice."<span class="poly">contrast(L) ≈ c₀ + c₁L + c₂L² + c₃L³ + c₄L⁴ + c₅L⁵</span></span><span class="b"><span class="b4">🧠</span></span></li>
     </ol>
   </section>
+
+  <section class="wide" id="console">
+    <div class="intro">
+      <div class="kicker">VI. Cross-examination</div>
+      <h2>Put your theme on the stand.</h2>
+      <p class="prose">This terminal uses your theme's <em>raw</em> colours, with nothing adjusted for you. Run something that looks familiar, like <code>git diff</code> or <code>npm test</code>, then type <code>lie</code> to mark every span that wouldn't clear 4.6:1. Press <kbd>`</kbd> anywhere to open it as a drop-down console.</p>
+    </div>
+    <figure>
+      <div class="tm-home" id="tmHome"><div class="tm-placeholder">The terminal is open as a drop-down console. Press <kbd>Esc</kbd> to bring it back.</div>
+        <div class="tm" id="tm">
+          <div class="tm-bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="ti" id="tmTitle">you@localhost: ~</span><button class="x" id="tmClose" aria-label="Close console (Esc)">esc</button></div>
+          <div class="tm-body" id="tmBody">
+            <div class="tm-out" id="tmOut" role="log" aria-live="polite" aria-relevant="additions" aria-label="Terminal output"></div>
+            <div class="tm-in" id="tmIn"><span id="tmPrompt"></span><span id="tmLine"></span><input id="tmInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Terminal command input"></div>
+          </div>
+          <div class="tm-sugg" id="tmSugg" role="toolbar" aria-label="Suggested commands"></div>
+        </div>
+      </div>
+      <figcaption>Fig. 3. A tiny terminal drawn with plain DOM elements. Try <b>help</b>, <b>theme dracula</b>, <b>judge</b>, <b>git diff</b>, <b>lie</b> and <b>export ghostty</b>. Press Tab to complete and ↑/↓ for history.</figcaption>
+    </figure>
+  </section>
+  <div class="tm-scrim" id="tmScrim"></div>
+  <div class="tm-drop" id="tmDrop" role="dialog" aria-label="Drop-down terminal console" aria-hidden="true"></div>
 
   <section class="col">
     <p class="aside" id="metaNote">A note on the colours: this page is wearing your theme, but it doesn't take it on trust. Like Pi, it moves each accent in OKLCH until its own text clears 4.6:1. The tiles above are left exactly as your theme defines them.</p>
@@ -601,6 +660,7 @@ function run(theme,key){
   current=analyze(theme); currentKey=key;
   applySkin(theme); renderPalette(current); renderRoast(current); drawCard(current);
   document.querySelectorAll("#presets .chip[data-k]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===key)));
+  if(typeof TERM!=="undefined"&&TERM.ready) TERM.refresh();
   try{ const h=key&&key!=="custom"?"#"+key:"#p="+[theme.bg,theme.fg,...theme.c].map(s=>s.slice(1)).join("-"); history.replaceState(null,"",h); }catch(e){}
 }
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
@@ -629,6 +689,268 @@ $("copyBtn").onclick=async()=>toast(await copy(roastText(current))?"Roast copied
 $("linkBtn").onclick=async()=>toast(await copy(location.protocol==="file:"?"https://lyingterminals.com/"+location.hash:location.href)?"Link copied.":"Couldn't copy link.");
 $("metaDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
 
+/* ---------- VI. Cross-examination: tiny DOM terminal ---------- */
+const TERM=(function(){
+  const el=$("tm"), out=$("tmOut"), body=$("tmBody"), input=$("tmInput"), lineEl=$("tmLine"), promptEl=$("tmPrompt");
+  const COMMANDS=["help","theme","judge","export","ls","git diff","git log","npm test","cat error.log","lie","clear","whoami","exit"];
+  const FORMATS=["ghostty","kitty","iterm"];
+  let blocks=[], lieMode=false, hist=[], hIdx=-1, draft="", dropOpen=false, lastFocus=null;
+  const S=(t,c,o={})=>Object.assign({t,c},o);          // segment: text, colour (0-15 | "fg"), {b:bold}
+  const L=(...segs)=>segs;                              // one line
+  const PROMPT=()=>[S("you@localhost",2,{b:1,x:1}),S(" "),S("~",4,{b:1,x:1}),S(" $ ","fg",{x:1})];
+
+  function setColours(){
+    const t=current.theme;
+    el.style.setProperty("--tbg",t.bg); el.style.setProperty("--tfg",t.fg);
+    t.c.forEach((h,i)=>el.style.setProperty("--t"+i,h));
+    $("tmTitle").textContent=`you@localhost: ~ — ${t.name} (raw colours)`;
+  }
+  // FAIL < 3 · MEH < 4.6 · LIE = a "bright" colour that isn't actually brighter than its normal twin
+  function judgeSpan(c){
+    const t=current.theme, hex=c==="fg"?t.fg:t.c[c], r=contrast(hex,t.bg);
+    if(r>=4.6) return null;
+    let liar=false;
+    if(typeof c==="number"&&c>=8){ const n=c-8; liar = t.c[c]===t.c[n] || contrast(t.c[c],t.bg) < contrast(t.c[n],t.bg)-0.05; }
+    const cls=r<3?"fail":"warn";
+    return {r, cls:liar?"lol":cls, lab:liar?"LIE":r<3?"FAIL":"MEH"};
+  }
+  function segHTML(s,seen,judged){
+    const style=s.c===undefined?"":s.c==="fg"?"color:var(--tfg)":`color:var(--t${s.c})`;
+    const txt=esc(s.t); let cls=s.b?"b":"";
+    let pill="";
+    if(lieMode&&judged&&!s.x&&s.c!==undefined&&s.t.trim()){
+      const j=judgeSpan(s.c);
+      if(j){ cls+=` lie-u ${j.cls}`; const key=s.c; if(!seen.has(key)){ seen.add(key); pill=`<span class="lab ${j.cls}" title="${s.c==="fg"?"foreground":cname(s.c)} ${fmt(j.r)}:1">${j.lab} ${fmt(j.r)}</span>`; } }
+    }
+    const inner=s.b?`<b>${txt}</b>`:txt;
+    return `<span${cls.trim()?` class="${cls.trim()}"`:""}${style?` style="${style}"`:""}${pill?` title="${esc(cname(typeof s.c==="number"?s.c:7))}"`:""}>${inner}</span>${pill}`;
+  }
+  function renderBlock(b){
+    const seen=new Set();
+    return `<div class="blk">${b.lines.map(l=>`<div class="ln">${l.map(s=>segHTML(s,seen,b.judged)).join("")}</div>`).join("")}</div>`;
+  }
+  function renderAll(){ out.innerHTML=blocks.map(renderBlock).join(""); scroll(); }
+  function push(lines,echo){
+    const b={lines:echo?[[...PROMPT(),S(echo,"fg",{x:1})],...lines]:lines}; blocks.push(b);
+    if(blocks.length>80) blocks=blocks.slice(-80), renderAll();
+    else { out.insertAdjacentHTML("beforeend",renderBlock(b)); scroll(); }
+  }
+  const scroll=()=>{ body.scrollTop=body.scrollHeight; };
+  function drawInput(){
+    const v=input.value, p=Math.min(input.selectionStart??v.length,v.length);
+    lineEl.innerHTML=`<span style="color:var(--tfg)">${esc(v.slice(0,p))}</span><span class="tm-cur">${esc(v[p]||" ")}</span><span style="color:var(--tfg)">${esc(v.slice(p+1))}</span>`;
+  }
+  promptEl.innerHTML=PROMPT().map(s=>segHTML(s,new Set(),false)).join("");
+
+  /* ---------- sample output, all in the theme's 16 colours ---------- */
+  const OUT={
+    ls:()=>[
+      L(S("total 48",8)),
+      L(S("drwxr-xr-x  ",8),S(" 6 you staff  192 Oct  9 18:20 ",8),S(".",4,{b:1})),
+      L(S("-rw-r--r--  ",8),S(" 1 you staff  412 Oct  9 18:20 ",8),S(".env",8),S("  # bright black: the colour of secrets",8)),
+      L(S("drwxr-xr-x  ",8),S(" 8 you staff  256 Oct  9 18:21 ",8),S(".git",4,{b:1})),
+      L(S("-rwxr-xr-x  ",8),S(" 1 you staff 2.1K Oct  9 18:22 ",8),S("deploy.sh",2,{b:1})),
+      L(S("-rw-r--r--  ",8),S(" 1 you staff  31K Oct  9 18:23 ",8),S("error.log","fg")),
+      L(S("lrwxr-xr-x  ",8),S(" 1 you staff   10 Oct  9 18:23 ",8),S("latest",6),S(" -> ","fg"),S("v2.4.1",6)),
+      L(S("drwxr-xr-x  ",8),S("12 you staff  384 Oct  9 18:24 ",8),S("node_modules",4,{b:1}),S("  (380 MB, as is tradition)",8)),
+      L(S("-rw-r--r--  ",8),S(" 1 you staff 1.3K Oct  9 18:24 ",8),S("package.json","fg")),
+      L(S("-rw-r--r--  ",8),S(" 1 you staff  64K Oct  9 18:24 ",8),S("theme.zip",1,{b:1})),
+    ],
+    "git diff":()=>[
+      L(S("diff --git a/src/theme.ts b/src/theme.ts",15,{b:1})),
+      L(S("index 3f2a1c4..9be07d2 100644",15,{b:1})),
+      L(S("--- a/src/theme.ts",15,{b:1})),
+      L(S("+++ b/src/theme.ts",15,{b:1})),
+      L(S("@@ -12,9 +12,10 @@",6),S(" export function secondaryText(palette: Palette) {","fg")),
+      L(S("   // TODO: make comments readable (since 2019)",8)),
+      L(S("-  return palette.brightBlack;",1)),
+      L(S("+  // bright black failed 3:1 again, so we pick it by contrast instead",2)),
+      L(S("+  return pickByContrast(palette, { min: 4.6 });",2)),
+      L(S("   }","fg")),
+      L(S("@@ -40,6 +41,6 @@",6),S(" const BRIGHT_IS_BRIGHTER = ","fg"),S("true",5),S(";",8)),
+      L(S("-const ACCENT = palette.brightBlue; ",1),S("// \"brighter\", allegedly",9)),
+      L(S("+const ACCENT = palette.blue;       ",2),S("// turns out it was the same colour",10)),
+      L(S(" warning: ",11,{b:1}),S("in the working copy of 'theme.ts', LF will be replaced by CRLF",3)),
+    ],
+    "git log":()=>[
+      L(S("commit 95a2870",3),S(" (",3),S("HEAD -> ",14,{b:1}),S("main",10,{b:1}),S(", ",3),S("origin/main",9,{b:1}),S(")",3)),
+      L(S("Author: ",8),S("You <you@localhost>","fg")),
+      L(S("Date:   ",8),S("Sat Oct 10 08:49:12 2026 +0200",8)),
+      L(S("")),
+      L(S("    Raise secondary text contrast to 4.6:1 because 4.5 felt like a lie","fg")),
+      L(S("")),
+      L(S("commit 5191a75",3)),
+      L(S("Author: ",8),S("You <you@localhost>","fg")),
+      L(S("Date:   ",8),S("Sat Oct 10 08:41:03 2026 +0200",8)),
+      L(S("")),
+      L(S("    Make bright black visible. Again.","fg")),
+      L(S("")),
+      L(S("commit ef7f459",3),S(" (",3),S("tag: ",11,{b:1}),S("v0.0.1-ghost",11,{b:1}),S(")",3)),
+      L(S("Author: ",8),S("Bright Black <ghost@localhost>","fg")),
+      L(S("Date:   ",8),S("Thu Jan  1 00:00:00 1970 +0000",8)),
+      L(S("")),
+      L(S("    Initial commit (you can't see this one either)",8)),
+    ],
+    "npm test":()=>[
+      L(S("> theme-roast@1.0.0 test",8)),
+      L(S("> vitest run --reporter=verbose",8)),
+      L(S("")),
+      L(S(" RUN ",4,{b:1}),S(" v2.1.3 ",4),S("~/theme-roast",8)),
+      L(S("")),
+      L(S(" ✓ ",2),S("contrast.test.ts",8),S(" > foreground clears 7:1 ","fg"),S("3ms",8)),
+      L(S(" ✓ ",2),S("contrast.test.ts",8),S(" > accents clear 4.6:1 ","fg"),S("2ms",8)),
+      L(S(" × ",1),S("bright.test.ts",8),S(" > bright colours are brighter ","fg"),S("4ms",8)),
+      L(S("   → expected ",1),S("'#7aa2f7'",2),S(" not to be ",1),S("'#7aa2f7'",1)),
+      L(S(" ↓ ",3),S("ghost.test.ts",8),S(" > bright black is visible ","fg"),S("[skipped: could not find it]",11)),
+      L(S("")),
+      L(S(" Test Files  ",8),S("1 failed",1,{b:1}),S(" | ",8),S("1 passed",2,{b:1}),S(" | ",8),S("1 skipped",3),S(" (3)",8)),
+      L(S("      Tests  ",8),S("1 failed",1,{b:1}),S(" | ",8),S("2 passed",2,{b:1}),S(" | ",8),S("1 skipped",3),S(" (4)",8)),
+      L(S("   Duration  ",8),S("412ms",13)),
+    ],
+    "cat error.log":()=>[
+      L(S("2026-10-10T08:41:02.113Z ",8),S("INFO ",4,{b:1}),S(" server listening on ","fg"),S(":3000",6)),
+      L(S("2026-10-10T08:41:07.520Z ",8),S("DEBUG",5,{b:1}),S(" palette loaded: 16 colours, 0 rules","fg")),
+      L(S("2026-10-10T08:41:07.522Z ",8),S("WARN ",3,{b:1}),S(" bright black is 1.0:1 against background, rendering anyway","fg")),
+      L(S("2026-10-10T08:41:09.004Z ",8),S("ERROR",1,{b:1}),S(" ContrastError: ","fg"),S("comment text is legally a ghost",9)),
+      L(S("    at secondaryText (",8),S("src/theme.ts:14:10",12),S(")",8)),
+      L(S("    at render (",8),S("src/ui/statusline.ts:88:22",12),S(")",8)),
+      L(S("    at Terminal.paint (",8),S("node_modules/tui/index.js:1204:7",12),S(")",8)),
+      L(S("2026-10-10T08:41:09.005Z ",8),S("WARN ",11,{b:1}),S(" retrying with ","fg"),S("bright",11),S(" yellow (it is not brighter)","fg")),
+      L(S("2026-10-10T08:41:09.006Z ",8),S("FATAL",9,{b:1}),S(" user has opened lyingterminals.com","fg")),
+    ],
+  };
+
+  function help(){ return [
+    L(S("Cross-examination: available commands",15,{b:1})),
+    ...[["help","this list"],["theme <name>","switch theme (Tab completes; bare 'theme' lists them)"],["judge","the verdict, grade and top roasts"],["export ghostty|kitty|iterm","download this theme as a config file"],
+       ["ls","list files"],["git diff","a diff, in your colours"],["git log","history, including the invisible commit"],["npm test","run the (rigged) test suite"],["cat error.log","logs that look like your logs"],
+       ["lie","toggle lie mode: mark spans under 4.6:1"],["clear","clear the screen (Ctrl+L also works)"]].map(([c,d])=>L(S("  "+c.padEnd(28),2),S(d,8))),
+    L(S("Keys: ",8),S("Tab",6),S(" complete · ",8),S("↑/↓",6),S(" history · ",8),S("`",6),S(" drop-down · ",8),S("Esc",6),S(" close",8)),
+  ];}
+  function findTheme(q){
+    q=q.toLowerCase().trim(); if(!q) return null;
+    const ent=Object.entries(THEMES);
+    const exact=ent.find(([k,t])=>k===q||t.name.toLowerCase()===q||t.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")===q);
+    if(exact) return exact[0];
+    const pre=ent.filter(([k,t])=>k.startsWith(q.replace(/\s+/g,"-"))||t.name.toLowerCase().startsWith(q));
+    return pre.length===1?pre[0][0]:pre.length?pre.map(p=>p[0]):null;
+  }
+  function judge(){
+    const A=current; const col={"A+":2,"A":2,"B":4,"C":3,"D":3,"F":1}[A.grade];
+    const top=A.findings.filter(f=>f.sev!=="ok").slice(0,3);
+    return [
+      L(S("Verdict for ",8),S(A.theme.name,15,{b:1})),
+      L(S("  grade  ",8),S(A.grade,col,{b:1}),S("   honesty ",8),S(`${A.score}/100`,"fg")),
+      L(S("  \u201C"+A.verdict+"\u201D",5)),
+      ...top.map(f=>L(S(f.sev==="fail"?"  ✗ ":f.sev==="lol"?"  ? ":"  ! ",{fail:1,lol:5,warn:3}[f.sev],{b:1}),S(f.text,"fg"))),
+      L(S("  (full roast in section III; this court is in session)",8)),
+    ];
+  }
+  /* ---------- exports ---------- */
+  const slug=t=>t.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  function exportText(fmt,t){
+    const head=`${t.name} (exported by lyingterminals.com. Grade ${current.grade}, viewer discretion advised)`;
+    if(fmt==="ghostty") return {name:slug(t), mime:"application/octet-stream", text:`# ${head}\nbackground = ${t.bg}\nforeground = ${t.fg}\n${t.c.map((h,i)=>`palette = ${i}=${h}`).join("\n")}\ncursor-color = ${t.fg}\nselection-background = ${mix(t.fg,t.bg,0.75)}\nselection-foreground = ${t.fg}\n`};
+    if(fmt==="kitty") return {name:slug(t)+".conf", mime:"text/plain", text:`# ${head}\nforeground ${t.fg}\nbackground ${t.bg}\ncursor ${t.fg}\nselection_foreground ${t.fg}\nselection_background ${mix(t.fg,t.bg,0.75)}\n${t.c.map((h,i)=>`color${i} ${h}`).join("\n")}\n`};
+    const comp=h=>{const [r,g,b]=rgb(h).map(v=>v/255); return `\t<dict>\n\t\t<key>Alpha Component</key>\n\t\t<real>1</real>\n\t\t<key>Blue Component</key>\n\t\t<real>${b.toFixed(6)}</real>\n\t\t<key>Color Space</key>\n\t\t<string>sRGB</string>\n\t\t<key>Green Component</key>\n\t\t<real>${g.toFixed(6)}</real>\n\t\t<key>Red Component</key>\n\t\t<real>${r.toFixed(6)}</real>\n\t</dict>`;};
+    const ent=[...t.c.map((h,i)=>[`Ansi ${i} Color`,h]),["Background Color",t.bg],["Bold Color",t.fg],["Cursor Color",t.fg],["Cursor Text Color",t.bg],["Foreground Color",t.fg],["Selected Text Color",t.fg],["Selection Color",mix(t.fg,t.bg,0.75)]];
+    ent.sort((a,b)=>a[0]<b[0]?-1:1);
+    return {name:slug(t)+".itermcolors", mime:"application/xml", text:`<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<!-- ${esc(head)} -->\n<plist version="1.0">\n<dict>\n${ent.map(([k,h])=>`\t<key>${k}</key>\n${comp(h)}`).join("\n")}\n</dict>\n</plist>\n`};
+  }
+  function download(f){ const a=document.createElement("a"); a.download=f.name; a.href=URL.createObjectURL(new Blob([f.text],{type:f.mime})); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
+
+  const QUIPS=[c=>`zsh: command not found: ${c}. Objection sustained.`, c=>`${c}: not a recognised command. The witness is confused. Try 'help'.`, c=>`${c}? Bold of you. Type 'help' for the admissible commands.`];
+  function exec(raw){
+    const cmd=raw.trim(); push([],raw); if(!cmd) return;
+    hist.push(cmd); if(hist.length>50) hist.shift(); hIdx=-1;
+    const [w,...rest]=cmd.split(/\s+/); const arg=rest.join(" "); const lower=cmd.toLowerCase().replace(/\s+/g," ");
+    const add=(lines,judged)=>{ const b=blocks[blocks.length-1]; b.lines.push(...lines); if(judged) b.judged=true; renderAll(); };
+    if(/^sudo\b/.test(lower)) return add([L(S("[sudo] password for you: ",8)),L(S("Nice try. This terminal has no root, only judgement. ",1),S("This incident will be reported to your bright black, which won't see it.",8))]);
+    if(/^rm\s+-[a-z]*r[a-z]*f|^rm\s+-[a-z]*f[a-z]*r/.test(lower)) return add([L(S("rm: refusing to delete ",1),S(arg.replace(/^-\S+\s*/,"")||"/","fg"),S(". Your bright black already deleted itself visually.",8))]);
+    if(OUT[lower]) return add(OUT[lower](),true);
+    switch(w.toLowerCase()){
+      case "help": case "?": return add(help());
+      case "clear": blocks=[]; return renderAll();
+      case "whoami": return add([L(S("you",2),S(" (defendant's counsel)",8))]);
+      case "exit": if(dropOpen){ close(); return; } return add([L(S("There is no exit. Only ",8),S("Esc",6),S(" in drop-down mode.",8))]);
+      case "lie":
+        lieMode=!lieMode; renderAll();
+        return add([L(S("lie mode ",15,{b:1}),S(lieMode?"on":"off",lieMode?1:2,{b:1}),S(lieMode?": spans under 4.6:1 are marked FAIL (< 3), MEH (< 4.6) or LIE (a 'bright' that isn't brighter).":". The lies continue, unmarked.",8))]);
+      case "judge": return add(judge(),true);
+      case "theme": {
+        if(!arg) return add([L(S("Themes (current marked with *):",8)),...Object.entries(THEMES).map(([k,t])=>L(S(k===currentKey?"* ":"  ",2),S(k.padEnd(18),k===currentKey?2:"fg"),S(t.name,8)))]);
+        const k=findTheme(arg);
+        if(Array.isArray(k)) return add([L(S("ambiguous: ",3),S(k.join("  "),"fg"))]);
+        if(!k) return add([L(S(`theme: no such theme '${arg}'. `,1),S("Type 'theme' to list them.",8))]);
+        run(THEMES[k],k); hit(k);
+        return add([L(S("switched to ",8),S(THEMES[k].name,15,{b:1}),S(" · grade ",8),S(current.grade,{"A+":2,"A":2,"B":4,"C":3,"D":3,"F":1}[current.grade],{b:1}),S(" · URL is now #"+k,8))]);
+      }
+      case "export": {
+        const f=(arg||"").toLowerCase();
+        if(!FORMATS.includes(f)) return add([L(S("usage: export ghostty|kitty|iterm",3))]);
+        const file=exportText(f,current.theme); download(file);
+        return add([L(S("✓ ",2),S("wrote ",8),S(file.name,"fg",{b:1}),S(` (${file.text.length} bytes, ${f})`,8)),L(S("  Note: it still contains every lie listed above.",8))]);
+      }
+    }
+    if(w.toLowerCase()==="git") return add([L(S(`git: '${rest[0]||""}' is not a git command. Try 'git diff' or 'git log'.`,1))]);
+    if(w.toLowerCase()==="cat") return add([L(S(`cat: ${arg||"(nothing)"}: No such file. Try 'cat error.log'.`,1))]);
+    if(w.toLowerCase()==="npm") return add([L(S("npm ",8),S("ERR!",1,{b:1}),S(` Unknown command: "${rest.join(" ")}". Try 'npm test'.`,"fg"))]);
+    add([L(S(pick(QUIPS,cmd,"q")(w),1))]);
+  }
+  function complete(){
+    const v=input.value, m=v.match(/^(\s*)(\S*)(\s+)?(.*)$/);
+    let cands=[], prefix="", typed=v;
+    if(/^theme\s+/i.test(v)){ prefix=v.replace(/\S*$/,""); typed=v.slice(prefix.length).toLowerCase(); cands=Object.keys(THEMES).filter(k=>k.startsWith(typed)); }
+    else if(/^export\s+/i.test(v)){ prefix=v.replace(/\S*$/,""); typed=v.slice(prefix.length).toLowerCase(); cands=FORMATS.filter(k=>k.startsWith(typed)); }
+    else { typed=v.toLowerCase(); cands=COMMANDS.filter(c=>c.startsWith(typed)); }
+    if(!cands.length) return;
+    if(cands.length===1){ input.value=prefix+cands[0]+(["theme","export"].includes(cands[0])?" ":""); }
+    else { let lcp=cands[0]; for(const c of cands) while(!c.startsWith(lcp)) lcp=lcp.slice(0,-1);
+      if(lcp.length>typed.length) input.value=prefix+lcp; else { push([L(...cands.map((c,i)=>S(c+(i<cands.length-1?"   ":""),c===currentKey?2:"fg")))],v); } }
+    input.setSelectionRange(input.value.length,input.value.length); drawInput();
+  }
+  input.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){ e.preventDefault(); const v=input.value; input.value=""; exec(v); drawInput(); }
+    else if(e.key==="Tab"){ e.preventDefault(); complete(); }
+    else if(e.key==="ArrowUp"){ if(!hist.length) return; e.preventDefault(); if(hIdx===-1){draft=input.value;hIdx=hist.length;} hIdx=Math.max(0,hIdx-1); input.value=hist[hIdx]; requestAnimationFrame(()=>{input.setSelectionRange(input.value.length,input.value.length);drawInput();}); }
+    else if(e.key==="ArrowDown"){ if(hIdx===-1) return; e.preventDefault(); hIdx++; if(hIdx>=hist.length){hIdx=-1;input.value=draft;} else input.value=hist[hIdx]; requestAnimationFrame(()=>{input.setSelectionRange(input.value.length,input.value.length);drawInput();}); }
+    else if(e.key==="l"&&e.ctrlKey){ e.preventDefault(); blocks=[]; renderAll(); }
+    else if(e.key==="c"&&e.ctrlKey&&input.selectionStart===input.selectionEnd){ e.preventDefault(); push([],input.value+"^C"); input.value=""; drawInput(); }
+    else if(e.key==="Escape"&&dropOpen){ e.preventDefault(); close(); }
+    else if(e.key==="`"&&dropOpen&&!input.value){ e.preventDefault(); close(); }
+  });
+  ["input","keyup","click","select"].forEach(ev=>input.addEventListener(ev,drawInput));
+  input.addEventListener("focus",()=>{el.classList.add("focus");drawInput();});
+  input.addEventListener("blur",()=>{el.classList.remove("focus");drawInput();});
+  body.addEventListener("mouseup",()=>{ if(!getSelection().toString()) input.focus({preventScroll:true}); });
+
+  // suggestion chips (great on phones)
+  const SUG=["help","judge","git diff","lie","npm test","cat error.log","ls","git log","theme ","export ghostty","clear"];
+  $("tmSugg").innerHTML=SUG.map(s=>`<button type="button" data-cmd="${s}">${s.trim()==="theme"?"theme …":s}</button>`).join("");
+  $("tmSugg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; const c=b.dataset.cmd;
+    if(c.endsWith(" ")){ input.value=c; input.focus(); input.setSelectionRange(c.length,c.length); drawInput(); push([L(S("Tip: type a theme name, or press Tab to cycle through them.",8))]); }
+    else { exec(c); input.focus({preventScroll:true}); } });
+
+  // drop-down console: the same terminal, moved into a fixed panel
+  const home=$("tmHome"), drop=$("tmDrop"), scrim=$("tmScrim");
+  function open(){ if(dropOpen) return; lastFocus=document.activeElement; drop.appendChild(el); home.classList.add("empty"); drop.classList.add("open"); scrim.classList.add("open"); drop.setAttribute("aria-hidden","false"); dropOpen=true; scroll(); setTimeout(()=>input.focus({preventScroll:true}),30); }
+  function close(){ if(!dropOpen) return; home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.setAttribute("aria-hidden","true"); dropOpen=false; scroll(); if(lastFocus&&lastFocus.focus&&lastFocus!==input) lastFocus.focus({preventScroll:true}); else input.blur(); }
+  $("tmClose").addEventListener("click",close); scrim.addEventListener("click",close);
+  document.addEventListener("keydown",e=>{
+    const tg=e.target, typing=tg&&(tg.tagName==="INPUT"||tg.tagName==="TEXTAREA"||tg.isContentEditable);
+    if(e.key==="`"&&!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey){ e.preventDefault(); dropOpen?close():open(); }
+    else if(e.key==="Escape"&&dropOpen&&tg!==input){ close(); }
+  });
+
+  // welcome
+  function welcome(){ blocks=[]; push([
+    L(S(`Last login: ${new Date().toDateString()} on ttys001`,8)),
+    L(S("Cross-examination is now in session. Every colour you see is the theme's own.",15)),
+    L(S("Try ",8),S("help",2),S(", ",8),S("git diff",2),S(", then ",8),S("lie",1,{b:1}),S(". Press ",8),S("`",6),S(" anywhere to open the drop-down.",8)),
+  ]); }
+  return {refresh(){ setColours(); renderAll(); drawInput(); }, init(){ setColours(); welcome(); drawInput(); }, exec, open, close, exportText, get lie(){return lieMode;}};
+})();
+
 // boot from hash
 (function(){
   const h=decodeURIComponent(location.hash.slice(1));
@@ -638,6 +960,7 @@ $("metaDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"short"
   // redraw the card once the web fonts are in, so the canvas uses them too
   if(document.fonts){ Promise.all([document.fonts.load(`20px "Departure Mono"`),document.fonts.load(`40px "Newsreader"`),document.fonts.load(`italic 20px "Newsreader"`)]).catch(()=>{}).then(()=>document.fonts.ready).then(()=>current&&drawCard(current)); }
 })();
+TERM.init(); TERM.ready=true;
 </script>
 </body>
 </html>

@@ -73,9 +73,48 @@ function dashboard(r) {
 <p class="m" style="margin-top:30px">JSON: add <code>&amp;format=json</code></p></body></html>`;
 }
 
+/* ---------- curl mode: an ANSI test card for terminals (the server can't see your colours, so no grade) ---------- */
+const CLI_RE = /^(curl|wget|httpie)\//i;
+const NAMES8 = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
+const JOKES = [
+  "Your bright black called. Nobody could read the message.",
+  "\"Bright\" is not a colour, it's a marketing department.",
+  "16 colours, 0 rules, 1 very tired accessibility checker.",
+  "Some themes have contrast issues. Yours has contrast opinions.",
+  "If your comments vanished, check your bright black. It's probably the background.",
+];
+function testCard(color, joke) {
+  const E = (code, s) => (color ? `\x1b[${code}m${s}\x1b[0m` : s);
+  const block = (bgCode) => (color ? `\x1b[${bgCode}m      \x1b[0m` : "[    ]");
+  const L = [];
+  L.push(E("1", "lyingterminals.com") + " · ANSI test card");
+  L.push(E("90", "Each colour as text on your background, then as a block of its own background."));
+  L.push("");
+  for (let i = 0; i < 8; i++) {
+    const n = NAMES8[i];
+    const left = E(String(30 + i), `${String(i).padStart(2)} ${n.padEnd(14)}`) + " " + block(40 + i);
+    const right = E(String(90 + i), `${String(i + 8).padStart(2)} bright ${n.padEnd(8)}`) + " " + block(100 + i);
+    L.push(`  ${left}    ${right}`);
+  }
+  L.push("");
+  L.push(E("90", "  # can you read this comment? It's bright black, like most secondary text."));
+  L.push("  " + E("2", "dim text") + " · " + E("1", "bold text") + " · " + E("1;90", "bold bright black") + " · " + E("4", "underlined") + " · " + E("7", " reverse "));
+  L.push("");
+  L.push("  " + E("3", joke));
+  L.push("");
+  L.push(E("1", "Paste your theme at lyingterminals.com for the real verdict"));
+  L.push(E("90", "No colours? curl lyingterminals.com/plain"));
+  return L.join("\n") + "\n";
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/plain" || (url.pathname === "/" && request.method === "GET" && CLI_RE.test(request.headers.get("user-agent") || ""))) {
+      const joke = JOKES[Math.floor(Math.random() * JOKES.length)];
+      return new Response(testCard(url.pathname !== "/plain", joke), { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "vary": "User-Agent" } });
+    }
 
     if (url.pathname === "/stats") {
       const key = url.searchParams.get("key") || "";
