@@ -208,7 +208,7 @@ canvas#card{display:block;width:100%;height:auto}
 .swatch-inline{display:inline-block;width:.8em;height:.8em;border-radius:2px;vertical-align:-.05em;margin:0 .15em;border:1px solid var(--line)}
 footer{margin-top:clamp(80px,12vw,140px);padding:28px 0 calc(40px + env(safe-area-inset-bottom));border-top:1px solid var(--line);font-size:var(--small);color:var(--muted);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer a{color:var(--fg);font-weight:400}
-.dedication{font:italic 400 13px/1.6 var(--serif);color:var(--muted);text-align:center;text-wrap:balance;max-width:60ch;margin:-12px auto 0;padding:0 var(--gutter) calc(36px + env(safe-area-inset-bottom))}
+.dedication{font:italic 400 13px/1.6 var(--serif);color:var(--muted);text-align:left;text-wrap:balance;max-width:60ch;margin:-12px 0 0;padding:0 0 calc(36px + env(safe-area-inset-bottom))}
 @media (max-width:640px){.dedication{font-size:14px}}
 .credit{font:italic 400 17px/1.5 var(--serif);color:var(--fg)}
 
@@ -403,7 +403,7 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
     <div class="links" style="width:100%;display:flex;gap:18px;flex-wrap:wrap"><a href="https://github.com/Anouartahiri/lyingterminals" target="_blank" rel="noopener">Source on GitHub ↗</a><a href="https://x.com/AnouarTahiri" target="_blank" rel="noopener me">by @AnouarTahiri ↗</a></div>
     <div style="width:100%">lyingterminals.com · <span id="srcNote">Sources: morhetz/gruvbox · catppuccin/palette · Ghostty built-ins (TokyoNight, Atom One Dark/Light, Monokai Classic, GitHub Dark/Light Default, Everforest Dark Med) · nordtheme/alacritty · dracula/ghostty · rose-pine/ghostty · rebelot/kanagawa.nvim · altercation/solarized</span></div>
   </footer>
-  <p class="dedication">The floating bar above was envisioned by Seb Van Papple, visionary of navigation, who looked upon a long page and declared: let there be a way back up. Generations of scrollers, as yet unborn, stand forever in his debt.</p>
+  <div class="col"><p class="dedication">The floating bar above was envisioned by Seb Van Papple, visionary of navigation, who looked upon a long page and declared: let there be a way back up. Generations of scrollers, as yet unborn, stand forever in his debt.</p></div>
 </main>
 
 <script>
