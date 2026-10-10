@@ -27,6 +27,49 @@ async def swipe(pg, cdp, dy, term_pos):
     await cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []}); await pg.wait_for_timeout(500)
     z = await pg.evaluate(st); return z["t"] - a["t"], z["p"] - a["p"]
 
+BAR_CR = r"""()=>{const P=c=>c.match(/[\d.]+/g).slice(0,3).map(Number);const lin=v=>{v/=255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
+ const L=c=>{const[r,g,b]=P(c);return .2126*lin(r)+.7152*lin(g)+.0722*lin(b)};const CR=(a,b)=>{const x=L(a),y=L(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+ const bg=getComputedStyle(document.body).backgroundColor; let m=99,w='';
+ document.querySelectorAll('#fbar a, #fbar b, #fbar span').forEach(e=>{const v=CR(getComputedStyle(e).color,bg); if(v<m){m=v;w=e.textContent+' '+getComputedStyle(e).color+' on '+bg;}}); return [+m.toFixed(2),w];}"""
+async def fbar(c, T, mob, vw):
+    pg = await c.new_page(); pg.set_default_timeout(120000); errs = []
+    pg.on("pageerror", lambda e: errs.append(str(e)))
+    await pg.goto(URL + "#nord", timeout=120000); await pg.add_style_tag(content="html{scroll-behavior:auto!important}"); await pg.wait_for_timeout(800)
+    vis = "(()=>{const b=document.getElementById('fbar');return b.classList.contains('show')&&!b.inert&&getComputedStyle(b).visibility==='visible'})()"
+    async def scroll(dy):
+        for _ in range(8): await pg.evaluate(f"scrollBy(0,{dy/8})"); await pg.wait_for_timeout(30)
+        await pg.wait_for_timeout(350)
+    check(T + "bar hidden at top (header visible)", not await pg.evaluate(vis))
+    await scroll(1500); check(T + "bar hidden while scrolling down", not await pg.evaluate(vis))
+    await scroll(-200); check(T + "bar shows on scroll up", await pg.evaluate(vis))
+    y0 = await pg.evaluate("document.getElementById('fbar').getBoundingClientRect().top"); check(T + "bar pinned at top, 44px", y0 == 0 and await pg.evaluate("document.getElementById('fbar').offsetHeight") == 44)
+    if SHOTS: await shot(pg, f"fbar-nord-{vw}.png", pg)
+    await scroll(300); check(T + "bar hides again on scroll down", not await pg.evaluate(vis))
+    await scroll(-200)
+    g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "bar shows theme grade", g.replace('\xa0',' ') == "Nord · D", g)
+    await pg.evaluate("document.querySelector(\"button[data-k='github-light']\").click()"); await pg.wait_for_timeout(200)
+    g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "grade updates on theme change", g.startswith("GitHub Light · "), g)
+    await pg.evaluate("TERM.exec('theme solarized-light')"); await pg.evaluate("TERM.exec('fix')"); await pg.wait_for_timeout(200)
+    g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "grade shows fix result", g.replace('\xa0',' ') == "Solarized Light · F → C fixed", g)
+    await pg.evaluate("TERM.exec('fix --undo')"); await pg.wait_for_timeout(100)
+    g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "fix --undo restores grade", g.replace('\xa0',' ') == "Solarized Light · F", g)
+    await pg.evaluate("scrollTo(0,0)"); await pg.wait_for_timeout(200); await scroll(2500); await scroll(-200)
+    await pg.evaluate("TERM.open()"); await pg.wait_for_timeout(250); check(T + "bar hidden while drop-down is open", await pg.evaluate("getComputedStyle(document.getElementById('fbar')).visibility") == "hidden"); await pg.evaluate("TERM.close()")
+    await scroll(-150)
+    await pg.add_style_tag(content="*{transition:none!important}")
+    worst = await pg.evaluate("(cr)=>{const f=eval(cr);let m=[99,''];for(const k of Object.keys(THEMES)){run(THEMES[k],k);const r=f();if(r[0]<m[0])m=[r[0],k+': '+r[1]];}return m}", BAR_CR)
+    check(T + "bar text >= 4.6:1 in all 17 themes", worst[0] >= 4.6, str(worst))
+    if SHOTS:
+        await pg.evaluate("run(THEMES['github-light'],'github-light')"); await pg.wait_for_timeout(100); await shot(pg, f"fbar-github-light-{vw}.png", pg)
+    await pg.evaluate("document.querySelector('#fbar nav a[href=\"#verdict\"]').click()"); await pg.wait_for_timeout(600)
+    top = await pg.evaluate("document.getElementById('verdict').getBoundingClientRect().top")
+    check(T + "anchor lands below the bar", 44 <= top <= 90, str(top))
+    if os.path.exists(AXE):
+        await scroll(-150); await pg.add_script_tag(path=AXE)
+        res = await pg.evaluate("axe.run({include:[['#fbar']]},{resultTypes:['violations']}).then(r=>r.violations.filter(v=>['serious','critical'].includes(v.impact)).map(v=>v.id))")
+        check(T + "axe on visible bar: no serious/critical", not res and await pg.evaluate(vis), str(res))
+    check(T + "bar: no page errors", not errs, str(errs)); await pg.close()
+
 async def run(b, vw):
     mob = vw < 1000; errs = []
     c = await b.new_context(viewport={"width": vw, "height": 844 if mob else 900}, device_scale_factor=2 if mob else 1, is_mobile=mob, has_touch=mob, accept_downloads=True)
@@ -134,6 +177,7 @@ async def run(b, vw):
         await pg.mouse.move(600, 420); y0 = await pg.evaluate("scrollY"); await pg.mouse.wheel(0, 100); await pg.wait_for_timeout(800)
         check(T + "first wheel tick at terminal bottom scrolls page", await pg.evaluate("scrollY") - y0 >= 90)
     check(T + "no console errors", not errs, str(errs))
+    await fbar(c, T, mob, vw)
     await c.close()
 
 async def main():
