@@ -240,13 +240,11 @@ footer a{color:var(--fg);font-weight:400}
 .tm-drop .tm{border-top:0;border-radius:0 0 14px 14px;max-width:1100px;margin:0 auto}
 .tm-drop .tm-body{height:min(56vh,520px);overscroll-behavior:contain}
 html.tm-lock,html.tm-lock body{overflow:hidden}
-.tm .ln.trimmed{font-style:italic}
-@media (max-width:700px),(pointer:coarse){#tmHome .tm-body{height:auto;max-height:none;overflow:visible}}
 .tm-drop .tm-bar .x{display:inline-block}
 .tm-scrim{position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s}
 .tm-scrim.open{opacity:1;pointer-events:auto}
 kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);border-radius:5px;border-bottom-width:2px}
-@media (max-width:640px){.tm{font-size:14px}.tm-body{height:380px;padding:12px 12px 8px}.tm-bar .ti{padding-right:0}}
+@media (max-width:640px){.tm{font-size:14px}.tm-body{height:min(60vh,33em);padding:12px 12px 8px}.tm-bar .ti{padding-right:0}}
 @media (prefers-reduced-motion:reduce){.tm-cur{animation:none!important}.tm-drop{transition:none}}
 </style>
 </head>
@@ -745,21 +743,38 @@ const TERM=(function(){
     if(blocks.length>80) blocks=blocks.slice(-80), renderAll();
     else { out.insertAdjacentHTML("beforeend",renderBlock(b)); scroll(); }
   }
-  const COMPACT=matchMedia("(max-width:700px),(pointer:coarse)"), RM=matchMedia("(prefers-reduced-motion: reduce)");
-  let justRan=false; const MAXL=40;
-  const inlineGrow=()=>!dropOpen&&COMPACT.matches;
-  function trim(){ // inline on phones: no inner scroller, keep only the last MAXL lines (full history stays in the drop-down)
-    out.querySelectorAll(".ln.trimmed").forEach(n=>n.remove());
-    if(!inlineGrow()) return;
-    const lns=out.querySelectorAll(".ln"); if(lns.length<=MAXL) return;
-    for(let i=0;i<lns.length-MAXL+1;i++) lns[i].remove();
-    out.querySelectorAll(".blk").forEach(b=>{ if(!b.children.length) b.remove(); });
-    out.insertAdjacentHTML("afterbegin",'<div class="blk"><div class="ln trimmed"><span class="ui" style="color:var(--muted)">… earlier output trimmed</span></div></div>');
-  }
-  const scroll=()=>{ trim();
-    if(!inlineGrow()){ body.scrollTop=body.scrollHeight; return; }
-    if(justRan||document.activeElement===input) input.scrollIntoView({block:"nearest",behavior:RM.matches?"auto":"smooth"});
-    justRan=false; };
+  const COMPACT=matchMedia("(max-width:700px),(pointer:coarse)");
+  const scroll=()=>{ body.scrollTop=body.scrollHeight; };
+  /* Touch scroll chaining for the inline terminal: the terminal scrolls first, and whatever it can't take
+     (at its top/bottom) goes to the page in the same gesture. Horizontal swipes and taps are left alone.
+     v1 has no momentum: the page stops where the finger lifts; onRelease(velocity) is the hook for inertia. */
+  (function chain(){
+    const SLOP=6; let g=null;
+    body.addEventListener("touchstart",e=>{
+      if(dropOpen||e.touches.length!==1){ g=null; return; }
+      const t=e.touches[0]; g={x0:t.clientX,y0:t.clientY,y:t.clientY,t:e.timeStamp,mode:null,v:0};
+    },{passive:true});
+    body.addEventListener("touchmove",e=>{
+      if(!g||dropOpen||e.touches.length!==1) return;
+      const t=e.touches[0];
+      if(!g.mode){
+        const dx=Math.abs(t.clientX-g.x0), dyAbs=Math.abs(t.clientY-g.y0);
+        if(dx<SLOP&&dyAbs<SLOP) return;
+        if(dx>dyAbs||String(getSelection())){ g.mode="native"; return; }  // horizontal or selecting text: hands off
+        g.mode="chain"; g.y=g.y0;                            // count the slop too, like native scrolling
+      }
+      if(g.mode!=="chain") return;
+      if(e.cancelable) e.preventDefault();                               // we move both scrollers ourselves: no double scroll
+      let d=g.y-t.clientY; g.v=d/Math.max(1,e.timeStamp-g.t); g.y=t.clientY; g.t=e.timeStamp;
+      const max=body.scrollHeight-body.clientHeight, before=body.scrollTop;
+      body.scrollTop=Math.max(0,Math.min(max,before+d));
+      const rest=d-(body.scrollTop-before);
+      if(Math.abs(rest)>=.5) window.scrollBy({top:rest,behavior:"instant"});
+    },{passive:false});
+    const end=()=>{ if(g&&g.mode==="chain") onRelease(g.v); g=null; };
+    body.addEventListener("touchend",end,{passive:true}); body.addEventListener("touchcancel",end,{passive:true});
+    function onRelease(v){ /* inertia goes here in v2 (px/ms) */ }
+  })();
   function cols(){ const m=document.createElement("span"); m.textContent="0".repeat(20); m.style.visibility="hidden"; out.appendChild(m); const cw=m.getBoundingClientRect().width/20; m.remove();
     const cs=getComputedStyle(out); return Math.max(20,Math.floor((out.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight))/(cw||8.4))); }
   function drawInput(){
@@ -872,7 +887,7 @@ const TERM=(function(){
 
   const QUIPS=[c=>`zsh: command not found: ${c}. Objection sustained.`, c=>`${c}: not a recognised command. The witness is confused. Try 'help'.`, c=>`${c}? Bold of you. Type 'help' for the admissible commands.`];
   function exec(raw){
-    justRan=true; const cmd=raw.trim(); push([],raw); if(!cmd) return;
+    const cmd=raw.trim(); push([],raw); if(!cmd) return;
     hist.push(cmd); if(hist.length>50) hist.shift(); hIdx=-1;
     const [w,...rest]=cmd.split(/\s+/); const arg=rest.join(" "); const lower=cmd.toLowerCase().replace(/\s+/g," ");
     const add=(lines,judged)=>{ const b=blocks[blocks.length-1]; b.lines.push(...lines); if(judged) b.judged=true; renderAll(); };
