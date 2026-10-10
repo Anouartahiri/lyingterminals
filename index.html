@@ -91,12 +91,10 @@ html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
 .fbar a{border:0;font-weight:400;color:var(--fg);white-space:nowrap}
 .fbar nav a[aria-current],.top nav a[aria-current]{color:var(--fg);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:currentColor}
 .fbar .brand b{color:var(--red);font-weight:400}
-.fbar nav{flex:1;min-width:0;display:flex;gap:20px;justify-content:center;overflow-x:auto;scrollbar-width:none}
-.fbar nav::-webkit-scrollbar{display:none}
+.fbar nav{flex:1;min-width:0;display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
+.fbar nav::-webkit-scrollbar{display:none} .fbar nav a:first-child{margin-left:auto}
 .fbar nav a{color:var(--fg);line-height:44px} .fbar nav a:hover{text-decoration:underline;text-underline-offset:4px}
-.fbar .gr{font-variant-numeric:tabular-nums;border:1px solid var(--line);border-radius:999px;padding:3px 10px;line-height:1.3}
-.fbar .gr b{font-weight:700} .fbar .gr{display:flex;gap:.5ch;align-items:baseline;min-width:0} .fbar .gr .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media (max-width:640px){.fbar{gap:12px}.fbar .brand .com{display:none}.fbar nav{justify-content:flex-start;gap:16px;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}.fbar .gr{padding:3px 10px}.fbar .gr .fx,.fbar .gr .nm,.fbar .gr .dot{display:none}}
+@media (max-width:640px){.fbar{gap:12px}.fbar .brand .com{display:none}.fbar nav{gap:14px}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
 
 /* hero */
 .hero{margin-top:clamp(56px,11vw,140px)}
@@ -284,7 +282,6 @@ var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute(
 <div class="fbar" id="fbar" inert aria-hidden="true">
   <a class="brand" href="#top" aria-label="lyingterminals.com, back to top">lying<b>terminals</b><span class="com">.com</span></a>
   <nav aria-label="Sections (floating bar)"><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a></nav>
-  <a class="gr" id="fbarGrade" href="#verdict"></a>
 </div>
 <header class="top" id="top">
   <a class="brand" href="#">lying<b>terminals</b>.com</a>
@@ -706,18 +703,11 @@ function run(theme,key,opts={}){
   applySkin(theme); renderPalette(current); renderRoast(current); drawCard(current);
   document.querySelectorAll("#presets .chip[data-k]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===key)));
   if(typeof TERM!=="undefined"&&TERM.ready) TERM.refresh();
-  barGrade();
   if(!opts.keepTitle){ const DT=run.defaultTitle||(run.defaultTitle=document.title);
     document.title = key&&key!=="custom" ? `${theme.name} gets ${/^[AF]/.test(current.grade)?"an":"a"} ${current.grade}. Is your terminal theme lying to you?` : DT; }
   if(!opts.boot) try{ const h=shareURL(key,theme); if(location.pathname+location.hash!==h&&location.hash!==h) history.replaceState(null,"",h); }catch(e){}
 }
 /* floating bar */
-function barGrade(){
-  const g=$("fbarGrade"); if(!g||!current) return;
-  const nm=current.theme.name||"Custom", f=(typeof TERM!=="undefined"&&TERM.fixedGrade)?TERM.fixedGrade():null;
-  g.innerHTML=`<span class="nm">${esc(nm)}</span><span class="dot"> ·&nbsp;</span><b>${current.grade}</b>`+(f?` → <b>${f}</b> <span class="fx">fixed</span>`:"");
-  g.setAttribute("aria-label",`${nm}, grade ${current.grade}`+(f?`; fixed terminal palette grades ${f}`:"")+". Jump to the verdict");
-}
 (()=>{
   const bar=$("fbar"), head=document.querySelector("header.top"); let headIn=true, last=scrollY, acc=0, on=false;
   const set=v=>{ if(v===on) return; on=v; bar.classList.toggle("show",v); bar.inert=!v; bar.setAttribute("aria-hidden",String(!v)); };
@@ -728,12 +718,12 @@ function barGrade(){
     acc = (Math.sign(d)===Math.sign(acc)) ? acc+d : d;
     if(acc>12) set(false); else if(acc<-12) set(true);
   },{passive:true});
-  addEventListener("tm:fix",barGrade);
   // which section are we in: a band just below the bar decides
   const ids=["pick","evidence","verdict","card-sec","console"], links=[...document.querySelectorAll(".fbar nav a, .top nav a")], vis=new Map();
   const mark=()=>{ const cur=ids.find(id=>vis.get(id)); links.forEach(a=>{ if(cur&&a.getAttribute("href")==="#"+cur){ a.setAttribute("aria-current","location"); const n=a.parentNode; if(n.scrollWidth>n.clientWidth) n.scrollLeft=Math.max(0,a.offsetLeft-n.offsetLeft-24); } else a.removeAttribute("aria-current"); }); };
   const io=new IntersectionObserver(es=>{ es.forEach(e=>vis.set(e.target.id,e.isIntersecting)); mark(); },{rootMargin:"-45px 0px -55% 0px"});
   ids.forEach(id=>{ const s=$(id); if(s) io.observe(s); });
+  const bn=bar.querySelector("nav"), fit=()=>bn.classList.toggle("over",bn.scrollWidth>bn.clientWidth+1); fit(); addEventListener("resize",fit);
 })();
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
 function hit(k){ try{ if(!/^(www\.)?lyingterminals\.com$/.test(location.hostname)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
@@ -793,7 +783,7 @@ const TERM=(function(){
   // the terminal's palette: the raw theme, or its `fix`ed version (the page itself always stays raw)
   const active=()=>(fixed&&fixed.src===current.theme)?fixed.A:current;
   function setColours(){
-    if(fixed&&fixed.src!==current.theme){ fixed=null; dispatchEvent(new Event("tm:fix")); }
+    if(fixed&&fixed.src!==current.theme){ fixed=null; }
     const t=active().theme;
     el.style.setProperty("--tbg",t.bg); el.style.setProperty("--tfg",t.fg);
     t.c.forEach((h,i)=>el.style.setProperty("--t"+i,h));
@@ -1013,13 +1003,13 @@ const TERM=(function(){
       case "fix": {
         if(/^--?undo$|^undo$/i.test(arg)){
           if(!fixed) return add([H(2,U("Nothing to undo: the terminal is already showing the raw palette."))]);
-          fixed=null; setColours(); renderAll(); dispatchEvent(new Event("tm:fix"));
+          fixed=null; setColours(); renderAll();
           return add([H(2,U("✓ ","green"),U("reverted to the raw "),U(current.theme.name,"fg",{b:1}),U(" palette · grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}))]);
         }
         if(arg) return add([L(U("usage: fix  |  fix --undo","yellow"))]);
         const F=fixPalette(current.theme);
         if(!F.changes.length) return add([H(2,U("Nothing to fix: every colour already clears 4.6:1 and every bright is brighter."))]);
-        const A=analyze(F.theme); fixed={src:current.theme,A}; setColours(); dispatchEvent(new Event("tm:fix"));
+        const A=analyze(F.theme); fixed={src:current.theme,A}; setColours();
         const sw=(hex)=>S("██",hex,{x:1}), r1=x=>(Math.floor(contrast(x,current.theme.bg)*100)/100).toFixed(2);
         const rows=F.changes.flatMap(([nm,o,n])=> W<60
           ? [H(4,U("  "+nm+" ","fg"),U(o+" → "+n)), H(4,U("    "),sw(o),U(" "+r1(o)+" → "),sw(n),U(" "+r1(n),"green"))]
@@ -1143,7 +1133,7 @@ const TERM=(function(){
     H(2,U("Cross-examination is now in session. The demo commands use your theme's own colours.","fg")),
     H(2,U("Try "),U("help","green"),U(", "),U("git diff","green"),U(", then "),U("lie","red",{b:1}),U(". Press "),U("`","cyan"),U(" anywhere to open the drop-down.")),
   ]); }
-  return {fixPalette, get fixed(){return !!fixed;}, fixedGrade(){ return fixed&&fixed.src===current.theme?fixed.A.grade:null; }, refresh(){ setColours(); renderAll(); drawInput(); fade(); }, init(){ setColours(); welcome(); drawInput(); }, exec, open, close, exportText, get lie(){return lieMode;}, get isOpen(){return dropOpen;}};
+  return {fixPalette, get fixed(){return !!fixed;}, refresh(){ setColours(); renderAll(); drawInput(); fade(); }, init(){ setColours(); welcome(); drawInput(); }, exec, open, close, exportText, get lie(){return lieMode;}, get isOpen(){return dropOpen;}};
 })();
 
 // boot: /t/<slug> path, then #hash, else a random preset that would get a D or F (the guilty ones make better first impressions)
