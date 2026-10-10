@@ -90,11 +90,12 @@ section{margin-top:clamp(64px,10vw,120px);scroll-margin-top:64px}
 html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
 .fbar a{border:0;font-weight:400;color:var(--fg);white-space:nowrap}
 .fbar nav a[aria-current],.top nav a[aria-current]{color:var(--fg);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:currentColor}
+.fbar .dollar{display:none;color:var(--bar-acc,var(--fg));font-weight:700;padding:0 4px}
 .fbar .brand b{color:var(--red);font-weight:400}
 .fbar nav{flex:1;min-width:0;display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
 .fbar nav::-webkit-scrollbar{display:none} .fbar nav a:first-child{margin-left:auto}
 .fbar nav a{color:var(--fg);line-height:44px} .fbar nav a:hover{text-decoration:underline;text-underline-offset:4px}
-@media (max-width:640px){.fbar{gap:12px}.fbar .brand .com{display:none}.fbar nav{gap:14px}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
+@media (max-width:640px){.fbar{gap:12px}.fbar .brand .full{display:none}.fbar .dollar{display:inline}.fbar nav{gap:20px}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
 
 /* hero */
 .hero{margin-top:clamp(56px,11vw,140px)}
@@ -280,7 +281,7 @@ var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute(
 </head>
 <body>
 <div class="fbar" id="fbar" inert aria-hidden="true">
-  <a class="brand" href="#top" aria-label="lyingterminals.com, back to top">lying<b>terminals</b><span class="com">.com</span></a>
+  <a class="brand" href="#top" aria-label="lyingterminals, back to top"><span class="full" aria-hidden="true">lying<b>terminals</b><span class="com">.com</span></span><span class="dollar" aria-hidden="true">$</span></a>
   <nav aria-label="Sections (floating bar)"><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a></nav>
 </div>
 <header class="top" id="top">
@@ -603,6 +604,7 @@ function applySkin(t){
   const {skin,fixes,light}=deriveSkin(t), R=document.documentElement;
   for(const [k,v] of Object.entries(skin)) R.style.setProperty("--"+k,v);
   R.classList.toggle("is-light",light);
+  R.style.setProperty("--bar-acc", contrast(skin.green,skin.bg)>=4.6?skin.green:skin.fg); // floating-bar "$": accent if it clears 4.6:1, else text colour
   document.querySelector('meta[name="theme-color"]').setAttribute("content",t.bg);
   const n=fixes.length, sw=h=>`<span class="swatch-inline" style="background:${h}"></span>`;
   $("metaNote").innerHTML = `A note on the colours: this page is wearing <b>${esc(t.name)}</b>, but it doesn't take it on trust. Like Pi, it moves each accent in OKLCH until its own text clears 4.6:1 (7:1 for body text). ` +
