@@ -142,6 +142,8 @@ Inspired by **[“There are many themes, but this one is yours”](https://earen
 
 Fonts embedded in `index.html`: [Departure Mono](https://departuremono.com) by Helena Zhang and [Newsreader](https://github.com/productiontype/Newsreader) by Production Type, both under the SIL Open Font License 1.1.
 
+**Acknowledgements:** this project owes an unpayable debt to Seb Van Papple, who, in a single act of feedback, reunited the reader with the top of the page. Scholars disagree on whether he is a designer, a prophet, or both. We have stopped asking.
+
 ## License
 
 Code is [MIT](LICENSE). The embedded fonts remain under the SIL Open Font License 1.1.
