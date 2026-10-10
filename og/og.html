@@ -6,7 +6,7 @@
 html,body{width:1200px;height:630px;overflow:hidden;background:var(--bg);color:var(--fg)}
 h1{position:absolute;top:62px;left:0;right:0;text-align:center;font:400 62px/1 "NR";letter-spacing:-.02em;color:var(--fg)}
 h1 i{color:var(--red);font-style:normal}
-.win{position:absolute;left:120px;top:166px;width:960px;height:372px;border:1px solid var(--line);border-radius:16px;background:var(--bg);box-shadow:0 30px 70px -30px #000;overflow:hidden}
+.win{position:absolute;left:120px;top:154px;width:960px;height:364px;border:1px solid var(--line);border-radius:16px;background:var(--bg);box-shadow:0 30px 70px -30px #000;overflow:hidden}
 .bar{height:46px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:10px;font:20px "DM";color:var(--muted)}
 .bar b{width:14px;height:14px;border-radius:50%;display:inline-block}
 .bar .t{margin-left:auto;margin-right:auto;transform:translateX(-30px)}
@@ -15,9 +15,9 @@ h1 i{color:var(--red);font-style:normal}
 .lab{display:inline-block;font-size:19px;line-height:1;letter-spacing:.05em;padding:6px 11px;border:2px solid currentColor;border-radius:99px;vertical-align:4px;margin-left:14px}
 .grade{position:absolute;right:34px;top:30px;text-align:center;color:var(--red)}
 .grade .g{font:400 210px/.8 "NR";letter-spacing:-.05em}
-.grade .s{font:22px "DM";color:var(--muted);margin-top:16px}
-.wm{position:absolute;bottom:62px;left:0;right:0;text-align:center;font:20px "DM";color:var(--muted);letter-spacing:.04em}
-.wm b{color:var(--fg);font-weight:400}
+.grade .s{font:22px/1 "DM";color:var(--muted);margin-top:-8px;letter-spacing:.08em}
+.wm{position:absolute;bottom:62px;left:0;right:0;text-align:center;font:32px/1 "DM";color:var(--green)}
+.wm span{color:var(--muted)}
 </style></head><body>
 <h1>Is your terminal theme <i>lying</i> to you?</h1>
 <div class="win"><div class="bar"><b style="background:#ff5f57"></b><b style="background:#febc2e"></b><b style="background:#28c840"></b><span class="t">you@localhost: ~ — Solarized Dark</span></div>
@@ -30,5 +30,5 @@ h1 i{color:var(--red);font-style:normal}
  <div class="ln" style="color:var(--muted)">certified liar · 34/100</div>
  <div class="grade"><div class="g">F</div><div class="s">grade</div></div>
 </div></div>
-<div class="wm">lying<b>terminals</b>.com &nbsp;·&nbsp; or: curl lyingterminals.com</div>
+<div class="wm"><span>$</span> curl lyingterminals.com</div>
 </body></html>
