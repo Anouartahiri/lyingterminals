@@ -589,7 +589,7 @@ function applySkin(t){
   document.querySelector('meta[name="theme-color"]').setAttribute("content",t.bg);
   const n=fixes.length, sw=h=>`<span class="swatch-inline" style="background:${h}"></span>`;
   $("metaNote").innerHTML = `A note on the colours: this page is wearing <b>${esc(t.name)}</b>, but it doesn't take it on trust. Like Pi, it moves each accent in OKLCH until its own text clears 4.6:1 (7:1 for body text). ` +
-    (n ? `Here it had to quietly fix ${n} colour${n>1?"s":""}: ${fixes.map(([k,a,b])=>`${k} ${sw(a)}→${sw(b)}`).join(", ")}. ` : `This theme needed no fixes. Respect. `) +
+    (n ? `Here it had to fix ${n} colour${n>1?"s":""}: ${fixes.map(([k,a,b])=>`${k} ${sw(a)}→${sw(b)}`).join(", ")}. ` : `This theme needed no fixes. Respect. `) +
     `The tiles above are left exactly as your theme defines them.`;
 }
 
