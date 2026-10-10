@@ -50,6 +50,28 @@ Gruvbox Dark · Catppuccin Mocha / Latte · Tokyo Night · Nord · Dracula · So
 
 The verdict card is drawn by hand on a `<canvas>` at 1200 × 630, in the theme's own colours, using no libraries. Download it as a PNG, copy the roast as text, or copy a link that reopens the same theme.
 
+## VI. Cross-examination: a terminal in your theme's raw colours
+
+Section VI is a small DOM terminal (no xterm.js) painted in the selected theme's **raw** ANSI colours, so you see what the theme really looks like. Press <kbd>`</kbd> anywhere to open it as a drop-down console; <kbd>Esc</kbd> closes it.
+
+<table>
+  <tr>
+    <td width="68%"><img src="docs/terminal.webp" alt="The terminal in Nord running git diff with lie mode on: comment and removed lines tagged FAIL, MEH and LIE"></td>
+    <td width="32%"><img src="docs/terminal-mobile.webp" alt="The terminal on a phone running judge, with tap-to-run command chips"></td>
+  </tr>
+</table>
+
+Commands: `help`, `theme <name>` (Tab completes), `judge`, `export ghostty|kitty|iterm`, `ls`, `git diff`, `git log`, `npm test`, `cat error.log`, `lie`, `clear`. `lie` tags every demo output span under 4.6:1 with FAIL, MEH or LIE pills. The terminal's own UI text uses the page's contrast-safe colours; only the fake demo output is allowed to lie.
+
+### Or ask from your actual terminal
+
+```sh
+curl lyingterminals.com          # ANSI test card: all 16 colours as text and blocks, dim/bold samples
+curl lyingterminals.com/plain    # same card without escape codes
+```
+
+The server can't see your terminal's colours, so there's no grade, just a test card you can judge with your own eyes. Browsers get the normal page.
+
 ## On your phone, too
 
 <img src="docs/mobile.webp" alt="Mobile screenshots" width="100%">
@@ -71,6 +93,7 @@ The verdict card is drawn by hand on a `<canvas>` at 1200 × 630, in the theme's
 | `src/worker.js` | Serves the assets and counts anonymous visits; private `/stats` dashboard |
 | `migrations/` | D1 schema for the daily counters |
 | `docs/` | README images |
+| `og/og.html` | Source of `og.png` (render at 1200×630 with Playwright) |
 
 ## Deploy
 
