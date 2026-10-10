@@ -250,12 +250,19 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
 
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .hero-hint{margin-top:18px}
-.hero-hint button{font:var(--small)/1.4 var(--mono);color:var(--muted);background:none;border:0;padding:10px 0;min-height:44px;cursor:pointer;text-align:left}
+.hero-hint button{font:15px/1.4 var(--mono);color:var(--fg);background:none;border:0;padding:10px 0;min-height:44px;cursor:pointer;text-align:left}
 .hero-hint button:hover .t,.hero-hint button:focus-visible .t{text-decoration:underline;text-underline-offset:3px}
-.hero-hint kbd{font:inherit;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--fg)}
+.hero-hint kbd,.hero-hint .k{font:inherit;color:var(--cyan)}
+.hero-hint kbd{border:1px solid currentColor;border-radius:4px;padding:0 5px}
 .hero-hint .touch{display:none}
 @media (max-width:700px),(pointer:coarse){.hero-hint .key{display:none}.hero-hint .touch{display:inline}}
+@media (max-width:640px){.hero-hint button{font-size:14px}.tm-bar .tm-mode,.tm-bar .tm-host{display:none}}
 </style>
+<script>/* apply the URL's theme (or a random D/F preset) before first paint: no flash of another theme */
+(function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#a5b6b8", "muted": "#7b969c", "line": "#1a414b", "panel": "#07313c", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#524c73", "muted": "#716c80", "line": "#dfd9d9", "panel": "#f2ece8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#41565d", "muted": "#68726f", "line": "#dfdcce", "panel": "#f5efdd", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
+if(m&&S.s[m[1]])k=m[1];else if(S.s[h])k=h;else if(!/^p=/.test(h))k=S.df[Math.floor(Math.random()*S.df.length)];
+window.__BOOT=k;if(!k)return;var v=S.s[k],r=document.documentElement;for(var n in v.v)r.style.setProperty("--"+n,v.v[n]);if(v.l)r.classList.add("is-light");
+var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",v.v.bg);}catch(e){}})();</script>
 </head>
 <body>
 <header class="top">
@@ -273,7 +280,7 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
     </dl>
     <h1>Is your terminal theme <em>lying</em> to&nbsp;you?</h1>
     <p class="lede">Every terminal theme ships 16 ANSI colours and absolutely no rules. "Bright" is a suggestion. Bright black, the colour most apps use for secondary text, is often a rumour. Pick a theme and we'll run real <strong>WCAG&nbsp;2</strong> contrast maths on it (4.5:1 for text, 3:1 for UI), and then we'll be honest about it.</p>
-    <p class="hero-hint"><button type="button" id="heroHint" aria-label="Open the drop-down terminal to cross-examine your theme"><span class="t"><span class="key">press <kbd>`</kbd> to cross-examine your theme ↓</span><span class="touch">tap to cross-examine ↓</span></span></button></p>
+    <p class="hero-hint"><button type="button" id="heroHint" aria-label="Open the drop-down terminal to cross-examine your theme"><span class="t"><span class="key">press <kbd>`</kbd> to cross-examine your theme ↓</span><span class="touch"><span class="k">tap</span> to cross-examine ↓</span></span></button></p>
   </div>
 
   <section class="wide" id="pick">
@@ -742,7 +749,7 @@ const TERM=(function(){
     const t=active().theme;
     el.style.setProperty("--tbg",t.bg); el.style.setProperty("--tfg",t.fg);
     t.c.forEach((h,i)=>el.style.setProperty("--t"+i,h));
-    $("tmTitle").textContent=`you@localhost: ~ — ${current.theme.name} (${fixed?"fixed":"raw"} colours)`;
+    $("tmTitle").innerHTML=`<span class="tm-host">you@localhost: ~ — </span>${esc(current.theme.name)}<span class="tm-mode"> (${fixed?"fixed":"raw"} colours)</span>`;
   }
   // FAIL < 3 · MEH < 4.6 · LIE = a "bright" colour that isn't actually brighter than its normal twin
   function judgeSpan(c){
@@ -928,6 +935,13 @@ const TERM=(function(){
     else msg=lines.slice(0,2).map(text).filter(Boolean).join(". ").slice(0,220);
     live.textContent=""; setTimeout(()=>{ live.textContent=msg; },30);
   }
+  // what `fix` could not repair, from the fixed palette's real findings
+  function remaining(A){
+    const left=A.findings.filter(f=>f.sev!=="ok"); if(!left.length) return "No charges remain.";
+    const grey=left.map(f=>(f.text.match(/bright (\w+) \(#[0-9a-f]{6}\) is a shade of grey|Your bright (\w+) is grey/)||[]).slice(1).find(Boolean)).filter(Boolean);
+    if(grey.length===left.length) return `${grey.length} ${grey.length===1?"bright is":"brights are"} still grey (${grey.join(", ")}): lightness alone can't give ${grey.length===1?"it":"them"} a hue.`;
+    return `${left.length} ${left.length===1?"charge remains":"charges remain"}: ${left.slice(0,3).map(f=>f.text.split(/[.:]/)[0]).join("; ")}.`;
+  }
   function exec(raw){
     const cmd=raw.trim(); push([],raw); if(!cmd) return;
     hist.push(cmd); if(hist.length>50) hist.shift(); hIdx=-1;
@@ -956,15 +970,17 @@ const TERM=(function(){
         const F=fixPalette(current.theme);
         if(!F.changes.length) return add([H(2,U("Nothing to fix: every colour already clears 4.6:1 and every bright is brighter."))]);
         const A=analyze(F.theme); fixed={src:current.theme,A}; setColours();
-        const sw=(hex)=>S("██",hex,{x:1}), r1=x=>fmt(contrast(x,current.theme.bg));
+        const sw=(hex)=>S("██",hex,{x:1}), r1=x=>(Math.floor(contrast(x,current.theme.bg)*100)/100).toFixed(2);
         const rows=F.changes.flatMap(([nm,o,n])=> W<60
           ? [L(U("  "+nm,"fg")), H(4,U("    "+o+" "),sw(o),U(" "+r1(o)+" → "),U(n+" ","fg"),sw(n),U(" "+r1(n),"green"))]
-          : [H(18,U("  "+nm.padEnd(16),"fg"),U(o+" "),sw(o),U(" "+r1(o).padStart(4)+" → "),U(n+" ","fg"),sw(n),U(" "+r1(n).padStart(4),"green"))]);
+          : [H(18,U("  "+nm.padEnd(16),"fg"),U(o+" "),sw(o),U(" "+r1(o).padStart(5)+" → "),U(n+" ","fg"),sw(n),U(" "+r1(n).padStart(5),"green"))]);
         return add([
-          L(U("Fixing "),U(current.theme.name,"fg",{b:1}),U(`: OKLCH lightness only, hue kept, chroma capped at the source. Target 4.65:1, brights at least 0.3 brighter.`)),
+          H(2,U("Fixing "),U(current.theme.name,"fg",{b:1}),U(": OKLCH lightness only, hue kept.")),
+          H(2,U("Target 4.65:1; each bright at least 0.3 above its normal twin.")),
           ...rows,
           L(U("  grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}),U(" → "),U(A.grade,GRADE_ROLE[A.grade],{b:1}),U(`, ${current.score} → ${A.score}`,"fg")),
-          H(2,U("Demo output, judge and export now use the fixed palette; the page above stays raw. "),U("fix --undo","cyan"),U(" reverts.")),
+          H(2,U(remaining(A))),
+          H(2,U("Demo output, judge and export now use the fixed palette; the page keeps the original theme. "),U("fix --undo","cyan"),U(" reverts.")),
         ]);
       }
       case "theme": {
@@ -973,13 +989,13 @@ const TERM=(function(){
         if(Array.isArray(k)) return add([H(2,U("ambiguous: ","yellow"),U(k.join("  "),"fg"))]);
         if(!k) return add([H(2,U(`theme: no such theme '${arg}'. `,"red"),U("Type 'theme' to list them."))]);
         run(THEMES[k],k); hit(k);
-        return add([H(2,U("switched to "),U(THEMES[k].name,"fg",{b:1}),U(" · grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}),U(" · URL is now #"+k))]);
+        return add([H(2,U("switched to "),U(THEMES[k].name,"fg",{b:1}),U(" · grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}),U(" · URL is now "+(/^https?:$/.test(location.protocol)?"/t/":"#")+k))]);
       }
       case "export": {
         const f=(arg||"").toLowerCase();
         if(!FORMATS.includes(f)) return add([L(U("usage: export ghostty|kitty|iterm","yellow"))]);
         const A=active(); const file=exportText(f,A.theme,A.grade,!!fixed); download(file);
-        return add([H(2,U("✓ ","green"),U("wrote "),U(file.name,"fg",{b:1}),U(` (${file.text.length} bytes, ${f}${fixed?", fixed palette":""})`)),H(2,U("  Note: it still contains every lie listed above."))]);
+        return add([H(2,U("✓ ","green"),U("wrote "),U(file.name,"fg",{b:1}),U(` (${file.text.length} bytes, ${f}${fixed?", fixed palette":""})`)),H(2,U(fixed?"  "+remaining(active()):"  Note: it still contains every lie listed above."))]);
       }
     }
     if(w.toLowerCase()==="git") return add([H(2,U(`git: '${rest[0]||""}' is not a git command. Try 'git diff' or 'git log'.`,"red"))]);
@@ -1031,13 +1047,14 @@ const TERM=(function(){
   // drop-down console: the same terminal, moved into a fixed panel
   const home=$("tmHome"), drop=$("tmDrop"), scrim=$("tmScrim");
   function open(){
+    dropOpen=drop.classList.contains("open")&&!drop.hidden;   // trust the DOM, never a stale flag
     if(dropOpen) return;
     const ae=document.activeElement; lastFocus=(ae&&ae!==document.body&&ae!==input&&!el.contains(ae))?ae:null;
     drop.appendChild(el); home.classList.add("empty"); drop.classList.add("open"); scrim.classList.add("open"); drop.hidden=false; dropOpen=true; document.documentElement.classList.add("tm-lock"); renderAll(); fade();
     input.focus({preventScroll:true});
   }
   function close(){
-    if(!dropOpen) return;
+    if(!drop.classList.contains("open")&&drop.hidden){ dropOpen=false; return; }
     const y=scrollY; input.blur();
     home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.hidden=true; dropOpen=false; document.documentElement.classList.remove("tm-lock"); renderAll(); fade();
     if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
@@ -1059,6 +1076,8 @@ const TERM=(function(){
     if(!dropOpen) return;
     e.preventDefault(); e.stopImmediatePropagation(); close();
   },true);
+  // belt and braces: if a keydown Esc was swallowed (IME, browser UI), the keyup still closes
+  window.addEventListener("keyup",e=>{ if((e.key==="Escape"||e.key==="Esc")&&dropOpen) close(); },true);
   document.addEventListener("keydown",e=>{
     if(e.isComposing||e.keyCode===229) return;
     if(e.key==="`"&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
@@ -1080,12 +1099,12 @@ const TERM=(function(){
 // boot: /t/<slug> path, then #hash, else a random preset that would get a D or F (the guilty ones make better first impressions)
 (function(){
   const m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/), h=decodeURIComponent(location.hash.slice(1));
-  const guilty=()=>{ const ks=Object.keys(THEMES).filter(k=>/^[DF]/.test(analyze(THEMES[k]).grade)); return ks[Math.floor(Math.random()*ks.length)]||"gruvbox-dark"; };
+  const guilty=()=>{ if(window.__BOOT&&THEMES[window.__BOOT]&&!m&&!THEMES[h]) return window.__BOOT; const ks=Object.keys(THEMES).filter(k=>/^[DF]/.test(analyze(THEMES[k]).grade)); return ks[Math.floor(Math.random()*ks.length)]||"gruvbox-dark"; };
   if(m&&THEMES[m[1]]) run(THEMES[m[1]],m[1],{boot:1});
   else if(THEMES[h]) run(THEMES[h],h,{boot:1});
   else if(h.startsWith("p=")){ try{ const hs=h.slice(2).split("-").map(s=>"#"+s); const t=parsePalette(hs.join("\n")); $("custom").value=hs.join(" "); run(t,"custom",{boot:1}); }catch(e){ const k=guilty(); run(THEMES[k],k,{boot:1}); } }
   else { const k=guilty(); run(THEMES[k],k,{boot:1}); }
-  $("heroHint").addEventListener("click",()=>TERM.open());
+  $("heroHint").addEventListener("click",e=>{ e.preventDefault(); TERM.open(); });
   // redraw the card once the web fonts are in, so the canvas uses them too
   if(document.fonts){ Promise.all([document.fonts.load(`20px "Departure Mono"`),document.fonts.load(`40px "Newsreader"`),document.fonts.load(`italic 20px "Newsreader"`)]).catch(()=>{}).then(()=>document.fonts.ready).then(()=>current&&drawCard(current)); }
 })();

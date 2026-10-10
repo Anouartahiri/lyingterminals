@@ -53,11 +53,24 @@ async def run(b, vw):
     check(T + "focus trapped in dialog", inside)
     await pg.focus("#tmInput"); await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
     check(T + "Esc closes and returns focus to the hint", await pg.evaluate("!TERM.isOpen && document.activeElement.id==='heroHint'"))
+    again = []
+    for _ in range(3):
+        await (pg.tap("#heroHint") if mob else pg.click("#heroHint")); await pg.wait_for_timeout(250); o = await pg.evaluate("TERM.isOpen")
+        await (pg.tap("#tmClose") if mob else pg.keyboard.press("Escape")); await pg.wait_for_timeout(250); again.append(o and not await pg.evaluate("TERM.isOpen"))
+    check(T + "hint opens on every click/tap", all(again), str(again))
+    hs = await pg.evaluate("(()=>{const b=document.getElementById('heroHint'),k=b.querySelector(mobile()? '.k':'kbd');function mobile(){return getComputedStyle(b.querySelector('.touch')).display!=='none'} return [getComputedStyle(b).fontSize, getComputedStyle(b).color===getComputedStyle(document.body).color||getComputedStyle(b).color, getComputedStyle(k).color]})()")
+    check(T + "hint 14-15px, text colour, accent key", hs[0] in ("14px", "15px") and hs[1] is True, str(hs))
     # A2: fix
     await pg.evaluate("document.activeElement.blur()"); await pg.keyboard.press("`"); await pg.wait_for_timeout(200)
     await typ(pg, "theme solarized-light"); await pg.wait_for_timeout(500); await typ(pg, "clear"); await typ(pg, "fix")
     fx = await pg.evaluate("""(()=>{const t=[...document.querySelectorAll('#tmOut .blk')].pop().innerText; return {txt:t, fixed:TERM.fixed, live:document.getElementById('tmLive').textContent}})()""")
-    check(T + "fix prints old → new rows and the new grade", "→" in fx["txt"] and "grade F → C, 7 → 72" in fx["txt"].replace("\n", " "), fx["txt"][-160:].replace("\n", " | "))
+    flat = fx["txt"].replace("\n", " ")
+    check(T + "fix prints old → new rows and the new grade", "→" in flat and "grade F → C, 7 → 72" in flat, fx["txt"][-200:].replace("\n", " | "))
+    import re as _re
+    check(T + "fix ratios use two decimals", bool(_re.search(r"\d\.\d\d → #[0-9a-f]{6}", flat)) and not _re.search(r" \d\.\d → ", flat))
+    check(T + "fix copy: original theme + remaining charges", "page keeps the original theme" in flat and "still grey" in flat and "stays raw" not in flat)
+    hdr = await pg.evaluate("[...document.querySelectorAll('#tmOut .blk:last-child .ln')].slice(1,3).map(l=>Math.round(l.getBoundingClientRect().height/parseFloat(getComputedStyle(l).lineHeight)))")
+    if not mob: check(T + "fix header: two deliberate lines, no wrap", hdr == [1, 1], str(hdr))
     await shot(pg, f"fix-{vw}.png", pg.locator("#tm"))
     pal = await pg.evaluate("""(()=>{const s=getComputedStyle(document.getElementById('tm')),bg=s.getPropertyValue('--tbg').trim();const v=[...Array(16).keys()].map(i=>s.getPropertyValue('--t'+i).trim());
       return {bg, under:v.filter((h,i)=>contrast(h,bg)<4.6&&i!==15&&i!==7).length, page:getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()}})()""")
@@ -67,7 +80,17 @@ async def run(b, vw):
     async with pg.expect_download() as dl: await typ(pg, "export kitty")
     path = await (await dl.value).path(); body = open(path).read()
     check(T + "export uses fixed palette", "(fixed)" in body and "Grade C" in body)
+    note = await pg.evaluate("[...document.querySelectorAll('#tmOut .blk')].pop().innerText")
+    check(T + "export note says what remains", "still grey" in note and "every lie listed above" not in note, note.split("\n")[-1])
+    for cmd in ["help", "git diff", "npm test", "cat error.log", "git log", "fix --undo", "fix"]: await typ(pg, cmd)
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+    check(T + "one Esc closes after fix with long output", not await pg.evaluate("TERM.isOpen"))
+    await pg.keyboard.press("`"); await pg.wait_for_timeout(200)
     await typ(pg, "fix --undo"); check(T + "fix --undo reverts", not await pg.evaluate("TERM.fixed"))
+    await typ(pg, "theme dracula"); st = await pg.evaluate("[...document.querySelectorAll('#tmOut .blk')].pop().innerText")
+    check(T + "status line shows the share URL form", ("/t/dracula" in st) if URL.startswith("http") else ("#dracula" in st), st.split("\n")[-1])
+    title = await pg.evaluate("[document.getElementById('tmTitle').innerText, document.getElementById('tmTitle').scrollWidth<=document.getElementById('tmTitle').clientWidth]")
+    check(T + "console title fits" + (" without '(raw colours)'" if mob else ""), title[1] and (("raw colours" not in title[0] and "you@localhost" not in title[0]) if mob else ("raw colours" in title[0])), str(title))
     await pg.fill("#tmInput", "fix --u"); await pg.press("#tmInput", "Tab"); check(T + "Tab completes fix --undo", await pg.input_value("#tmInput") == "fix --undo"); await pg.fill("#tmInput", "")
     # demo commands + lie mode, UI contrast, accessible pills
     for cmd in ["help", "git diff", "lie", "npm test", "ls", "git log", "cat error.log", "judge", "theme nord", "lie"]: await typ(pg, cmd)
