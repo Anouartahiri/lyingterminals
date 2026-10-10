@@ -89,6 +89,7 @@ section{margin-top:clamp(64px,10vw,120px);scroll-margin-top:64px}
 .fbar.show{transform:none;visibility:visible;transition:transform .22s ease,visibility 0s}
 html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
 .fbar a{border:0;font-weight:400;color:var(--fg);white-space:nowrap}
+.fbar nav a[aria-current],.top nav a[aria-current]{color:var(--fg);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:currentColor}
 .fbar .brand b{color:var(--red);font-weight:400}
 .fbar nav{flex:1;min-width:0;display:flex;gap:20px;justify-content:center;overflow-x:auto;scrollbar-width:none}
 .fbar nav::-webkit-scrollbar{display:none}
@@ -715,7 +716,7 @@ function barGrade(){
   const g=$("fbarGrade"); if(!g||!current) return;
   const nm=current.theme.name||"Custom", f=(typeof TERM!=="undefined"&&TERM.fixedGrade)?TERM.fixedGrade():null;
   g.innerHTML=`<span class="nm">${esc(nm)}</span><span class="dot"> ·&nbsp;</span><b>${current.grade}</b>`+(f?` → <b>${f}</b> <span class="fx">fixed</span>`:"");
-  g.setAttribute("aria-label",`${nm}, grade ${current.grade}`+(f?`, ${f} with the fixed terminal palette`:"")+". Jump to the verdict");
+  g.setAttribute("aria-label",`${nm}, grade ${current.grade}`+(f?`; fixed terminal palette grades ${f}`:"")+". Jump to the verdict");
 }
 (()=>{
   const bar=$("fbar"), head=document.querySelector("header.top"); let headIn=true, last=scrollY, acc=0, on=false;
@@ -728,6 +729,11 @@ function barGrade(){
     if(acc>12) set(false); else if(acc<-12) set(true);
   },{passive:true});
   addEventListener("tm:fix",barGrade);
+  // which section are we in: a band just below the bar decides
+  const ids=["pick","evidence","verdict","card-sec","console"], links=[...document.querySelectorAll(".fbar nav a, .top nav a")], vis=new Map();
+  const mark=()=>{ const cur=ids.find(id=>vis.get(id)); links.forEach(a=>{ if(cur&&a.getAttribute("href")==="#"+cur){ a.setAttribute("aria-current","location"); const n=a.parentNode; if(n.scrollWidth>n.clientWidth) n.scrollLeft=Math.max(0,a.offsetLeft-n.offsetLeft-24); } else a.removeAttribute("aria-current"); }); };
+  const io=new IntersectionObserver(es=>{ es.forEach(e=>vis.set(e.target.id,e.isIntersecting)); mark(); },{rootMargin:"-45px 0px -55% 0px"});
+  ids.forEach(id=>{ const s=$(id); if(s) io.observe(s); });
 })();
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
 function hit(k){ try{ if(!/^(www\.)?lyingterminals\.com$/.test(location.hostname)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
