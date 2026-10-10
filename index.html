@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="boot">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -163,6 +163,7 @@ ol.roast .dt{grid-column:2;font-size:var(--small);color:var(--muted);display:fle
 .lab{font-size:var(--small);letter-spacing:.06em;padding:1px 7px;border-radius:99px;border:1px solid currentColor}
 .lab.fail{color:var(--red)} .lab.lol{color:var(--magenta)} .lab.warn{color:var(--yellow)} .lab.ok{color:var(--green)}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}}
+html.boot,html.boot *,html.boot *::before,html.boot *::after{transition:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 
 /* card */
@@ -212,7 +213,7 @@ footer a{color:var(--fg);font-weight:400}
 .tm-bar i{width:12px;height:12px;border-radius:50%;display:block;flex:none}
 .tm-bar .ti{flex:1;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding-right:44px}
 .tm-bar .x{display:none;color:var(--muted);font-size:var(--small);padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
-.tm-body{height:430px;overflow-y:auto;padding:14px 16px 10px;cursor:text;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.tm-body{height:430px;overflow-y:auto;padding:14px 16px 10px;cursor:text;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .tm-out{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
 .tm-out .ln{min-height:1.5em}
 .tm-in{position:relative;white-space:pre-wrap;overflow-wrap:anywhere;min-height:1.5em}
@@ -224,7 +225,7 @@ footer a{color:var(--fg);font-weight:400}
 .tm .lie-u{text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:3px}
 .tm .lie-u.fail{text-decoration-color:var(--red)} .tm .lie-u.warn{text-decoration-color:var(--yellow)} .tm .lie-u.lol{text-decoration-color:var(--magenta)}
 .tm .lab{display:inline-block;margin:0 .45em;padding:2px 8px;font-size:12px;letter-spacing:.04em;line-height:1.25;vertical-align:1px;white-space:nowrap;background:var(--tbg);text-decoration:none;text-indent:0}
-.tm-sugg{display:flex;gap:8px;overflow-x:auto;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel);scrollbar-width:none;scroll-padding-inline:12px}
+.tm-sugg{touch-action:pan-x pan-y;display:flex;gap:8px;overflow-x:auto;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel);scrollbar-width:none;scroll-padding-inline:12px}
 .tm-sugg.more-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
 .tm-sugg.more-l.more-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 48px),transparent)}
 .tm-sugg.more-l:not(.more-r){-webkit-mask-image:linear-gradient(90deg,transparent,#000 32px);mask-image:linear-gradient(90deg,transparent,#000 32px)}
@@ -237,7 +238,10 @@ footer a{color:var(--fg);font-weight:400}
 .tm-drop{position:fixed;inset:0 0 auto 0;z-index:50;padding:0 max(12px,env(safe-area-inset-left)) 12px;transform:translateY(-102%);transition:transform .22s cubic-bezier(.2,.8,.2,1);pointer-events:none}
 .tm-drop.open{transform:none;pointer-events:auto}
 .tm-drop .tm{border-top:0;border-radius:0 0 14px 14px;max-width:1100px;margin:0 auto}
-.tm-drop .tm-body{height:min(56vh,520px)}
+.tm-drop .tm-body{height:min(56vh,520px);overscroll-behavior:contain}
+html.tm-lock,html.tm-lock body{overflow:hidden}
+.tm .ln.trimmed{font-style:italic}
+@media (max-width:700px),(pointer:coarse){#tmHome .tm-body{height:auto;max-height:none;overflow:visible}}
 .tm-drop .tm-bar .x{display:inline-block}
 .tm-scrim{position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s}
 .tm-scrim.open{opacity:1;pointer-events:auto}
@@ -664,7 +668,7 @@ function run(theme,key){
   applySkin(theme); renderPalette(current); renderRoast(current); drawCard(current);
   document.querySelectorAll("#presets .chip[data-k]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===key)));
   if(typeof TERM!=="undefined"&&TERM.ready) TERM.refresh();
-  try{ const h=key&&key!=="custom"?"#"+key:"#p="+[theme.bg,theme.fg,...theme.c].map(s=>s.slice(1)).join("-"); history.replaceState(null,"",h); }catch(e){}
+  try{ const h=key&&key!=="custom"?"#"+key:"#p="+[theme.bg,theme.fg,...theme.c].map(s=>s.slice(1)).join("-"); if(location.hash!==h) history.replaceState(null,"",h); }catch(e){}
 }
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
 function hit(k){ try{ if(!/^(www\.)?lyingterminals\.com$/.test(location.hostname)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
@@ -741,7 +745,21 @@ const TERM=(function(){
     if(blocks.length>80) blocks=blocks.slice(-80), renderAll();
     else { out.insertAdjacentHTML("beforeend",renderBlock(b)); scroll(); }
   }
-  const scroll=()=>{ body.scrollTop=body.scrollHeight; };
+  const COMPACT=matchMedia("(max-width:700px),(pointer:coarse)"), RM=matchMedia("(prefers-reduced-motion: reduce)");
+  let justRan=false; const MAXL=40;
+  const inlineGrow=()=>!dropOpen&&COMPACT.matches;
+  function trim(){ // inline on phones: no inner scroller, keep only the last MAXL lines (full history stays in the drop-down)
+    out.querySelectorAll(".ln.trimmed").forEach(n=>n.remove());
+    if(!inlineGrow()) return;
+    const lns=out.querySelectorAll(".ln"); if(lns.length<=MAXL) return;
+    for(let i=0;i<lns.length-MAXL+1;i++) lns[i].remove();
+    out.querySelectorAll(".blk").forEach(b=>{ if(!b.children.length) b.remove(); });
+    out.insertAdjacentHTML("afterbegin",'<div class="blk"><div class="ln trimmed"><span class="ui" style="color:var(--muted)">… earlier output trimmed</span></div></div>');
+  }
+  const scroll=()=>{ trim();
+    if(!inlineGrow()){ body.scrollTop=body.scrollHeight; return; }
+    if(justRan||document.activeElement===input) input.scrollIntoView({block:"nearest",behavior:RM.matches?"auto":"smooth"});
+    justRan=false; };
   function cols(){ const m=document.createElement("span"); m.textContent="0".repeat(20); m.style.visibility="hidden"; out.appendChild(m); const cw=m.getBoundingClientRect().width/20; m.remove();
     const cs=getComputedStyle(out); return Math.max(20,Math.floor((out.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight))/(cw||8.4))); }
   function drawInput(){
@@ -854,7 +872,7 @@ const TERM=(function(){
 
   const QUIPS=[c=>`zsh: command not found: ${c}. Objection sustained.`, c=>`${c}: not a recognised command. The witness is confused. Try 'help'.`, c=>`${c}? Bold of you. Type 'help' for the admissible commands.`];
   function exec(raw){
-    const cmd=raw.trim(); push([],raw); if(!cmd) return;
+    justRan=true; const cmd=raw.trim(); push([],raw); if(!cmd) return;
     hist.push(cmd); if(hist.length>50) hist.shift(); hIdx=-1;
     const [w,...rest]=cmd.split(/\s+/); const arg=rest.join(" "); const lower=cmd.toLowerCase().replace(/\s+/g," ");
     const add=(lines,judged)=>{ const b=blocks[blocks.length-1]; b.lines.push(...lines); if(judged) b.judged=true; renderAll(); };
@@ -919,7 +937,7 @@ const TERM=(function(){
   ["input","keyup","click","select"].forEach(ev=>input.addEventListener(ev,drawInput));
   input.addEventListener("focus",()=>{el.classList.add("focus");drawInput();});
   input.addEventListener("blur",()=>{el.classList.remove("focus");drawInput();});
-  body.addEventListener("mouseup",()=>{ if(!getSelection().toString()) input.focus({preventScroll:true}); });
+  body.addEventListener("pointerup",e=>{ if(e.pointerType==="mouse"&&!getSelection().toString()) input.focus({preventScroll:true}); }); // touch taps never pop the keyboard
 
   // suggestion chips (great on phones); the row fades at the edge that still scrolls
   const SUG=["help","judge","git diff","lie","npm test","cat error.log","ls","git log","theme ","export ghostty","clear"];
@@ -929,28 +947,33 @@ const TERM=(function(){
   sugg.addEventListener("scroll",fade,{passive:true}); addEventListener("resize",fade); requestAnimationFrame(fade);
   sugg.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; const c=b.dataset.cmd;
     if(c.endsWith(" ")){ input.value=c; input.focus({preventScroll:true}); input.setSelectionRange(c.length,c.length); drawInput(); push([H(2,U("Tip: type a theme name, or press Tab to list them."))]); }
-    else { exec(c); input.focus({preventScroll:true}); } });
+    else { exec(c); if(!COMPACT.matches||dropOpen) input.focus({preventScroll:true}); } });
 
   // drop-down console: the same terminal, moved into a fixed panel
   const home=$("tmHome"), drop=$("tmDrop"), scrim=$("tmScrim");
   function open(){
     if(dropOpen) return;
     const ae=document.activeElement; lastFocus=(ae&&ae!==document.body&&ae!==input&&!el.contains(ae))?ae:null;
-    drop.appendChild(el); home.classList.add("empty"); drop.classList.add("open"); scrim.classList.add("open"); drop.setAttribute("aria-hidden","false"); dropOpen=true; scroll(); fade();
+    drop.appendChild(el); home.classList.add("empty"); drop.classList.add("open"); scrim.classList.add("open"); drop.setAttribute("aria-hidden","false"); dropOpen=true; document.documentElement.classList.add("tm-lock"); renderAll(); fade();
     input.focus({preventScroll:true});
   }
   function close(){
     if(!dropOpen) return;
     const y=scrollY; input.blur();
-    home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.setAttribute("aria-hidden","true"); dropOpen=false; scroll(); fade();
+    home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.setAttribute("aria-hidden","true"); dropOpen=false; document.documentElement.classList.remove("tm-lock"); renderAll(); fade();
     if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
     scrollTo(scrollX,y); lastFocus=null;
   }
   $("tmClose").addEventListener("click",close); scrim.addEventListener("click",close);
   // One capture-phase handler owns Esc and the backtick, so nothing inside can swallow them.
+  // Esc: window-level capture listener runs before anything else, so the first press always closes (prompt text is kept)
+  window.addEventListener("keydown",e=>{
+    if(e.key!=="Escape"&&e.key!=="Esc") return;
+    if(!dropOpen) return;
+    e.preventDefault(); e.stopImmediatePropagation(); close();
+  },true);
   document.addEventListener("keydown",e=>{
     if(e.isComposing||e.keyCode===229) return;
-    if(e.key==="Escape"&&dropOpen){ e.preventDefault(); e.stopPropagation(); close(); return; }
     if(e.key==="`"&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
       const tg=e.target, typing=tg&&(tg.tagName==="INPUT"||tg.tagName==="TEXTAREA"||tg.tagName==="SELECT"||tg.isContentEditable);
       if(typing) return;                                   // incl. the terminal's own input: it's just a character there
@@ -977,6 +1000,8 @@ const TERM=(function(){
   if(document.fonts){ Promise.all([document.fonts.load(`20px "Departure Mono"`),document.fonts.load(`40px "Newsreader"`),document.fonts.load(`italic 20px "Newsreader"`)]).catch(()=>{}).then(()=>document.fonts.ready).then(()=>current&&drawCard(current)); }
 })();
 TERM.init(); TERM.ready=true;
+// first paint already uses the hash theme: only now allow colour transitions
+requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove("boot")));
 </script>
 </body>
 </html>
