@@ -257,6 +257,7 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
 .hero-hint .touch{display:none}
 @media (max-width:700px),(pointer:coarse){.hero-hint .key{display:none}.hero-hint .touch{display:inline}}
 @media (max-width:640px){.hero-hint button{font-size:14px}.tm-bar .tm-mode,.tm-bar .tm-host{display:none}}
+.tm .ln{text-wrap:pretty}
 </style>
 <script>/* apply the URL's theme (or a random D/F preset) before first paint: no flash of another theme */
 (function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#a5b6b8", "muted": "#7b969c", "line": "#1a414b", "panel": "#07313c", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#524c73", "muted": "#716c80", "line": "#dfd9d9", "panel": "#f2ece8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#41565d", "muted": "#68726f", "line": "#dfdcce", "panel": "#f5efdd", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
@@ -685,6 +686,8 @@ function run(theme,key,opts={}){
   applySkin(theme); renderPalette(current); renderRoast(current); drawCard(current);
   document.querySelectorAll("#presets .chip[data-k]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===key)));
   if(typeof TERM!=="undefined"&&TERM.ready) TERM.refresh();
+  if(!opts.keepTitle){ const DT=run.defaultTitle||(run.defaultTitle=document.title);
+    document.title = key&&key!=="custom" ? `${theme.name} gets ${/^[AF]/.test(current.grade)?"an":"a"} ${current.grade}. Is your terminal theme lying to you?` : DT; }
   if(!opts.boot) try{ const h=shareURL(key,theme); if(location.pathname+location.hash!==h&&location.hash!==h) history.replaceState(null,"",h); }catch(e){}
 }
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
@@ -772,7 +775,9 @@ const TERM=(function(){
     const inner=s.b?`<b>${txt}</b>`:txt;
     return `<span${cls.trim()?` class="${cls.trim()}"`:""}${style?` style="${style}"`:""}${pill?` title="${esc(cname(typeof s.c==="number"?s.c:7))}"`:""}>${inner}</span>${pill}`;
   }
-  function renderBlock(b){
+  // UI text: glue the last two words so no word sits alone on a line (text-wrap:pretty does the rest)
+  function glue(l){ for(let i=l.length-1;i>=0;i--){ const t=l[i].t; const j=t.trimEnd().lastIndexOf(" "); const pair=t.trimEnd().slice(t.trimEnd().lastIndexOf(" ",j-1)+1); if(j>0&&j<t.trimEnd().length-1&&pair.length<=18){ const c=l.slice(); c[i]={...l[i],t:t.slice(0,j)+"\u00a0"+t.slice(j+1)}; return Object.assign(c,{hang:l.hang}); } if(t.trim()) return l; } return l; }
+  function renderBlock(b){ b={...b,lines:b.lines.map(glue)};
     const seen=new Set();
     return `<div class="blk${b.judged?" demo":""}">${b.lines.map(l=>`<div class="ln"${l.hang?` style="padding-left:${l.hang}ch;text-indent:-${l.hang}ch"`:""}>${l.map(s=>segHTML(s,seen,b.judged)).join("")}</div>`).join("")}</div>`;
   }
@@ -972,7 +977,7 @@ const TERM=(function(){
         const A=analyze(F.theme); fixed={src:current.theme,A}; setColours();
         const sw=(hex)=>S("██",hex,{x:1}), r1=x=>(Math.floor(contrast(x,current.theme.bg)*100)/100).toFixed(2);
         const rows=F.changes.flatMap(([nm,o,n])=> W<60
-          ? [L(U("  "+nm,"fg")), H(4,U("    "+o+" "),sw(o),U(" "+r1(o)+" → "),U(n+" ","fg"),sw(n),U(" "+r1(n),"green"))]
+          ? [H(4,U("  "+nm+" ","fg"),U(o+" → "+n)), H(4,U("    "),sw(o),U(" "+r1(o)+" → "),sw(n),U(" "+r1(n),"green"))]
           : [H(18,U("  "+nm.padEnd(16),"fg"),U(o+" "),sw(o),U(" "+r1(o).padStart(5)+" → "),U(n+" ","fg"),sw(n),U(" "+r1(n).padStart(5),"green"))]);
         return add([
           H(2,U("Fixing "),U(current.theme.name,"fg",{b:1}),U(": OKLCH lightness only, hue kept.")),
@@ -980,7 +985,7 @@ const TERM=(function(){
           ...rows,
           L(U("  grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}),U(" → "),U(A.grade,GRADE_ROLE[A.grade],{b:1}),U(`, ${current.score} → ${A.score}`,"fg")),
           H(2,U(remaining(A))),
-          H(2,U("Demo output, judge and export now use the fixed palette; the page keeps the original theme. "),U("fix --undo","cyan"),U(" reverts.")),
+          H(2,U("Demo, judge and export use the fixed palette; the page keeps the original. "),U("fix --undo","cyan"),U(" reverts.")),
         ]);
       }
       case "theme": {
@@ -1103,7 +1108,7 @@ const TERM=(function(){
   if(m&&THEMES[m[1]]) run(THEMES[m[1]],m[1],{boot:1});
   else if(THEMES[h]) run(THEMES[h],h,{boot:1});
   else if(h.startsWith("p=")){ try{ const hs=h.slice(2).split("-").map(s=>"#"+s); const t=parsePalette(hs.join("\n")); $("custom").value=hs.join(" "); run(t,"custom",{boot:1}); }catch(e){ const k=guilty(); run(THEMES[k],k,{boot:1}); } }
-  else { const k=guilty(); run(THEMES[k],k,{boot:1}); }
+  else { const k=guilty(); run(THEMES[k],k,{boot:1,keepTitle:1}); }
   $("heroHint").addEventListener("click",e=>{ e.preventDefault(); TERM.open(); });
   // redraw the card once the web fonts are in, so the canvas uses them too
   if(document.fonts){ Promise.all([document.fonts.load(`20px "Departure Mono"`),document.fonts.load(`40px "Newsreader"`),document.fonts.load(`italic 20px "Newsreader"`)]).catch(()=>{}).then(()=>document.fonts.ready).then(()=>current&&drawCard(current)); }
