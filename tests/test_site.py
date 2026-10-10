@@ -48,7 +48,7 @@ async def fbar(c, T, mob, vw):
     await scroll(-200)
     g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "bar shows theme grade", g.replace('\xa0',' ') == "Nord · D", g)
     await pg.evaluate("document.querySelector(\"button[data-k='github-light']\").click()"); await pg.wait_for_timeout(200)
-    g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "grade updates on theme change", g.startswith("GitHub Light · "), g)
+    g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "grade updates on theme change", g.replace('\xa0',' ').startswith("GitHub Light · "), g)
     await pg.evaluate("TERM.exec('theme solarized-light')"); await pg.evaluate("TERM.exec('fix')"); await pg.wait_for_timeout(200)
     g = await pg.evaluate("document.getElementById('fbarGrade').textContent"); check(T + "grade shows fix result", g.replace('\xa0',' ') == "Solarized Light · F → C fixed", g)
     await pg.evaluate("TERM.exec('fix --undo')"); await pg.wait_for_timeout(100)
