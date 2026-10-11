@@ -49,7 +49,7 @@ h1 i{{color:var(--red);font-style:normal}}
 .bar .t{{margin-left:auto;margin-right:auto;transform:translateX(-30px);color:{s["title"]}}}
 .body{{position:relative;padding:22px 30px;font:28px/46px "DM"}}
 .ln{{white-space:nowrap}}
-.lab{{display:inline-block;font-size:19px;line-height:1;letter-spacing:.05em;padding:6px 11px;border:2px solid currentColor;border-radius:99px;vertical-align:4px;margin-left:14px}}
+.lab{{display:inline-block;font-size:19px;line-height:1;letter-spacing:.02em;padding:6px 8px;border:2px solid currentColor;border-radius:99px;vertical-align:4px;margin-left:10px}}
 .grade{{position:absolute;right:34px;top:30px;text-align:center;color:var(--{ROLE[d["grade"]]})}}
 .grade .g{{font:400 210px/.8 "NR";letter-spacing:-.05em}}
 .grade .s{{font:22px/1 "DM";color:var(--muted);margin-top:-8px;letter-spacing:.08em}}

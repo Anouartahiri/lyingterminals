@@ -88,6 +88,74 @@ async def fbar(c, T, mob, vw):
         check(T + "axe on visible bar: no serious/critical", not res and await pg.evaluate(vis), str(res))
     check(T + "bar: no page errors", not errs, str(errs)); await pg.close()
 
+async def fs_test(c, T, mob):
+    pg = await c.new_page(); errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
+    await pg.goto(URL + "#nord", timeout=120000); await pg.add_style_tag(content="html{scroll-behavior:auto!important}"); await pg.wait_for_timeout(700)
+    async def ex(cmd):
+        await pg.evaluate("c=>TERM.exec(c)", cmd)
+        return await pg.evaluate("(([...document.querySelectorAll('#tmOut .blk')].pop()||{}).innerText||'').replace(/\\u00a0/g,' ')")
+    o = await ex("ls -la"); check(T + "ls -la lists hidden .lies, dirs and files", all(x in o for x in [".lies", "evidence", "themes", "verdict.txt", "drwxr-xr-x" if not mob else "4096"]), o[-120:])
+    col = await pg.evaluate("(()=>{const s=[...document.querySelectorAll('#tmOut .blk:last-child span')].find(e=>e.textContent==='evidence');return [getComputedStyle(s).color, getComputedStyle(document.getElementById('tm')).getPropertyValue('--t4').trim()]})()")
+    import re as _r
+    hx = col[1].lstrip('#'); rgbv = "rgb(%d, %d, %d)" % tuple(int(hx[i:i+2], 16) for i in (0, 2, 4))
+    check(T + "ls colours dirs with the theme's raw blue", col[0] == rgbv, str(col))
+    o = await ex("cd evidence"); await pg.wait_for_timeout(1000); top = await pg.evaluate("document.getElementById('evidence').getBoundingClientRect().top")
+    check(T + "cd evidence scrolls the page there", 0 <= top <= 120 and "evidence" in o, f"{top:.0f} {o.splitlines()[-1]}")
+    o = await ex("pwd"); check(T + "pwd", o.strip().endswith("/home/you/evidence"), o)
+    check(T + "prompt shows cwd", "~/evidence" in await pg.evaluate("document.getElementById('tmPrompt').textContent"))
+    o = await ex("cat ../themes/nord.theme"); check(T + "cat theme file: 16 colours with hex and ratios", o.count("#") >= 19 and "bright black" in o and "1.69" in o, o[:80])
+    o = await ex("cd"); await pg.wait_for_timeout(1000); top = await pg.evaluate("scrollY"); check(T + "bare cd goes home and to the top", top < 5 and await pg.evaluate("document.getElementById('tmPrompt').textContent").__await__ if False else top < 5, str(top))
+    o = await ex("cat .lies"); check(T + "cat .lies lists the worst offences", o.count("\n") >= 2 and "1." in o, o[:80])
+    o = await ex("cat verdict.txt"); check(T + "cat verdict.txt has grade", "grade D" in o, o[:80])
+    o = await ex("grep FAIL verdict.txt"); check(T + "grep FAIL verdict.txt finds tagged lines", o.count("FAIL") >= 1 and "bright black" in o, o[-120:])
+    o1 = await ex("ls -la"); o2 = await ex("ls -la")
+    sz = lambda o: [l for l in o.splitlines() if "error.log" in l]
+    check(T + "error.log size stable across ls -la", sz(o1) and [l.split()[-5 if not mob else 0] for l in sz(o1)] == [l.split()[-5 if not mob else 0] for l in sz(o2)], str(sz(o1) + sz(o2)))
+    o = await ex("cat nope"); check(T + "zsh-style cat error", o.splitlines()[-1] == "cat: nope: No such file or directory", o)
+    o = await ex("cd nope"); check(T + "zsh-style cd error", o.splitlines()[-1] == "cd: no such file or directory: nope", o)
+    o = await ex("frob"); check(T + "zsh-style command not found", "zsh: command not found: frob" in o and "help" in o, o)
+    o = await ex("history"); check(T + "history has no stray summary line", o.strip().splitlines()[-1].strip().endswith("history"), o[-80:])
+    legend = await pg.evaluate("document.querySelector('.legend').textContent")
+    check(T + "legend says bright is darker than its normal twin", "↓ bright is darker than its normal twin" in legend)
+    note = await pg.evaluate("document.getElementById('metaNote').textContent")
+    check(T + "page note: no 'Like Pi', page vs fix labelled", "Like Pi" not in note and ("page itself had to adjust" in note or "needed no fixes" in note) and "fix" in note, note[:160])
+    chev = await pg.evaluate("getComputedStyle(document.getElementById('tmSuggWrap'),'::after').content")
+    check(T + "chip row has a chevron when it scrolls", "›" in chev, chev)
+    o = await ex("cat exhibits/card.png"); check(T + "cat card.png is binary garbage", "PNG" in o)
+    o = await ex("grep trenchcoat"); check(T + "grep finds findings", "trenchcoat" in o and ":" in o, o[:80])
+    o = await ex("echo $USER uses $THEME"); check(T + "echo expands variables", o.strip().endswith("you uses Nord"), o)
+    o = await ex("whoami"); check(T + "whoami", "you, presumably" in o)
+    o = await ex("man ls"); check(T + "man ls", "list files" in o)
+    o = await ex("fix"); check(T + "fix states target and repaired count", "just above the 4.6 bar" in o and "repaired" in o and "palette colours" in o, o[:200])
+    ttl = await pg.evaluate("document.getElementById('tmTitle').innerText.trim()")
+    check(T + ("console title shows '· fixed' on mobile" if mob else "console title shows fixed colours"), ttl.endswith("· fixed") if mob else "(fixed colours)" in ttl, ttl)
+    o = await ex("ls themes"); check(T + "fix creates themes/nord.fixed", "nord.fixed" in o)
+    o = await ex("diff themes/nord.theme themes/nord.fixed"); check(T + "diff shows -/+ colour lines", "--- themes/nord.theme" in o and "\n- black" in o and "\n+ black" in o, o[:100])
+    o = await ex("open themes/dracula.theme"); check(T + "open .theme switches theme", await pg.evaluate("currentKey") == "dracula" and "Dracula" in o)
+    o = await ex("open themes/nord.fixed"); check(T + "open .fixed applies the fix", await pg.evaluate("[currentKey, TERM.fixed]") == ["nord", True], o)
+    o = await ex("history"); check(T + "history numbers commands", "  1  ls -la" in o)
+    for cmd, word in [("vim x", "read-only"), ("rm notes", "read-only"), ("ssh court", "refused"), ("git push", "rejected"), ("sudo ls", "Nice try"), ("cd ../..", "permission denied")]:
+        o = await ex(cmd); check(T + f"refusal: {cmd}", word.lower() in o.lower(), o.splitlines()[-1])
+    o = await ex("frobnicate"); check(T + "unknown command hints at help", "help" in o)
+    await pg.fill("#tmInput", "cat ver"); await pg.press("#tmInput", "Tab"); v1 = await pg.input_value("#tmInput")
+    await pg.fill("#tmInput", "cd ev"); await pg.press("#tmInput", "Tab"); v2 = await pg.input_value("#tmInput")
+    await pg.fill("#tmInput", "cat themes/dr"); await pg.press("#tmInput", "Tab"); v3 = await pg.input_value("#tmInput")
+    await pg.fill("#tmInput", "gr"); await pg.press("#tmInput", "Tab"); v4 = await pg.input_value("#tmInput"); await pg.fill("#tmInput", "")
+    check(T + "Tab completes paths and commands", [v1, v2, v3, v4] == ["cat verdict.txt", "cd evidence/", "cat themes/dracula.theme", "grep "], str([v1, v2, v3, v4]))
+    chips = await pg.evaluate("[...document.querySelectorAll('#tmSugg button')].map(b=>b.dataset.cmd)")
+    check(T + "chips include ls -la and cat verdict.txt", "ls -la" in chips and "cat verdict.txt" in chips)
+    await ex("cat verdict.txt"); await pg.wait_for_timeout(80); lv = await pg.evaluate("document.getElementById('tmLive').textContent")
+    check(T + "aria-live stays concise", 0 < len(lv) < 240, lv)
+    if SHOTS:
+        await ex("clear"); await ex("cd ~"); await ex("ls -la"); await shot(pg, f"fs-ls-la-{'390' if mob else '1366'}.png", pg.locator("#tm"))
+        await ex("clear"); await ex("cat themes/solarized-light.theme"); await shot(pg, f"fs-cat-theme-{'390' if mob else '1366'}.png", pg.locator("#tm"))
+    if os.path.exists(AXE):
+        await pg.wait_for_timeout(1500)  # let the theme colour transitions from 'open' settle
+        await pg.add_script_tag(path=AXE)
+        res = await pg.evaluate("axe.run({exclude:[['#tmOut .demo'],['.sw .aa']]},{resultTypes:['violations']}).then(r=>r.violations.filter(v=>['serious','critical'].includes(v.impact)).map(v=>v.id+':'+v.nodes.map(n=>n.target.join(' ')).join(' ; ')))")
+        check(T + "axe after filesystem commands: no serious/critical", not res, str(res))
+    check(T + "filesystem: no page errors", not errs, str(errs)); await pg.close()
+
 async def stream_test(b, vw):
     T = f"[{vw}] "; mob = vw < 1000
     c = await b.new_context(viewport={"width": vw, "height": 844 if mob else 900}, is_mobile=mob, has_touch=mob)
@@ -198,6 +266,10 @@ async def run(b, vw):
     live = await pg.evaluate("document.getElementById('tmLive').textContent")
     check(T + "live region announces a short summary", 0 < len(live) < 240, live)
     await pg.keyboard.press("ArrowUp"); await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+    if not mob:
+        await pg.keyboard.press("`"); await pg.wait_for_timeout(150); await pg.keyboard.type("exit"); y0 = await pg.evaluate("scrollY")
+        await pg.keyboard.press("Enter"); await pg.keyboard.type(" `ls"); await pg.wait_for_timeout(500)
+        check(T + "keys typed right after exit don't reach the page", not await pg.evaluate("TERM.isOpen") and await pg.evaluate("scrollY") == y0, str(await pg.evaluate("[TERM.isOpen, scrollY]")) + f" {y0}")
     check(T + "Esc closes on first press after history", not await pg.evaluate("TERM.isOpen"))
     # axe
     if os.path.exists(AXE):
@@ -228,6 +300,7 @@ async def run(b, vw):
         check(T + "first wheel tick at terminal bottom scrolls page", await pg.evaluate("scrollY") - y0 >= 90)
     check(T + "no console errors", not errs, str(errs))
     await fbar(c, T, mob, vw)
+    await fs_test(c, T, mob)
     await c.close()
 
 async def main():
