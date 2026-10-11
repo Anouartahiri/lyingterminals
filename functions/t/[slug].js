@@ -12,7 +12,7 @@ export async function onRequestGet({ request, params, env }) {
   const an = /^[AF]/.test(t.grade) ? "an" : "a";
   const title = `${t.name} gets ${an} ${t.grade}. Is your terminal theme lying to you?`;
   const desc = `${t.name}: grade ${t.grade}, ${t.score}/100. ${t.top} Cross-examine it in a terminal drawn in its raw colours, or: curl lyingterminals.com`;
-  const img = `${url.origin}/og/${slug}.png`;
+  const img = `${url.origin}/og/${slug}.png?v=2`;
   const alt = `Share card: a terminal in ${t.name} running judge, grade ${t.grade}, ${t.score}/100.`;
   const content = (v) => ({ element(e) { e.setAttribute("content", v); } });
 

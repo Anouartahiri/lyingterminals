@@ -3,7 +3,7 @@
   "name": "Gruvbox Dark",
   "grade": "A",
   "score": 85,
-  "top": "red: 2.6:1. Fails even the 3:1 UI bar. Visible only to cats."
+  "top": "red: 2.69:1. Fails even the 3:1 UI bar. Visible only to cats."
  },
  "catppuccin-mocha": {
   "name": "Catppuccin Mocha",
@@ -21,19 +21,19 @@
   "name": "Tokyo Night",
   "grade": "C",
   "score": 68,
-  "top": "bright black: 1.9:1. Your comments are whispering. From another room."
+  "top": "bright black: 1.91:1. Your comments are whispering. From another room."
  },
  "nord": {
   "name": "Nord",
   "grade": "D",
   "score": 56,
-  "top": "bright black: 1.6:1. Your comments are whispering. From another room."
+  "top": "bright black: 1.69:1. Your comments are whispering. From another room."
  },
  "dracula": {
   "name": "Dracula",
   "grade": "A",
   "score": 94,
-  "top": "bright black: 3.0:1. Fine for a border, a hate crime for a comment."
+  "top": "bright black: 3.02:1. Fine for a border, a hate crime for a comment."
  },
  "solarized-dark": {
   "name": "Solarized Dark",
@@ -63,7 +63,7 @@
   "name": "GitHub Dark",
   "grade": "A",
   "score": 94,
-  "top": "bright black: 4.1:1. Fine for a border, a hate crime for a comment."
+  "top": "bright black: 4.11:1. Fine for a border, a hate crime for a comment."
  },
  "github-light": {
   "name": "GitHub Light",
@@ -87,13 +87,13 @@
   "name": "Kanagawa Wave",
   "grade": "A",
   "score": 91,
-  "top": "bright black: 3.3:1. Fine for a border, a hate crime for a comment."
+  "top": "bright black: 3.33:1. Fine for a border, a hate crime for a comment."
  },
  "solarized-light": {
   "name": "Solarized Light",
   "grade": "F",
   "score": 7,
-  "top": "Foreground: 4.1:1. Every line of code you've ever read in this theme technically failed WCAG."
+  "top": "Foreground: 4.12:1. Every line of code you've ever read in this theme technically failed WCAG."
  },
  "everforest-dark": {
   "name": "Everforest Dark",
