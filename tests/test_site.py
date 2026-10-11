@@ -88,9 +88,41 @@ async def fbar(c, T, mob, vw):
         check(T + "axe on visible bar: no serious/critical", not res and await pg.evaluate(vis), str(res))
     check(T + "bar: no page errors", not errs, str(errs)); await pg.close()
 
+async def stream_test(b, vw):
+    T = f"[{vw}] "; mob = vw < 1000
+    c = await b.new_context(viewport={"width": vw, "height": 844 if mob else 900}, is_mobile=mob, has_touch=mob)
+    pg = await c.new_page(); errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
+    await pg.goto(URL + "#solarized-light", timeout=120000); await pg.wait_for_timeout(800)
+    await pg.evaluate("""()=>{window.__live=[];new MutationObserver(()=>{const t=document.getElementById('tmLive').textContent;if(t)window.__live.push(t)}).observe(document.getElementById('tmLive'),{childList:true,characterData:true,subtree:true})}""")
+    t0 = await pg.evaluate("performance.now()")
+    await pg.evaluate("TERM.exec('fix')")
+    mid = await pg.evaluate("[TERM.streaming, document.querySelectorAll('#tmOut .blk:last-child .ln.pend').length]")
+    check(T + "fix output streams in (lines pending right after Enter)", mid[0] and mid[1] > 5, str(mid))
+    check(T + "nothing announced while streaming", await pg.evaluate("window.__live.length") == 0)
+    await pg.wait_for_function("!TERM.streaming", timeout=3000); ms = await pg.evaluate("performance.now()") - t0
+    check(T + "fix finishes within ~1s", ms < 1100, f"{ms:.0f}ms")
+    await pg.wait_for_timeout(100); lv = await pg.evaluate("window.__live")
+    check(T + "one concise announcement at the end", len(set(lv)) == 1 and len(lv[0]) < 240, str(lv))
+    sb = await pg.evaluate("(()=>{const b=document.getElementById('tmBody');return b.scrollHeight-b.clientHeight-b.scrollTop})()")
+    check(T + "stays at the bottom", sb <= 1, str(sb))
+    await pg.evaluate("TERM.exec('judge')"); await pg.keyboard.press("Shift")
+    sk = await pg.evaluate("[TERM.streaming, document.querySelectorAll('#tmOut .ln.pend').length]")
+    check(T + "a keypress skips to the end", sk == [False, 0], str(sk))
+    await pg.evaluate("TERM.exec('git log')"); await pg.evaluate("TERM.exec('ls')")
+    check(T + "a new command flushes pending output", await pg.evaluate("document.querySelectorAll('#tmOut .ln.pend').length") == 0 or await pg.evaluate("[...document.querySelectorAll('#tmOut .blk')].slice(0,-1).every(b=>!b.querySelector('.ln.pend'))"))
+    await pg.wait_for_function("!TERM.streaming", timeout=3000)
+    await pg.evaluate("TERM.exec('clear')"); await pg.evaluate("TERM.exec('fix --undo')")
+    ty = await pg.evaluate("document.querySelector('#tmOut .blk:last-child .ln:last-child').textContent.length")
+    full = await pg.evaluate("new Promise(r=>{const f=()=>TERM.streaming?setTimeout(f,5):r(document.querySelector('#tmOut .blk:last-child .ln:last-child').textContent.length);f()})")
+    check(T + "short line is typed character by character", ty < full, f"{ty} -> {full}")
+    await pg.emulate_media(reduced_motion="reduce"); await pg.evaluate("TERM.exec('judge')")
+    check(T + "reduced motion: instant output", not await pg.evaluate("TERM.streaming") and await pg.evaluate("document.querySelectorAll('#tmOut .ln.pend').length") == 0)
+    check(T + "streaming: no page errors", not errs, str(errs)); await c.close()
+
 async def run(b, vw):
     mob = vw < 1000; errs = []
     c = await b.new_context(viewport={"width": vw, "height": 844 if mob else 900}, device_scale_factor=2 if mob else 1, is_mobile=mob, has_touch=mob, accept_downloads=True)
+    await c.add_init_script("window.TERM_INSTANT=true")  # functional checks read output at once; streaming has its own test
     pg = await c.new_page(); pg.set_default_timeout(120000)
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: errs.append(m.text) if m.type in ("error", "warning") else None)
     T = f"[{vw}] "
@@ -202,7 +234,7 @@ async def main():
     async with async_playwright() as p:
         kw = {"executable_path": os.environ["CHROME_PATH"]} if os.environ.get("CHROME_PATH") else {}
         b = await p.chromium.launch(args=["--no-sandbox"], **kw)
-        for vw in (1366, 390): await run(b, vw)
+        for vw in (1366, 390): await run(b, vw); await stream_test(b, vw)
         await b.close()
     print(f"\n{len(FAILS)} failed" if FAILS else "\nall passed"); sys.exit(1 if FAILS else 0)
 asyncio.run(main())
