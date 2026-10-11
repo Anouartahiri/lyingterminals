@@ -275,6 +275,13 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
 @media (max-width:640px){.hero-hint button{font-size:14px}.tm-bar .tm-mode,.tm-bar .tm-host{display:none}}
 .tm .ln{text-wrap:pretty}
 .tm .ln.pend{display:none}
+.tm-sugg-wrap{position:relative}
+.tm-sugg-wrap::after{content:"›";position:absolute;right:0;top:1px;bottom:0;width:30px;display:flex;align-items:center;justify-content:center;font:700 22px/1 var(--mono);color:var(--fg);pointer-events:none;opacity:0;transition:opacity .15s}
+.tm-sugg-wrap.more-r::after{opacity:1}
+.tm-sugg.more-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent calc(100% - 24px));mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent calc(100% - 24px))}
+.tm-sugg.more-l.more-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 72px),transparent calc(100% - 24px));mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 72px),transparent calc(100% - 24px))}
+.tm-bar .tm-fixm{display:none}
+@media (max-width:640px){.tm-bar .tm-fixm{display:inline}}
 </style>
 <script>/* apply the URL's theme (or a random D/F preset) before first paint: no flash of another theme */
 (function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#a5b6b8", "muted": "#7b969c", "line": "#1a414b", "panel": "#07313c", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#524c73", "muted": "#716c80", "line": "#dfd9d9", "panel": "#f2ece8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#41565d", "muted": "#68726f", "line": "#dfdcce", "panel": "#f5efdd", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
@@ -330,7 +337,7 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
     </div>
     <figure>
       <div class="swatches" id="palette"></div>
-      <div class="legend"><span>≥ 4.5 readable text</span><span><span style="color:var(--yellow)">UI</span> 3–4.5 borders only</span><span><span style="color:var(--red)">GHOST</span> &lt; 3 fails everything</span><span class="s"><span style="color:var(--green)">↑ more</span> bright, more contrast</span><span><span style="color:var(--red)">↓ <span class="l">dimmer</span><span class="s">less</span></span> bright, but less contrast</span><span><span style="color:var(--magenta)">= same</span> identical hex</span></div>
+      <div class="legend"><span>≥ 4.5 readable text</span><span><span style="color:var(--yellow)">UI</span> 3–4.5 borders only</span><span><span style="color:var(--red)">GHOST</span> &lt; 3 fails everything</span><span class="s"><span style="color:var(--green)">↑ more</span> bright, more contrast</span><span><span style="color:var(--red)">↓</span> bright is darker than its normal twin</span><span><span style="color:var(--magenta)">= same</span> identical hex</span></div>
       <figcaption id="paletteTitle">—</figcaption>
     </figure>
   </section>
@@ -383,7 +390,7 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
             <div class="tm-out" id="tmOut" aria-label="Terminal output"></div><div class="sr-only" id="tmLive" role="status" aria-live="polite" aria-atomic="true"></div>
             <div class="tm-in" id="tmIn"><span id="tmPrompt"></span><span id="tmLine"></span><input id="tmInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Terminal command input"></div>
           </div>
-          <div class="tm-sugg" id="tmSugg" role="toolbar" aria-label="Suggested commands"></div>
+          <div class="tm-sugg-wrap" id="tmSuggWrap"><div class="tm-sugg" id="tmSugg" role="toolbar" aria-label="Suggested commands"></div></div>
         </div>
       </div>
       <figcaption>Fig. 3. A tiny terminal drawn with plain DOM elements. Try <b>help</b>, <b>theme dracula</b>, <b>judge</b>, <b>git diff</b>, <b>lie</b> and <b>export ghostty</b>. Press Tab to complete and ↑/↓ for history.</figcaption>
@@ -393,7 +400,7 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
   <div class="tm-drop" id="tmDrop" role="dialog" aria-modal="true" aria-label="Drop-down terminal console" hidden></div>
 
   <section class="col">
-    <p class="aside" id="metaNote">A note on the colours: this page is wearing your theme, but it doesn't take it on trust. Like Pi, it moves each accent in OKLCH until its own text clears 4.6:1. The tiles above are left exactly as your theme defines them.</p>
+    <p class="aside" id="metaNote">A note on the colours: this page is wearing your theme, but it doesn't take it on trust. It moves each accent in OKLCH until its own text clears 4.6:1. The tiles above are left exactly as your theme defines them.</p>
   </section>
 
   <footer class="col">
@@ -442,7 +449,7 @@ function oklch(h){ const [r,g,b]=rgb(h).map(lin);
   const l=Math.cbrt(0.4122214708*r+0.5363325363*g+0.0514459929*b), m=Math.cbrt(0.2119034982*r+0.6806995451*g+0.1073969566*b), s=Math.cbrt(0.0883024619*r+0.2817188376*g+0.6299787005*b);
   const L=0.2104542553*l+0.7936177850*m-0.0040720468*s, A=1.9779984951*l-2.4285922050*m+0.4505937099*s, B=0.0259040371*l+0.7827717662*m-0.8086757660*s;
   return {L, C:Math.hypot(A,B), H:(Math.atan2(B,A)*180/Math.PI+360)%360}; }
-const fmt = r => (Math.floor(r*10)/10).toFixed(1); // floor so we never round a fail into a pass
+const fmt = r => (Math.floor(r*100)/100).toFixed(2); // one rule everywhere: floor to 2 decimals, so a fail never rounds into a pass
 
 /* ---------- deterministic "randomness" so the roast is stable per theme ---------- */
 function seedOf(s){ let h=2166136261; for(const ch of s){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619);} return h>>>0; }
@@ -535,7 +542,7 @@ function analyze(theme){
   for(const i of ghosts.slice(0,3)){
     add("fail", pick([`${cname(i)}: ${fmt(r[i])}:1. Fails even the 3:1 UI bar. Visible only to cats.`,`${cname(i)}: ${fmt(r[i])}:1. Error messages in this colour are more of a vibe.`,`${cname(i)}: ${fmt(r[i])}:1. That's not syntax highlighting, that's syntax hiding.`],seed,"ghost"+i), `${c[i]} on ${bg}`, 5, 14+(3-r[i])*5);
   }
-  if(ghosts.length>3) add("fail", `…and ${ghosts.length-3} more colours under 3:1. At this point it's a ${light?"whiteout":"dark-mode séance"}.`, ghosts.slice(3).map(cname).join(", "), 3*(ghosts.length-3), 15);
+  if(ghosts.length>3) add("fail", `…and ${ghosts.length-3} more colour${ghosts.length-3>1?"s":""} under 3:1 (${ghosts.slice(3).map(i=>`${cname(i)} ${fmt(r[i])}`).join(", ")}). At this point it's a ${light?"whiteout":"dark-mode séance"}.`, ghosts.slice(3).map(cname).join(", "), 3*(ghosts.length-3), 15);
   if(uiOnly.length) add("warn", `${uiOnly.length} colour${uiOnly.length>1?"s":""} pass 3:1 but not 4.5:1: good enough for a border, not for a word.`, uiOnly.map(i=>`${cname(i)} ${fmt(r[i])}`).join(" · "), Math.min(uiOnly.length*1.5,12), 6+uiOnly.length);
 
   // light/dark specific
@@ -544,6 +551,8 @@ function analyze(theme){
     if(w<1.6) add("lol", `white on a light theme: ${fmt(w)}:1. Snow on a snowfield. A polar bear in a blizzard.`, `${c[7]} / ${c[15]} on ${bg}`, 3, 13);
   } else if(r[0]<1.3){
     add("lol", `black: ${fmt(r[0])}:1. Black on a dark background — technically a colour, spiritually a void.`, `${c[0]} on ${bg}`, 2, 8);
+  } else if(r[0]<3){
+    add("lol", `black: ${fmt(r[0])}:1. Black on a dark background is mostly a rumour.`, `${c[0]} on ${bg}`, 0, 5);  // reported, not scored
   }
 
   // praise if somehow earned
@@ -611,9 +620,9 @@ function applySkin(t){
   R.style.setProperty("--bar-acc", contrast(skin.green,skin.bg)>=4.6?skin.green:skin.fg); // floating-bar "$": accent if it clears 4.6:1, else text colour
   document.querySelector('meta[name="theme-color"]').setAttribute("content",t.bg);
   const n=fixes.length, sw=h=>`<span class="swatch-inline" style="background:${h}"></span>`;
-  $("metaNote").innerHTML = `A note on the colours: this page is wearing <b>${esc(t.name)}</b>, but it doesn't take it on trust. Like Pi, it moves each accent in OKLCH until its own text clears 4.6:1 (7:1 for body text). ` +
-    (n ? `Here it had to fix ${n} colour${n>1?"s":""}: ${fixes.map(([k,a,b])=>`${k} ${sw(a)}→${sw(b)}`).join(", ")}. ` : `This theme needed no fixes. Respect. `) +
-    `The tiles above are left exactly as your theme defines them.`;
+  $("metaNote").innerHTML = `A note on the colours: this page is wearing <b>${esc(t.name)}</b>, but it doesn't take it on trust: it moves each accent in OKLCH until its own text clears 4.6:1 (7:1 for body text). ` +
+    (n ? `Here the page itself had to adjust ${n} of its own text colour${n>1?"s":""}: ${fixes.map(([k,a,b])=>`${k} ${sw(a)}→${sw(b)}`).join(", ")}. ` : `This theme needed no fixes. Respect. `) +
+    `The tiles above are left exactly as your theme defines them; the terminal's <code>fix</code> command repairs the whole palette, which is a different job.`;
 }
 
 /* ---------- rendering ---------- */
@@ -794,7 +803,7 @@ const TERM=(function(){
     const t=active().theme;
     el.style.setProperty("--tbg",t.bg); el.style.setProperty("--tfg",t.fg);
     t.c.forEach((h,i)=>el.style.setProperty("--t"+i,h));
-    $("tmTitle").innerHTML=`<span class="tm-host">you@localhost: ~ — </span>${esc(current.theme.name)}<span class="tm-mode"> (${fixed?"fixed":"raw"} colours)</span>`;
+    $("tmTitle").innerHTML=`<span class="tm-host">you@localhost: ~ — </span>${esc(current.theme.name)}<span class="tm-mode"> (${fixed?"fixed":"raw"} colours)</span>${fixed?'<span class="tm-fixm"> · fixed</span>':""}`;
   }
   // FAIL < 3 · MEH < 4.6 · LIE = a "bright" colour that isn't actually brighter than its normal twin
   function judgeSpan(c){
@@ -854,6 +863,9 @@ const TERM=(function(){
   }
   // any key finishes the stream first (registered before the Esc/backtick handlers, so they still run after it)
   window.addEventListener("keydown",()=>flush(),true);
+  // after the console closes, stray keystrokes from fast typing must not reach the page (space would scroll, ` would reopen)
+  let closedAt=-1e9;
+  window.addEventListener("keydown",e=>{ if(performance.now()-closedAt<400&&!dropOpen&&document.activeElement!==input&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&e.key!=="Tab"){ e.preventDefault(); e.stopImmediatePropagation(); } },true);
   function renderAll(){ flush(); out.innerHTML=blocks.map(renderBlock).join(""); scroll(); }
   function push(lines,echo){
     flush();
@@ -1000,13 +1012,14 @@ const TERM=(function(){
   }
   function download(f){ const a=document.createElement("a"); a.download=f.name; a.href=URL.createObjectURL(new Blob([f.text],{type:f.mime})); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
 
-  const QUIPS=[c=>`zsh: command not found: ${c}. Objection sustained. Try 'help'.`, c=>`${c}: not a recognised command. The witness is confused. Try 'help'.`, c=>`${c}? Bold of you. Type 'help' for the admissible commands.`];
+  const QUIPS=["Objection sustained. Try 'help'.", "The witness is confused. Try 'help'.", "Bold of you. Type 'help' for the admissible commands."];
   // screen readers get one short summary per command, not the whole scrollback
   const live=$("tmLive");
   function announce(cmd,lines,judged){
     const text=l=>l.map(s=>s.t).join("").replace(/\s+/g," ").trim();
     let msg;
-    if(judged){ const bad=lieMode?out.querySelectorAll(".blk:last-child .lab").length:0; msg=`${cmd}: ${lines.length} lines of sample output`+(lieMode?`, ${bad} contrast ${bad===1?"problem":"problems"} marked`:""); }
+    if(/^history\b/.test(cmd)) msg=`history: ${lines.length} command${lines.length===1?"":"s"}`;
+    else if(judged){ const bad=lieMode?out.querySelectorAll(".blk:last-child .lab").length:0; msg=`${cmd}: ${lines.length} lines of sample output`+(lieMode?`, ${bad} contrast ${bad===1?"problem":"problems"} marked`:""); }
     else msg=(lines.slice(0,2).map(l=>text(l).replace(/[.:]$/,"")).filter(Boolean).join(". ")+".").slice(0,220);
     live.textContent=""; setTimeout(()=>{ live.textContent=msg; },30);
   }
@@ -1021,7 +1034,7 @@ const TERM=(function(){
   const SECTION={evidence:"evidence",exhibits:"card-sec",themes:"pick"};
   let pendingScroll=null;
   const fixedMade=new Set();
-  const fmtR=r=>(Math.floor(r*100)/100).toFixed(2);
+  const fmtR=fmt;
   const rRole=r=>r<3?"red":r<4.6?"yellow":"green";
   const NM16=i=>(i>=8?"bright ":"")+ANSI_NAMES[i%8];
   const sw=hex=>S("██",hex,{x:1});
@@ -1056,11 +1069,11 @@ const TERM=(function(){
       "README":{f:lines([[U("lyingterminals.com","fg",{b:1}),U(" — is your terminal theme lying to you?")],
         "Everything in this directory is generated from the real palette of the theme you're on. It's read-only: evidence can't be tampered with.",
         H(2,U("Try "),U("ls -la","cyan"),U(", "),U("cat verdict.txt","cyan"),U(", "),U(`cat themes/${currentKey||"nord"}.theme`,"cyan"),U(", "),U("grep bright","cyan"),U(" or "),U("cd evidence","cyan"),U("."))])},
-      "error.log":{f:()=>OUT["cat error.log"](cols()),demo:1},
+      "error.log":{f:()=>OUT["cat error.log"](cols()),demo:1,size:txt(OUT["cat error.log"](80)).join("\n").length+1},
       "evidence":{d:ev},
       "exhibits":{d:{"card.png":{f:()=>[L(U("‰PNG␚␀␀␀ IHDR ␀␀␄°␀␀␂v ▒▒▓░ ␀␀ IDAT x␜ìý ▓▒░▒ ...","fg"))],png:1,size:84213}}},
       "themes":{d:themes},
-      "verdict.txt":{f:lines([[U("Verdict for "),U(t.name,"fg",{b:1}),U(`: grade ${A.grade}, honesty ${A.score}/100`)],H(2,U("“"+A.verdict+"”","magenta")),...bad.map(f=>H(4,U(f.sev==="fail"?"  ✗ ":f.sev==="lol"?"  ? ":"  ! ",{fail:"red",lol:"magenta",warn:"yellow"}[f.sev],{b:1}),U(f.text,"fg")))])},
+      "verdict.txt":{f:lines([[U("Verdict for "),U(t.name,"fg",{b:1}),U(`: grade ${A.grade}, honesty ${A.score}/100`)],H(2,U("“"+A.verdict+"”","magenta")),...bad.map(f=>H(9,U(f.sev==="fail"?"  ✗ FAIL ":f.sev==="lol"?"  ? LIE  ":"  ! MEH  ",{fail:"red",lol:"magenta",warn:"yellow"}[f.sev],{b:1}),U(f.text,"fg")))])},
     }};
   }
   function resolve(path){
@@ -1110,7 +1123,7 @@ const TERM=(function(){
   }
   const textFiles=()=>{ const all=[]; const walk=(n,p)=>{ for(const [k,c] of Object.entries(n.d)){ if(c.d){ if(k!=="themes") walk(c,p+k+"/"); } else if(!c.png&&!c.demo) all.push([p+k,c]); } }; walk(tree(),""); return all; };
   const MAN={cd:"change directory: cd evidence, cd .., cd ~ (also scrolls the page there)",pwd:"print where you are",ls:"list files; -l long, -a include the hidden .lies",cat:"print a file: README, verdict.txt, themes/<slug>.theme, .lies, evidence/*",open:"open themes/<slug>.theme to switch theme; a .fixed file applies the fix",source:"same as open",grep:"grep [-i] PATTERN [file]: search the findings",diff:"diff themes/a.theme themes/b.fixed: what changed",echo:"echo text; knows $USER $HOME $SHELL $THEME $PWD $GRADE",whoami:"who you are, roughly",date:"what time it is in court",history:"the commands you've typed",man:"this",theme:"theme <name>: switch theme",judge:"the verdict, grade and top roasts",fix:"repair the palette by lightness only; fix --undo reverts",export:"export ghostty|kitty|iterm: download the theme",lie:"toggle lie mode",clear:"clear the screen",help:"list commands"};
-  const NOPE={vim:"vim: you'd never find the exit anyway. Read-only filesystem.",vi:"vi: read-only filesystem. Also, :q! is still a mystery.",nvim:"nvim: plugins loaded: 412. Files writable: 0.",nano:"nano: read-only filesystem. ^X marks the spot.",emacs:"emacs: a fine operating system, but this is a courtroom.",code:"code: the defendant may not open an IDE.",ssh:"ssh: connection refused. The witness may not leave the courtroom.",mv:"mv: read-only filesystem. The evidence stays where it is.",cp:"cp: read-only filesystem. Copies of evidence are inadmissible.",touch:"touch: read-only filesystem. Don't touch the evidence.",mkdir:"mkdir: read-only filesystem. No new hiding places.",chmod:"chmod: read-only filesystem. The verdict is not negotiable.",chown:"chown: you can't own this. Nobody owns bright black.",kill:"kill: the witness is already dead (it was bright black).",shutdown:"shutdown: court is in session until the theme confesses.",reboot:"reboot: rebooting won't change your palette.",curl:"curl: you're already here. From a real terminal: curl lyingterminals.com",wget:"wget: you're already here. From a real terminal: curl lyingterminals.com",python:"python: this terminal only runs judgement.",node:"node: this terminal only runs judgement.",logout:"logout: there is no logout, only Esc.",cowsay:"< moo. your bright black is still invisible. >"};
+  const NOPE={vim:"vim: you'd never find the exit anyway. Read-only filesystem.",vi:"vi: read-only filesystem. Also, :q! is still a mystery.",nvim:"nvim: plugins loaded: 412. Files writable: 0.",nano:"nano: read-only filesystem. ^X marks the spot.",emacs:"emacs: a fine operating system, but this is a courtroom.",code:"code: the defendant may not open an IDE.",ssh:"ssh: connection refused. The witness may not leave the courtroom.",mv:"The evidence stays where it is.",cp:"Copies of evidence are inadmissible.",touch:"Don't touch the evidence.",mkdir:"No new hiding places.",chmod:"The verdict is not negotiable.",chown:"chown: you can't own this. Nobody owns bright black.",kill:"kill: the witness is already dead (it was bright black).",shutdown:"shutdown: court is in session until the theme confesses.",reboot:"reboot: rebooting won't change your palette.",curl:"curl: you're already here. From a real terminal: curl lyingterminals.com",wget:"wget: you're already here. From a real terminal: curl lyingterminals.com",python:"python: this terminal only runs judgement.",node:"node: this terminal only runs judgement.",logout:"logout: there is no logout, only Esc.",cowsay:"< moo. your bright black is still invisible. >"};
   function fsCommand(w,args,add){
     const a0=args[0], W=cols();
     switch(w){
@@ -1118,7 +1131,7 @@ const TERM=(function(){
       case "cd": {
         const target=a0===undefined?"~":a0; if(target==="-") return add([L(U("cd: no OLDPWD. The past is inadmissible."))]);
         const r=resolve(target);
-        if(r.err==="outside") return add([H(2,U(`cd: permission denied: ${target}. You live in ~ now.`,"red"))]);
+        if(r.err==="outside") return add([L(U(`cd: permission denied: ${target}`,"red")),H(2,U("You live in ~ now."))]);
         if(r.err) return add([H(2,U(`cd: no such file or directory: ${target}`,"red"))]);
         if(!r.node.d) return add([H(2,U(`cd: not a directory: ${target}`,"red"))]);
         cwd=r.parts; promptEl.innerHTML=PROMPT().map(s=>segHTML(s,new Set(),false)).join("");
@@ -1184,7 +1197,7 @@ const TERM=(function(){
         const m=MAN[a0]; if(!m) return add([H(2,U(`No manual entry for ${a0}. Some things are beyond the law.`))]);
         return add([H(2,U(a0,"green",{b:1}),U(" — "+m))]);
       }
-      case "rm": return add([H(2,U("rm: read-only filesystem. ","red"),U("The evidence stays. Your bright black already deleted itself visually."))]);
+      case "rm": case "mv": case "cp": case "touch": case "mkdir": case "chmod": case "chown": { const f=args.filter(x=>!x.startsWith("-"))[0]||""; return add([L(U(`${w}: ${f||"."}: Read-only file system`,"red")),H(2,U(NOPE[w]||"The evidence stays. Your bright black already deleted itself visually."))]); }
     }
     if(NOPE[w]) return add([H(2,U(NOPE[w]))]);
     return undefined;
@@ -1218,14 +1231,15 @@ const TERM=(function(){
         const F=fixPalette(current.theme); fixedMade.add(currentKey);
         if(!F.changes.length) return add([H(2,U("Nothing to fix: every colour already clears 4.6:1 and every bright is brighter."))]);
         const A=analyze(F.theme); fixed={src:current.theme,A}; setColours();
-        const sw=(hex)=>S("██",hex,{x:1}), r1=x=>(Math.floor(contrast(x,current.theme.bg)*100)/100).toFixed(2);
+        const sw=(hex)=>S("██",hex,{x:1}), r1=x=>fmt(contrast(x,current.theme.bg));
         const rows=F.changes.flatMap(([nm,o,n])=> W<60
           ? [H(4,U("  "+nm+" ","fg"),U(o+" → "+n)), H(4,U("    "),sw(o),U(" "+r1(o)+" → "),sw(n),U(" "+r1(n),"green"))]
           : [H(18,U("  "+nm.padEnd(16),"fg"),U(o+" "),sw(o),U(" "+r1(o).padStart(5)+" → "),U(n+" ","fg"),sw(n),U(" "+r1(n).padStart(5),"green"))]);
         return add([
           H(2,U("Fixing "),U(current.theme.name,"fg",{b:1}),U(": OKLCH lightness only, hue kept.")),
-          H(2,U("Target 4.65:1; each bright at least 0.3 above its normal twin.")),
+          H(2,U("Target 4.65:1 (just above the 4.6 bar); each bright at least 0.3 above its normal twin.")),
           ...rows,
+          H(2,U(`  repaired ${F.changes.length} palette colour${F.changes.length>1?"s":""}`,"fg")),
           L(U("  grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}),U(" → "),U(A.grade,GRADE_ROLE[A.grade],{b:1}),U(`, ${current.score} → ${A.score}`,"fg")),
           H(2,U(remaining(A))),
           H(2,U("Demo, judge and export use the fixed palette; the page keeps the original. "),U("fix --undo","cyan"),U(" reverts.")),
@@ -1246,10 +1260,10 @@ const TERM=(function(){
         return add([H(2,U("✓ ","green"),U("wrote "),U(file.name,"fg",{b:1}),U(` (${file.text.length} bytes, ${f}${fixed?", fixed palette":""})`)),H(2,U(fixed?"  "+remaining(active()):"  Note: it still contains every lie listed above."))]);
       }
     }
-    if(w.toLowerCase()==="git") return add([H(2,U(`git: '${rest[0]||""}' is not a git command. Try 'git diff' or 'git log'.`,"red"))]);
+    if(w.toLowerCase()==="git") return add([L(U(`git: '${rest[0]||""}' is not a git command. See 'git --help'.`,"red")),H(2,U("Admissible here: git diff, git log."))]);
     if(w.toLowerCase()==="cat") return add([H(2,U(`cat: ${arg||"(nothing)"}: No such file. Try 'cat error.log'.`,"red"))]);
     if(w.toLowerCase()==="npm") return add([H(2,U("npm "),U("ERR!","red",{b:1}),U(` Unknown command: "${rest.join(" ")}". Try 'npm test'.`,"fg"))]);
-    add([H(2,U(pick(QUIPS,cmd,"q")(w),"red"))]);
+    add([L(U(`zsh: command not found: ${w}`,"red")),H(2,U(pick(QUIPS,cmd,"q")))]);
   }
   // bash-style completion: extend to the common prefix and list the candidates when there are several
   function complete(){
@@ -1294,7 +1308,7 @@ const TERM=(function(){
   const SUG=["help","ls -la","cat verdict.txt","judge","fix","git diff","lie","cd evidence","npm test","cat .lies","git log","theme ","export ghostty","clear"];
   const sugg=$("tmSugg");
   sugg.innerHTML=SUG.map(s=>`<button type="button" data-cmd="${s}">${s.trim()==="theme"?"theme …":s}</button>`).join("");
-  const fade=()=>{ const max=sugg.scrollWidth-sugg.clientWidth; sugg.classList.toggle("more-r",sugg.scrollLeft<max-2); sugg.classList.toggle("more-l",sugg.scrollLeft>2); };
+  const fade=()=>{ const max=sugg.scrollWidth-sugg.clientWidth; sugg.classList.toggle("more-r",sugg.scrollLeft<max-2); $("tmSuggWrap").classList.toggle("more-r",sugg.scrollLeft<max-2); sugg.classList.toggle("more-l",sugg.scrollLeft>2); };
   sugg.addEventListener("scroll",fade,{passive:true}); addEventListener("resize",fade); requestAnimationFrame(fade);
   sugg.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; const c=b.dataset.cmd;
     if(c.endsWith(" ")){ input.value=c; input.focus({preventScroll:true}); input.setSelectionRange(c.length,c.length); drawInput(); push([H(2,U("Tip: type a theme name, or press Tab to list them."))]); }
@@ -1312,6 +1326,7 @@ const TERM=(function(){
   function close(){
     if(!drop.classList.contains("open")&&drop.hidden){ dropOpen=false; return; }
     const y=scrollY; input.blur();
+    closedAt=performance.now();
     home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.hidden=true; dropOpen=false; document.documentElement.classList.remove("tm-lock"); renderAll(); fade();
     if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
     scrollTo(scrollX,y); lastFocus=null;
