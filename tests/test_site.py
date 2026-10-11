@@ -60,6 +60,16 @@ async def fbar(c, T, mob, vw):
     await pg.click("#fbarTerm"); await pg.wait_for_timeout(250)
     check(T + ">_ opens the drop-down terminal", await pg.evaluate("TERM.isOpen"))
     await pg.evaluate("TERM.close()"); await pg.wait_for_timeout(500); await scroll(-150)
+    if vw < 640:
+        for w in (vw, 360):
+            if w != vw: await pg.set_viewport_size({"width": w, "height": 800}); await pg.wait_for_timeout(300); await scroll(-150)
+            hs = await pg.evaluate("""(()=>{const bar=document.getElementById('fbar'),b=bar.getBoundingClientRect(),out=[];let prev=null;
+              for(const y of [b.top+1,b.top+22,b.bottom-1]){for(let x=0;x<innerWidth;x++){const e=document.elementFromPoint(x,y)?.closest('#fbar a,#fbar button');const k=e?(e.id||e.textContent.trim()):'DEAD';
+                if(y===b.top+22){if(k!==prev){out.push([k,x]);prev=k}} else if(k==='DEAD'&&x>4&&x<innerWidth-12) return ['DEAD row',y,x]}}
+              out.push(['END',innerWidth]);return out})()""")
+            ws = [hs[i+1][1]-hs[i][1] for i in range(len(hs)-1)] if hs[0] != 'DEAD row' else []
+            check(T + f"bar tap targets at {w}: 6 contiguous, >=44 wide, full 44px tall, no dead gaps", len(hs) == 7 and all(h[0] != 'DEAD' for h in hs) and min(ws) >= 44, str(list(zip([h[0][:8] for h in hs], ws))))
+        await pg.set_viewport_size({"width": vw, "height": 800}); await pg.wait_for_timeout(300)
     check(T + "no grade pill in the bar", await pg.evaluate("!document.querySelector('#fbar .gr, #fbarGrade')"))
     await scroll(300); check(T + "bar hides again on scroll down", not await pg.evaluate(vis))
     await scroll(-200)

@@ -93,11 +93,13 @@ html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
 .fbar .dollar{display:none;color:var(--bar-acc,var(--fg));font-weight:700;padding:0 4px}
 .fbar-tm{flex:none;width:44px;height:44px;margin-right:-10px;display:flex;align-items:center;justify-content:center;font:700 14px/1 var(--mono);color:var(--bar-acc,var(--fg));border-radius:6px}
 .fbar-tm:hover{background:var(--panel)}
+.fbar .brand,.fbar nav a,.fbar-tm{position:relative}
+.fbar .brand::before,.fbar nav a::before,.fbar-tm::before{content:"";position:absolute;top:50%;height:44px;transform:translateY(-50%);left:var(--hl,0);right:var(--hr,0)}
 .fbar .brand b{color:var(--red);font-weight:400}
 .fbar nav{flex:1;min-width:0;display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
 .fbar nav::-webkit-scrollbar{display:none} .fbar nav a:first-child{margin-left:auto}
 .fbar nav a{color:var(--fg);line-height:44px} .fbar nav a:hover{text-decoration:underline;text-underline-offset:4px}
-@media (max-width:640px){.fbar{gap:10px}.fbar .brand .full{display:none}.fbar .dollar{display:inline}.fbar nav{gap:10px;justify-content:space-between}.fbar nav a:first-child{margin-left:0}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
+@media (max-width:640px){.fbar{gap:10px}.fbar .brand .full{display:none}.fbar .dollar{display:inline}.fbar nav{gap:10px;justify-content:space-between;margin:0 -5px;padding:0 5px}.fbar nav a:first-child{margin-left:0}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
 
 /* hero */
 .hero{margin-top:clamp(56px,11vw,140px)}
@@ -743,6 +745,13 @@ function run(theme,key,opts={}){
   const io=new IntersectionObserver(es=>{ es.forEach(e=>vis.set(e.target.id,e.isIntersecting)); mark(); },{rootMargin:"-45px 0px -55% 0px"});
   ids.forEach(id=>{ const s=$(id); if(s) io.observe(s); });
   const bn=bar.querySelector("nav"), fit=()=>bn.classList.toggle("over",bn.scrollWidth>bn.clientWidth+1); fit(); addEventListener("resize",fit);
+  // extend each tap target to the midpoints between neighbours (no dead gaps, no overlap)
+  const hit=()=>{ const on=matchMedia("(max-width:640px)").matches; const els=[bar.querySelector(".brand"),...bn.children,$("fbarTerm")].filter(e=>e.offsetParent);
+    const rs=els.map(e=>e.getBoundingClientRect()), bl=bar.getBoundingClientRect();
+    els.forEach((e,i)=>{ const r=rs[i]; if(!on){e.style.removeProperty("--hl");e.style.removeProperty("--hr");return}
+      const B=j=>j===0?Math.max((rs[0].right+rs[1].left)/2,bl.left+44):(rs[j].right+rs[j+1].left)/2; const L=i?B(i-1):bl.left, Rr=i<els.length-1?B(i):bl.right;
+      e.style.setProperty("--hl",(Math.floor(L)-r.left)+"px"); e.style.setProperty("--hr",(r.right-Math.floor(Rr))+"px"); }); };
+  hit(); fit(); addEventListener("resize",()=>{hit();fit()}); document.fonts&&document.fonts.ready.then(hit);
   $("fbarTerm").addEventListener("click",()=>{ if(typeof TERM!=="undefined") TERM.open(); });
 })();
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
