@@ -133,6 +133,7 @@ async def fs_test(c, T, mob):
         await ex("clear"); await ex("cd ~"); await ex("ls -la"); await shot(pg, f"fs-ls-la-{'390' if mob else '1366'}.png", pg.locator("#tm"))
         await ex("clear"); await ex("cat themes/solarized-light.theme"); await shot(pg, f"fs-cat-theme-{'390' if mob else '1366'}.png", pg.locator("#tm"))
     if os.path.exists(AXE):
+        await pg.wait_for_timeout(1500)  # let the theme colour transitions from 'open' settle
         await pg.add_script_tag(path=AXE)
         res = await pg.evaluate("axe.run({exclude:[['#tmOut .demo'],['.sw .aa']]},{resultTypes:['violations']}).then(r=>r.violations.filter(v=>['serious','critical'].includes(v.impact)).map(v=>v.id+':'+v.nodes.map(n=>n.target.join(' ')).join(' ; ')))")
         check(T + "axe after filesystem commands: no serious/critical", not res, str(res))
