@@ -91,11 +91,13 @@ html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
 .fbar a{border:0;font-weight:400;color:var(--fg);white-space:nowrap}
 .fbar nav a[aria-current],.top nav a[aria-current]{color:var(--fg);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:currentColor}
 .fbar .dollar{display:none;color:var(--bar-acc,var(--fg));font-weight:700;padding:0 4px}
+.fbar-tm{flex:none;width:44px;height:44px;margin-right:-10px;display:flex;align-items:center;justify-content:center;font:700 14px/1 var(--mono);color:var(--bar-acc,var(--fg));border-radius:6px}
+.fbar-tm:hover{background:var(--panel)}
 .fbar .brand b{color:var(--red);font-weight:400}
 .fbar nav{flex:1;min-width:0;display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
 .fbar nav::-webkit-scrollbar{display:none} .fbar nav a:first-child{margin-left:auto}
 .fbar nav a{color:var(--fg);line-height:44px} .fbar nav a:hover{text-decoration:underline;text-underline-offset:4px}
-@media (max-width:640px){.fbar{gap:12px}.fbar .brand .full{display:none}.fbar .dollar{display:inline}.fbar nav{gap:20px}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
+@media (max-width:640px){.fbar{gap:10px}.fbar .brand .full{display:none}.fbar .dollar{display:inline}.fbar nav{gap:10px;justify-content:space-between}.fbar nav a:first-child{margin-left:0}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
 
 /* hero */
 .hero{margin-top:clamp(56px,11vw,140px)}
@@ -276,12 +278,13 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
 .tm .ln{text-wrap:pretty}
 .tm .ln.pend{display:none}
 .tm-sugg-wrap{position:relative}
-.tm-sugg-wrap::after{content:"›";position:absolute;right:0;top:1px;bottom:0;width:30px;display:flex;align-items:center;justify-content:center;font:700 22px/1 var(--mono);color:var(--fg);pointer-events:none;opacity:0;transition:opacity .15s}
-.tm-sugg-wrap.more-r::after{opacity:1}
 .tm-sugg.more-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent calc(100% - 24px));mask-image:linear-gradient(90deg,#000 calc(100% - 72px),transparent calc(100% - 24px))}
 .tm-sugg.more-l.more-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 72px),transparent calc(100% - 24px));mask-image:linear-gradient(90deg,transparent,#000 32px,#000 calc(100% - 72px),transparent calc(100% - 24px))}
 .tm-bar .tm-fixm{display:none}
 @media (max-width:640px){.tm-bar .tm-fixm{display:inline}}
+.tm-arr{position:absolute;top:1px;bottom:0;width:44px;z-index:1;display:flex;align-items:center;justify-content:center;font:700 24px/1 var(--mono);color:var(--fg);background:transparent;border:0;padding:0;cursor:pointer}
+.tm-arr[hidden]{display:none}
+.tm-arr.l{left:0} .tm-arr.r{right:0}  /* overlaid on the fades: the row and chip sizes never change */
 </style>
 <script>/* apply the URL's theme (or a random D/F preset) before first paint: no flash of another theme */
 (function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#a5b6b8", "muted": "#7b969c", "line": "#1a414b", "panel": "#07313c", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#524c73", "muted": "#716c80", "line": "#dfd9d9", "panel": "#f2ece8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#41565d", "muted": "#68726f", "line": "#dfdcce", "panel": "#f5efdd", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
@@ -293,6 +296,7 @@ var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute(
 <div class="fbar" id="fbar" inert aria-hidden="true">
   <a class="brand" href="#top" aria-label="lyingterminals, back to top"><span class="full" aria-hidden="true">lying<b>terminals</b><span class="com">.com</span></span><span class="dollar" aria-hidden="true">$</span></a>
   <nav aria-label="Sections (floating bar)"><a href="#pick">Pick</a><a href="#evidence">Evidence</a><a href="#verdict">Verdict</a><a href="#card-sec">Card</a></nav>
+  <button type="button" class="fbar-tm" id="fbarTerm" title="Open terminal (`)" aria-label="Open terminal">&gt;_</button>
 </div>
 <header class="top" id="top">
   <a class="brand" href="#">lying<b>terminals</b>.com</a>
@@ -390,7 +394,7 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
             <div class="tm-out" id="tmOut" aria-label="Terminal output"></div><div class="sr-only" id="tmLive" role="status" aria-live="polite" aria-atomic="true"></div>
             <div class="tm-in" id="tmIn"><span id="tmPrompt"></span><span id="tmLine"></span><input id="tmInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Terminal command input"></div>
           </div>
-          <div class="tm-sugg-wrap" id="tmSuggWrap"><div class="tm-sugg" id="tmSugg" role="toolbar" aria-label="Suggested commands"></div></div>
+          <div class="tm-sugg-wrap" id="tmSuggWrap"><button type="button" class="tm-arr l" id="tmArrL" aria-label="Previous commands" hidden>‹</button><div class="tm-sugg" id="tmSugg" role="toolbar" aria-label="Suggested commands"></div><button type="button" class="tm-arr r" id="tmArrR" aria-label="More commands" hidden>›</button></div>
         </div>
       </div>
       <figcaption>Fig. 3. A tiny terminal drawn with plain DOM elements. Try <b>help</b>, <b>theme dracula</b>, <b>judge</b>, <b>git diff</b>, <b>lie</b> and <b>export ghostty</b>. Press Tab to complete and ↑/↓ for history.</figcaption>
@@ -739,6 +743,7 @@ function run(theme,key,opts={}){
   const io=new IntersectionObserver(es=>{ es.forEach(e=>vis.set(e.target.id,e.isIntersecting)); mark(); },{rootMargin:"-45px 0px -55% 0px"});
   ids.forEach(id=>{ const s=$(id); if(s) io.observe(s); });
   const bn=bar.querySelector("nav"), fit=()=>bn.classList.toggle("over",bn.scrollWidth>bn.clientWidth+1); fit(); addEventListener("resize",fit);
+  $("fbarTerm").addEventListener("click",()=>{ if(typeof TERM!=="undefined") TERM.open(); });
 })();
 /* Anonymous theme-pick counter: one beacon per theme per tab session, aggregate counts only. */
 function hit(k){ try{ if(!/^(www\.)?lyingterminals\.com$/.test(location.hostname)||!navigator.sendBeacon) return; const seen=JSON.parse(sessionStorage.getItem("lt-hits")||"[]"); if(seen.includes(k)) return; seen.push(k); sessionStorage.setItem("lt-hits",JSON.stringify(seen)); navigator.sendBeacon("/hit?t="+encodeURIComponent(k)); }catch(e){} }
@@ -1308,8 +1313,13 @@ const TERM=(function(){
   const SUG=["help","ls -la","cat verdict.txt","judge","fix","git diff","lie","cd evidence","npm test","cat .lies","git log","theme ","export ghostty","clear"];
   const sugg=$("tmSugg");
   sugg.innerHTML=SUG.map(s=>`<button type="button" data-cmd="${s}">${s.trim()==="theme"?"theme …":s}</button>`).join("");
-  const fade=()=>{ const max=sugg.scrollWidth-sugg.clientWidth; sugg.classList.toggle("more-r",sugg.scrollLeft<max-2); $("tmSuggWrap").classList.toggle("more-r",sugg.scrollLeft<max-2); sugg.classList.toggle("more-l",sugg.scrollLeft>2); };
-  sugg.addEventListener("scroll",fade,{passive:true}); addEventListener("resize",fade); requestAnimationFrame(fade);
+  const fade=()=>{ const max=sugg.scrollWidth-sugg.clientWidth; sugg.classList.toggle("more-r",sugg.scrollLeft<max-2); $("tmArrR").hidden=!(max>2&&sugg.scrollLeft<max-2); $("tmArrL").hidden=!(max>2&&sugg.scrollLeft>2); sugg.classList.toggle("more-l",sugg.scrollLeft>2); };
+  sugg.addEventListener("scroll",fade,{passive:true});
+  const nudge=d=>sugg.scrollBy({left:d*Math.round(sugg.clientWidth*.8),behavior:RM.matches?"auto":"smooth"});
+  $("tmArrR").addEventListener("click",()=>nudge(1)); $("tmArrL").addEventListener("click",()=>nudge(-1));
+  // a vertical wheel scrolls the row sideways while it overflows (and only while it can still move that way)
+  sugg.addEventListener("wheel",e=>{ const max=sugg.scrollWidth-sugg.clientWidth; if(max<=2||Math.abs(e.deltaY)<=Math.abs(e.deltaX)) return;
+    if((e.deltaY>0&&sugg.scrollLeft>=max-1)||(e.deltaY<0&&sugg.scrollLeft<=1)) return; e.preventDefault(); sugg.scrollLeft+=e.deltaY; },{passive:false}); addEventListener("resize",fade); requestAnimationFrame(fade);
   sugg.addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; const c=b.dataset.cmd;
     if(c.endsWith(" ")){ input.value=c; input.focus({preventScroll:true}); input.setSelectionRange(c.length,c.length); drawInput(); push([H(2,U("Tip: type a theme name, or press Tab to list them."))]); }
     else { exec(c); if(!COMPACT.matches||dropOpen) input.focus({preventScroll:true}); } });
