@@ -777,14 +777,15 @@ function fixPalette(t){
 }
 const TERM=(function(){
   const el=$("tm"), out=$("tmOut"), body=$("tmBody"), input=$("tmInput"), lineEl=$("tmLine"), promptEl=$("tmPrompt");
-  const COMMANDS=["help","theme","judge","fix","export","ls","git diff","git log","npm test","cat error.log","lie","clear","whoami","exit"];
+  const COMMANDS=["help","theme","judge","fix","export","ls","cd","pwd","cat","open","source","grep","diff","echo","whoami","date","history","man","git diff","git log","npm test","lie","clear","exit"];
   const FORMATS=["ghostty","kitty","iterm"];
+  let cwd=[]; const where=(p=cwd)=>"~"+(p.length?"/"+p.join("/"):"");
   let fixed=null, blocks=[], lieMode=false, hist=[], hIdx=-1, draft="", dropOpen=false, lastFocus=null;
   const S=(t,c,o={})=>Object.assign({t,c},o);          // segment: text, colour (0-15 | "fg"), {b:bold}
   const L=(...segs)=>segs;                              // one line
   const H=(n,...segs)=>Object.assign(segs,{hang:n});     // line with hanging indent of n ch
   const U=(t,role="muted",o={})=>S(t,"u:"+role,o);      // terminal UI text: contrast-safe page colours (>= 4.6:1)
-  const PROMPT=()=>[U("you@localhost","green",{b:1}),S(" "),U("~","blue",{b:1}),U(" $ ","fg")];
+  const PROMPT=()=>[U("you@localhost","green",{b:1}),S(" "),U(where(),"blue",{b:1}),U(" $ ","fg")];
 
   // the terminal's palette: the raw theme, or its `fix`ed version (the page itself always stays raw)
   const active=()=>(fixed&&fixed.src===current.theme)?fixed.A:current;
@@ -902,15 +903,10 @@ const TERM=(function(){
   promptEl.innerHTML=PROMPT().map(s=>segHTML(s,new Set(),false)).join("");
 
   /* ---------- sample output, all in the theme's RAW 16 colours (this is what lie mode judges) ---------- */
-  const LS=[["d","192","."],["f","412",".env","# bright black: the colour of secrets"],["d","256",".git"],["x","2.1K","deploy.sh"],["f","31K","error.log"],["l","10","latest","v2.4.1"],["d","384","node_modules","(380 MB, as is tradition)"],["f","1.3K","package.json"],["z","64K","theme.zip"]];
-  const lsName=(e)=>e[0]==="d"?S(e[2],4,{b:1}):e[0]==="x"?S(e[2],2,{b:1}):e[0]==="l"?S(e[2],6):e[0]==="z"?S(e[2],1,{b:1}):e[2].startsWith(".")?S(e[2],8):S(e[2],"fg");
   const LOG=[["95a2870",[S("HEAD -> ",14,{b:1}),S("main",10,{b:1}),S(", ",3),S("origin/main",9,{b:1})],"You","Sat Oct 10 08:49","Raise secondary text contrast to 4.6:1 because 4.5 felt like a lie"],
              ["5191a75",null,"You","Sat Oct 10 08:41","Make bright black visible. Again."],
              ["ef7f459",[S("tag: ",11,{b:1}),S("v0.0.1-ghost",11,{b:1})],"Bright Black","Thu Jan  1 1970","Initial commit (you can't see this one either)",true]];
   const OUT={
-    ls:(w)=> w<60
-      ? [L(S("total 48",8)), ...LS.map(e=>H(6,S(e[1].padStart(5)+" ",8),lsName(e),...(e[0]==="l"?[S(" -> ","fg"),S(e[3],6)]:[])))]
-      : [L(S("total 48",8)), ...LS.map(e=>L(S((e[0]==="d"?"drwxr-xr-x":e[0]==="x"?"-rwxr-xr-x":e[0]==="l"?"lrwxr-xr-x":"-rw-r--r--")+"  1 you staff ",8),S(e[1].padStart(4)+" Oct  9 18:2"+(e[2].length%10)+" ",8),lsName(e),...(e[0]==="l"?[S(" -> ","fg"),S(e[3],6)]:[]),...(e[0]!=="l"&&e[3]?[S("  "+e[3],8)]:[])))],
     "git diff":()=>[
       H(4,S("diff --git a/src/theme.ts b/src/theme.ts",15,{b:1})),
       H(4,S("index 3f2a1c4..9be07d2 100644",15,{b:1})),
@@ -963,13 +959,14 @@ const TERM=(function(){
 
   /* ---------- terminal UI (help, verdicts, messages): contrast-safe colours, never judged ---------- */
   const HELP=[["help","this list"],["theme <name>","switch theme (Tab completes; bare 'theme' lists them)"],["judge","the verdict, grade and top roasts"],["fix","repair the palette (lightness only); fix --undo reverts"],["export ghostty|kitty|iterm","download this theme as a config file"],
-       ["ls","list files"],["git diff","a diff in your colours"],["git log","history, including the invisible commit"],["npm test","run the (rigged) test suite"],["cat error.log","logs that look like your logs"],
+       ["ls [-la] · cd · pwd","walk the evidence (cd scrolls the page too)"],["cat <file>","README, verdict.txt, themes/<slug>.theme, .lies"],["open <file>.theme","switch theme (.fixed applies the fix)"],["grep · diff","search findings · compare theme files"],["echo · whoami · date · history · man","the usual suspects"],
+       ["git diff · git log · npm test","demo output in your colours"],["cat error.log","logs that look like your logs"],
        ["lie","toggle lie mode: mark demo output under 4.6:1"],["clear","clear the screen (Ctrl+L also works)"]];
   function help(w){ return [
     L(U("Cross-examination: available commands","fg",{b:1})),
     ...(w<60 ? HELP.flatMap(([c,d])=>[L(U("  "+c,"green")),H(4,U("    "+d))]) : HELP.map(([c,d])=>H(30,U("  "+c.padEnd(28),"green"),U(d)))),
     H(6,U("Keys: "),U("Tab","cyan"),U(" complete · "),U("↑/↓","cyan"),U(" history · "),U("`","cyan"),U(" drop-down · "),U("Esc","cyan"),U(" close")),
-    H(2,U("Only the demo commands (ls, git, npm, cat) use your raw colours; lie mode judges those.")),
+    H(2,U("ls and the demos (git, npm, error.log) use your raw colours; lie mode judges those. The filesystem is read-only.")),
   ];}
   function findTheme(q){
     q=q.toLowerCase().trim(); if(!q) return null;
@@ -1003,7 +1000,7 @@ const TERM=(function(){
   }
   function download(f){ const a=document.createElement("a"); a.download=f.name; a.href=URL.createObjectURL(new Blob([f.text],{type:f.mime})); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
 
-  const QUIPS=[c=>`zsh: command not found: ${c}. Objection sustained.`, c=>`${c}: not a recognised command. The witness is confused. Try 'help'.`, c=>`${c}? Bold of you. Type 'help' for the admissible commands.`];
+  const QUIPS=[c=>`zsh: command not found: ${c}. Objection sustained. Try 'help'.`, c=>`${c}: not a recognised command. The witness is confused. Try 'help'.`, c=>`${c}? Bold of you. Type 'help' for the admissible commands.`];
   // screen readers get one short summary per command, not the whole scrollback
   const live=$("tmLive");
   function announce(cmd,lines,judged){
@@ -1020,6 +1017,178 @@ const TERM=(function(){
     if(grey.length===left.length) return `${grey.length} ${grey.length===1?"bright is":"brights are"} still grey (${grey.join(", ")}): lightness alone can't give ${grey.length===1?"it":"them"} a hue.`;
     return `${left.length} ${left.length===1?"charge remains":"charges remain"}: ${left.slice(0,3).map(f=>f.text.split(/[.:]/)[0]).join("; ")}.`;
   }
+  /* ---------- a read-only fake filesystem, generated from the real data ---------- */
+  const SECTION={evidence:"evidence",exhibits:"card-sec",themes:"pick"};
+  let pendingScroll=null;
+  const fixedMade=new Set();
+  const fmtR=r=>(Math.floor(r*100)/100).toFixed(2);
+  const rRole=r=>r<3?"red":r<4.6?"yellow":"green";
+  const NM16=i=>(i>=8?"bright ":"")+ANSI_NAMES[i%8];
+  const sw=hex=>S("██",hex,{x:1});
+  const T_=(t,role="fg",o)=>U(t,role,o);
+  function themeFile(t,title){
+    return ()=>{ const W=cols(), wide=W>=60;
+      return [L(U(`# ${t.name}${title||""} · grade ${analyze(t).grade} · lyingterminals.com`)),
+        L(T_(wide?"background      ":"background     "),T_(t.bg+" "),sw(t.bg)),
+        L(T_(wide?"foreground      ":"foreground     "),T_(t.fg+" "),sw(t.fg),U(" "+fmtR(contrast(t.fg,t.bg)),rRole(contrast(t.fg,t.bg)))),
+        ...t.c.map((h,i)=>{ const r=contrast(h,t.bg); return L(T_(wide?("color"+i).padEnd(8)+NM16(i).padEnd(15):NM16(i).padEnd(15)),T_(h+" "),sw(h),U(" "+fmtR(r),rRole(r))); })];
+    };
+  }
+  const txt=lines=>lines.map(l=>l.map(s=>s.t).join(""));
+  function tree(){
+    const A=current, t=current.theme, bad=A.findings.filter(f=>f.sev!=="ok");
+    const lines=a=>()=>a.map(x=>Array.isArray(x)?x:H(2,U(x,"fg")));
+    const themes={};
+    for(const [k,th] of Object.entries(THEMES)){
+      themes[k+".theme"]={f:themeFile(th),slug:k};
+      if(fixedMade.has(k)) themes[k+".fixed"]={f:themeFile(fixPalette(th).theme," (fixed)"),slug:k,fixed:1};
+    }
+    const group=(sev)=>A.findings.filter(f=>f.sev===sev).map(f=>H(2,U("• "+f.text,"fg")));
+    const ev={
+      "contrast.txt":{f:()=>[L(U(`# every colour vs ${t.bg}: FAIL < 3 · MEH < 4.6`)),...t.c.map((h,i)=>{const r=contrast(h,t.bg);return L(T_(NM16(i).padEnd(15)+h+" "),U(fmtR(r).padStart(5)+" ",rRole(r)),U(r<3?"FAIL":r<4.6?"MEH":"PASS",rRole(r)))})]},
+      "brights.txt":{f:()=>[L(U("# is bright actually brighter?")),...[1,2,3,4,5,6,7].map(i=>{const a=contrast(t.c[i],t.bg),b=contrast(t.c[i+8],t.bg),ok=b>=a-0.05&&t.c[i]!==t.c[i+8];return L(T_(ANSI_NAMES[i].padEnd(8)+fmtR(a)+" → "+fmtR(b)+" "),U(t.c[i]===t.c[i+8]?"same hex":ok?"brighter":"dimmer",ok?"green":"red"))})]},
+    };
+    const F=group("fail"), Wn=group("warn"), Lo=group("lol");
+    if(F.length) ev["failures.txt"]={f:()=>F}; if(Wn.length) ev["warnings.txt"]={f:()=>Wn}; if(Lo.length) ev["oddities.txt"]={f:()=>Lo};
+    const top=bad.slice().sort((a,b)=>b.w-a.w).slice(0,3);
+    return {d:{
+      ".lies":{f:lines(top.length?top.map((f,i)=>`${i+1}. ${f.text}`):["Nothing. This theme is suspiciously honest."]),hidden:1},
+      "README":{f:lines([[U("lyingterminals.com","fg",{b:1}),U(" — is your terminal theme lying to you?")],
+        "Everything in this directory is generated from the real palette of the theme you're on. It's read-only: evidence can't be tampered with.",
+        H(2,U("Try "),U("ls -la","cyan"),U(", "),U("cat verdict.txt","cyan"),U(", "),U(`cat themes/${currentKey||"nord"}.theme`,"cyan"),U(", "),U("grep bright","cyan"),U(" or "),U("cd evidence","cyan"),U("."))])},
+      "error.log":{f:()=>OUT["cat error.log"](cols()),demo:1},
+      "evidence":{d:ev},
+      "exhibits":{d:{"card.png":{f:()=>[L(U("‰PNG␚␀␀␀ IHDR ␀␀␄°␀␀␂v ▒▒▓░ ␀␀ IDAT x␜ìý ▓▒░▒ ...","fg"))],png:1,size:84213}}},
+      "themes":{d:themes},
+      "verdict.txt":{f:lines([[U("Verdict for "),U(t.name,"fg",{b:1}),U(`: grade ${A.grade}, honesty ${A.score}/100`)],H(2,U("“"+A.verdict+"”","magenta")),...bad.map(f=>H(4,U(f.sev==="fail"?"  ✗ ":f.sev==="lol"?"  ? ":"  ! ",{fail:"red",lol:"magenta",warn:"yellow"}[f.sev],{b:1}),U(f.text,"fg")))])},
+    }};
+  }
+  function resolve(path){
+    let parts=(path===undefined||path==="")?cwd.slice():path.startsWith("~")?[]:path.startsWith("/")?null:cwd.slice();
+    if(parts===null){ if(/^\/home\/you(\/|$)/.test(path)){ parts=[]; path=path.replace(/^\/home\/you\/?/,""); } else return {err:"outside"}; }
+    for(const seg of (path||"").replace(/^~\/?/,"").split("/")){
+      if(!seg||seg===".") continue;
+      if(seg===".."){ if(!parts.length) return {err:"outside"}; parts.pop(); continue; }
+      parts.push(seg);
+    }
+    let node=tree();
+    for(const p of parts){ if(!node.d||!node.d[p]) return {err:"missing",parts}; node=node.d[p]; }
+    return {node,parts};
+  }
+  const name=(n,k)=>n.d?S(k,4,{b:1}):k.startsWith(".")?S(k,8):k.endsWith(".png")?S(k,5,{b:1}):k.endsWith(".fixed")?S(k,2,{b:1}):k.endsWith(".log")?S(k,3):S(k,"fg");
+  const sizeOf=n=>n.d?4096:n.size||txt(n.f()).join("\n").length+1;
+  const stamp=()=>{ const d=new Date(); return d.toLocaleString("en-US",{month:"short"})+" "+String(d.getDate()).padStart(2)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+  function lsCmd(args){
+    const fl=args.filter(a=>a.startsWith("-")).join(""), long=fl.includes("l"), all=/a|A/.test(fl), W=cols();
+    const target=args.find(a=>!a.startsWith("-"));
+    const r=resolve(target);
+    if(r.err) return [H(2,U(`ls: ${target}: No such file or directory`,"red"))];
+    if(!r.node.d) return [L(name(r.node,target))];
+    let ents=Object.entries(r.node.d).filter(([k,n])=>all||!n.hidden&&!k.startsWith("."));
+    ents.sort((x,y)=>x[0].replace(/^\./,"").localeCompare(y[0].replace(/^\./,""),"en",{sensitivity:"base"}));
+    if(all) ents=[[".",{d:{}}],["..",{d:{}}],...ents];
+    if(!ents.length) return [L(S("",8))];
+    if(long){
+      const rows=ents.map(([k,n])=>{ const sz=String(sizeOf(n));
+        return W<60 ? H(7,S(sz.padStart(6)+" ",8),name(n,k)) : L(S((n.d?"drwxr-xr-x":"-r--r--r--")+"  1 you  court ",8),S(sz.padStart(6)+" "+stamp()+" ",8),name(n,k)); });
+      return [L(S("total "+ents.length*4,8)),...rows];
+    }
+    const out=[]; let cur=[], len=0;
+    for(const [k,n] of ents){ const w=k.length+2; if(len&&len+w>W){ out.push(cur); cur=[]; len=0; } cur.push(name(n,k),S("  ")); len+=w; }
+    if(cur.length) out.push(cur); return out;
+  }
+  function goSection(parts){
+    const id=parts.length?SECTION[parts[0]]:"top"; if(!id) return false;
+    if(dropOpen){ pendingScroll=parts; return true; }
+    const el2=document.getElementById(id); if(!el2) return false;
+    if(id==="top") scrollTo({top:0,behavior:RM.matches?"auto":"smooth"}); else el2.scrollIntoView({behavior:RM.matches?"auto":"smooth",block:"start"});
+    return true;
+  }
+  function applyFixFor(k){
+    if(k!==currentKey){ run(THEMES[k],k); hit(k); }
+    const F=fixPalette(current.theme), A=analyze(F.theme); fixed={src:current.theme,A}; fixedMade.add(k); setColours(); return A;
+  }
+  const textFiles=()=>{ const all=[]; const walk=(n,p)=>{ for(const [k,c] of Object.entries(n.d)){ if(c.d){ if(k!=="themes") walk(c,p+k+"/"); } else if(!c.png&&!c.demo) all.push([p+k,c]); } }; walk(tree(),""); return all; };
+  const MAN={cd:"change directory: cd evidence, cd .., cd ~ (also scrolls the page there)",pwd:"print where you are",ls:"list files; -l long, -a include the hidden .lies",cat:"print a file: README, verdict.txt, themes/<slug>.theme, .lies, evidence/*",open:"open themes/<slug>.theme to switch theme; a .fixed file applies the fix",source:"same as open",grep:"grep [-i] PATTERN [file]: search the findings",diff:"diff themes/a.theme themes/b.fixed: what changed",echo:"echo text; knows $USER $HOME $SHELL $THEME $PWD $GRADE",whoami:"who you are, roughly",date:"what time it is in court",history:"the commands you've typed",man:"this",theme:"theme <name>: switch theme",judge:"the verdict, grade and top roasts",fix:"repair the palette by lightness only; fix --undo reverts",export:"export ghostty|kitty|iterm: download the theme",lie:"toggle lie mode",clear:"clear the screen",help:"list commands"};
+  const NOPE={vim:"vim: you'd never find the exit anyway. Read-only filesystem.",vi:"vi: read-only filesystem. Also, :q! is still a mystery.",nvim:"nvim: plugins loaded: 412. Files writable: 0.",nano:"nano: read-only filesystem. ^X marks the spot.",emacs:"emacs: a fine operating system, but this is a courtroom.",code:"code: the defendant may not open an IDE.",ssh:"ssh: connection refused. The witness may not leave the courtroom.",mv:"mv: read-only filesystem. The evidence stays where it is.",cp:"cp: read-only filesystem. Copies of evidence are inadmissible.",touch:"touch: read-only filesystem. Don't touch the evidence.",mkdir:"mkdir: read-only filesystem. No new hiding places.",chmod:"chmod: read-only filesystem. The verdict is not negotiable.",chown:"chown: you can't own this. Nobody owns bright black.",kill:"kill: the witness is already dead (it was bright black).",shutdown:"shutdown: court is in session until the theme confesses.",reboot:"reboot: rebooting won't change your palette.",curl:"curl: you're already here. From a real terminal: curl lyingterminals.com",wget:"wget: you're already here. From a real terminal: curl lyingterminals.com",python:"python: this terminal only runs judgement.",node:"node: this terminal only runs judgement.",logout:"logout: there is no logout, only Esc.",cowsay:"< moo. your bright black is still invisible. >"};
+  function fsCommand(w,args,add){
+    const a0=args[0], W=cols();
+    switch(w){
+      case "pwd": return add([L(U("/home/you"+where().slice(1),"fg"))]);
+      case "cd": {
+        const target=a0===undefined?"~":a0; if(target==="-") return add([L(U("cd: no OLDPWD. The past is inadmissible."))]);
+        const r=resolve(target);
+        if(r.err==="outside") return add([H(2,U(`cd: permission denied: ${target}. You live in ~ now.`,"red"))]);
+        if(r.err) return add([H(2,U(`cd: no such file or directory: ${target}`,"red"))]);
+        if(!r.node.d) return add([H(2,U(`cd: not a directory: ${target}`,"red"))]);
+        cwd=r.parts; promptEl.innerHTML=PROMPT().map(s=>segHTML(s,new Set(),false)).join("");
+        const sec=r.parts.length?SECTION[r.parts[0]]:"top", lab={top:"the top",evidence:"II. The evidence","card-sec":"IV. Exhibit A",pick:"I. Pick a defendant"}[sec];
+        if(sec&&r.parts.length<=1&&goSection(r.parts)) return add([H(2,U(dropOpen?`→ ${lab} (the page goes there when you close the console)`:`→ scrolled the page to ${lab}`))]);
+        return add([]);
+      }
+      case "ls": case "ll": case "la": return add(lsCmd(w==="ll"?["-l",...args]:w==="la"?["-a",...args]:args),true);
+      case "cat": case "less": case "more": case "head": case "tail": case "bat": {
+        if(!a0) return add([L(U(`${w}: reading from stdin… just kidding. Try ${w} verdict.txt`))]);
+        const outL=[];
+        for(const p of args){ if(p.startsWith("-")) continue; const r=resolve(p);
+          if(r.err) { outL.push(H(2,U(`${w}: ${p}: No such file or directory`,"red"))); continue; }
+          if(r.node.d) { outL.push(H(2,U(`${w}: ${p}: Is a directory`,"red"))); continue; }
+          outL.push(...r.node.f()); }
+        const demo=args.some(p=>{const r=resolve(p);return r.node&&r.node.demo;});
+        return add(outL,demo);
+      }
+      case "open": case "source": case ".": {
+        if(!a0) return add([L(U(`usage: ${w} themes/<slug>.theme`,"yellow"))]);
+        const r=resolve(a0);
+        if(r.err) return add([H(2,U(`${w}: ${a0}: No such file or directory`,"red"))]);
+        if(!r.node.slug) return add([H(2,U(`${w}: ${a0}: not a theme file. Try `,"red"),U("cat "+a0,"cyan"),U(".","red"))]);
+        const k=r.node.slug;
+        if(r.node.fixed){ const before=analyze(THEMES[k]).grade, A=applyFixFor(k); return add([H(2,U("loaded "),U(THEMES[k].name,"fg",{b:1}),U(" with the fixed palette · grade "),U(before,GRADE_ROLE[before],{b:1}),U(" → "),U(A.grade,GRADE_ROLE[A.grade],{b:1}))]); }
+        run(THEMES[k],k); hit(k);
+        return add([H(2,U("loaded "),U(THEMES[k].name,"fg",{b:1}),U(" · grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}))]);
+      }
+      case "grep": case "rg": {
+        let i=0, ci=false; while(args[i]&&args[i].startsWith("-")){ if(/i/.test(args[i])) ci=true; i++; }
+        const pat=args[i], files=args.slice(i+1);
+        if(!pat) return add([L(U("usage: grep [-i] PATTERN [file]","yellow"))]);
+        const q=pat.replace(/^["']|["']$/g,""); let re; try{ re=new RegExp(q,ci?"gi":"g"); }catch(e){ re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),ci?"gi":"g"); }
+        let src;
+        if(files.length){ src=[]; for(const p of files){ const r=resolve(p); if(r.err||r.node.d) return add([H(2,U(`grep: ${p}: ${r.err?"No such file or directory":"Is a directory"}`,"red"))]); src.push([p,r.node]); } }
+        else src=textFiles();
+        const hits=[];
+        for(const [p,n] of src) for(const line of txt(n.f())){ re.lastIndex=0; if(!re.test(line)) continue; re.lastIndex=0;
+          const segs=[]; let last=0, m; while((m=re.exec(line))&&m[0]){ segs.push(U(line.slice(last,m.index),"fg"),U(m[0],"red",{b:1})); last=m.index+m[0].length; }
+          segs.push(U(line.slice(last).trimEnd(),"fg")); hits.push(H(2,...(src.length>1||!files.length?[U(p+": ","magenta")]:[]),...segs)); }
+        if(!hits.length) return add([H(2,U(`(no matches for '${q}'. The evidence is not on your side.)`))]);
+        return add(hits.length>14?[...hits.slice(0,14),L(U(`… ${hits.length-14} more`))]:hits);
+      }
+      case "diff": {
+        if(args.length<2) return add([L(U("usage: diff themes/a.theme themes/b.fixed","yellow"))]);
+        const ts=[]; for(const p of args.slice(0,2)){ const r=resolve(p); if(r.err||!r.node.slug) return add([H(2,U(`diff: ${p}: ${r.err?"No such file or directory":"not a theme file"}`,"red"))]);
+          ts.push(r.node.fixed?fixPalette(THEMES[r.node.slug]).theme:THEMES[r.node.slug]); }
+        const [x,y]=ts, rows=[["background",x.bg,y.bg],["foreground",x.fg,y.fg],...x.c.map((h,i)=>[NM16(i),h,y.c[i]])].filter(r=>r[1]!==r[2]);
+        if(!rows.length) return add([H(2,U("(identical. At least it lies consistently.)"))]);
+        return add([L(U("--- "+args[0],"red",{b:1})),L(U("+++ "+args[1],"green",{b:1})),
+          ...rows.flatMap(([n,o,nw])=>[L(U("- "+n.padEnd(W<60?15:16)+o+" ","red"),sw(o),U(" "+fmtR(contrast(o,x.bg)),"red")),L(U("+ "+n.padEnd(W<60?15:16)+nw+" ","green"),sw(nw),U(" "+fmtR(contrast(nw,y.bg)),"green"))])]);
+      }
+      case "echo": {
+        const V={USER:"you",HOME:"/home/you",SHELL:"/bin/judgement",THEME:current.theme.name,PWD:"/home/you"+where().slice(1),GRADE:current.grade,TERM:"xterm-256lies"};
+        const s=args.join(" ").replace(/\$\{?([A-Z_]+)\}?/g,(_,k)=>V[k]??"").replace(/^(["'])(.*)\1$/,"$2");
+        return add([H(0,U(s,"fg"))]);
+      }
+      case "whoami": return add([L(U("you","green"),U(", presumably"))]);
+      case "date": { const d=new Date(); return add([L(U(d.toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}),"fg"),U(" · court is in session"))]); }
+      case "history": return add(hist.map((h,i)=>L(U(String(i+1).padStart(4)+"  "),U(h,"fg"))));
+      case "man": {
+        if(!a0) return add([L(U("What manual page do you want? Try "),U("man ls","cyan"))]);
+        const m=MAN[a0]; if(!m) return add([H(2,U(`No manual entry for ${a0}. Some things are beyond the law.`))]);
+        return add([H(2,U(a0,"green",{b:1}),U(" — "+m))]);
+      }
+      case "rm": return add([H(2,U("rm: read-only filesystem. ","red"),U("The evidence stays. Your bright black already deleted itself visually."))]);
+    }
+    if(NOPE[w]) return add([H(2,U(NOPE[w]))]);
+    return undefined;
+  }
   function exec(raw){
     const cmd=raw.trim(); push([],raw); if(!cmd) return;
     hist.push(cmd); if(hist.length>50) hist.shift(); hIdx=-1;
@@ -1028,11 +1197,12 @@ const TERM=(function(){
     const W=cols();
     if(/^sudo\b/.test(lower)) return add([L(U("[sudo] password for you: ")),H(2,U("Nice try. This terminal has no root, only judgement. ","red"),U("This incident will be reported to your bright black, which won't see it."))]);
     if(/^rm\s+-[a-z]*r[a-z]*f|^rm\s+-[a-z]*f[a-z]*r/.test(lower)) return add([H(2,U("rm: refusing to delete ","red"),U(arg.replace(/^-\S+\s*/,"")||"/","fg"),U(". Your bright black already deleted itself visually."))]);
-    if(OUT[lower]) return add(OUT[lower](W),true);
+    if(/^git push\b/.test(lower)) return add([H(2,U("git push: rejected. The court accepts confessions, not pushes.","red"))]);
+    if(OUT[lower]&&lower!=="cat error.log") return add(OUT[lower](W),true);
+    if(fsCommand(w.toLowerCase(),rest,add)!==undefined||["pwd","cd","ls","ll","la","cat","less","more","head","tail","bat","open","source",".","grep","rg","diff","echo","whoami","date","history","man","rm"].includes(w.toLowerCase())||NOPE[w.toLowerCase()]) return;
     switch(w.toLowerCase()){
       case "help": case "?": return add(help(W));
       case "clear": blocks=[]; renderAll(); live.textContent="cleared"; return;
-      case "whoami": return add([L(U("you","green"),U(" (defendant's counsel)"))]);
       case "exit": if(dropOpen){ close(); return; } return add([L(U("There is no exit. Only "),U("Esc","cyan"),U(" in drop-down mode."))]);
       case "lie":
         lieMode=!lieMode; renderAll();
@@ -1045,7 +1215,7 @@ const TERM=(function(){
           return add([H(2,U("✓ ","green"),U("reverted to the raw "),U(current.theme.name,"fg",{b:1}),U(" palette · grade "),U(current.grade,GRADE_ROLE[current.grade],{b:1}))]);
         }
         if(arg) return add([L(U("usage: fix  |  fix --undo","yellow"))]);
-        const F=fixPalette(current.theme);
+        const F=fixPalette(current.theme); fixedMade.add(currentKey);
         if(!F.changes.length) return add([H(2,U("Nothing to fix: every colour already clears 4.6:1 and every bright is brighter."))]);
         const A=analyze(F.theme); fixed={src:current.theme,A}; setColours();
         const sw=(hex)=>S("██",hex,{x:1}), r1=x=>(Math.floor(contrast(x,current.theme.bg)*100)/100).toFixed(2);
@@ -1087,9 +1257,17 @@ const TERM=(function(){
     if(/^theme\s+/i.test(v)){ prefix=v.replace(/\S*$/,""); typed=v.slice(prefix.length).toLowerCase(); cands=Object.keys(THEMES).filter(k=>k.startsWith(typed)); }
     else if(/^fix\s+/i.test(v)){ prefix=v.replace(/\S*$/,""); typed=v.slice(prefix.length).toLowerCase(); cands=["--undo"].filter(k=>k.startsWith(typed)); }
     else if(/^export\s+/i.test(v)){ prefix=v.replace(/\S*$/,""); typed=v.slice(prefix.length).toLowerCase(); cands=FORMATS.filter(k=>k.startsWith(typed)); }
+    else if(/^(cd|ls|ll|la|cat|less|more|head|tail|open|source|grep|diff|bat)\s+/i.test(v)){
+      prefix=v.replace(/\S*$/,""); const tok=v.slice(prefix.length); const dirPart=tok.includes("/")?tok.slice(0,tok.lastIndexOf("/")+1):""; typed=tok.slice(dirPart.length);
+      const r=resolve(dirPart||undefined); if(r.err||!r.node.d) return;
+      const dirsOnly=/^cd\s/i.test(v);
+      const ents=Object.entries(r.node.d).filter(([k,n])=>k.startsWith(typed)&&(typed.startsWith(".")||!k.startsWith("."))&&(!dirsOnly||n.d));
+      cands=ents.map(([k,n])=>k+(n.d?"/":"")); prefix+=dirPart;
+      if(cands.length===1){ input.value=prefix+cands[0]; input.setSelectionRange(input.value.length,input.value.length); drawInput(); return; }
+    }
     else { typed=v.toLowerCase(); cands=COMMANDS.filter(c=>c.startsWith(typed)); }
     if(!cands.length) return;
-    if(cands.length===1){ input.value=prefix+cands[0]+(["theme","export"].includes(cands[0])?" ":""); }
+    if(cands.length===1){ input.value=prefix+cands[0]+(["theme","export","cd","cat","open","source","grep","diff","man","echo"].includes(cands[0])?" ":""); }
     else {
       let lcp=cands[0]; for(const c of cands) while(!c.startsWith(lcp)) lcp=lcp.slice(0,-1);
       if(lcp.length>typed.length) input.value=prefix+lcp;
@@ -1113,7 +1291,7 @@ const TERM=(function(){
   body.addEventListener("pointerup",e=>{ if(e.pointerType==="mouse"&&!getSelection().toString()) input.focus({preventScroll:true}); }); // touch taps never pop the keyboard
 
   // suggestion chips (great on phones); the row fades at the edge that still scrolls
-  const SUG=["help","judge","fix","git diff","lie","npm test","cat error.log","ls","git log","theme ","export ghostty","clear"];
+  const SUG=["help","ls -la","cat verdict.txt","judge","fix","git diff","lie","cd evidence","npm test","cat .lies","git log","theme ","export ghostty","clear"];
   const sugg=$("tmSugg");
   sugg.innerHTML=SUG.map(s=>`<button type="button" data-cmd="${s}">${s.trim()==="theme"?"theme …":s}</button>`).join("");
   const fade=()=>{ const max=sugg.scrollWidth-sugg.clientWidth; sugg.classList.toggle("more-r",sugg.scrollLeft<max-2); sugg.classList.toggle("more-l",sugg.scrollLeft>2); };
@@ -1137,6 +1315,7 @@ const TERM=(function(){
     home.appendChild(el); home.classList.remove("empty"); drop.classList.remove("open"); scrim.classList.remove("open"); drop.hidden=true; dropOpen=false; document.documentElement.classList.remove("tm-lock"); renderAll(); fade();
     if(lastFocus&&document.contains(lastFocus)) lastFocus.focus({preventScroll:true});
     scrollTo(scrollX,y); lastFocus=null;
+    if(pendingScroll){ const p=pendingScroll; pendingScroll=null; requestAnimationFrame(()=>goSection(p)); }
   }
   $("tmClose").addEventListener("click",close); scrim.addEventListener("click",close);
   // One capture-phase handler owns Esc and the backtick, so nothing inside can swallow them.
