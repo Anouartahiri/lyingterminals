@@ -274,6 +274,7 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
 @media (max-width:700px),(pointer:coarse){.hero-hint .key{display:none}.hero-hint .touch{display:inline}}
 @media (max-width:640px){.hero-hint button{font-size:14px}.tm-bar .tm-mode,.tm-bar .tm-host{display:none}}
 .tm .ln{text-wrap:pretty}
+.tm .ln.pend{display:none}
 </style>
 <script>/* apply the URL's theme (or a random D/F preset) before first paint: no flash of another theme */
 (function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#a5b6b8", "muted": "#7b969c", "line": "#1a414b", "panel": "#07313c", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#524c73", "muted": "#716c80", "line": "#dfd9d9", "panel": "#f2ece8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#41565d", "muted": "#68726f", "line": "#dfdcce", "panel": "#f5efdd", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
@@ -821,8 +822,40 @@ const TERM=(function(){
     const seen=new Set();
     return `<div class="blk${b.judged?" demo":""}">${b.lines.map(l=>`<div class="ln"${l.hang?` style="padding-left:${l.hang}ch;text-indent:-${l.hang}ch"`:""}>${l.map(s=>segHTML(s,seen,b.judged)).join("")}</div>`).join("")}</div>`;
   }
-  function renderAll(){ out.innerHTML=blocks.map(renderBlock).join(""); scroll(); }
+  /* Streaming: the model (blocks) is complete at once; only the reveal is animated. Any key, a new command or a
+     re-render finishes it instantly. Reduced motion or TERM_INSTANT: no animation. */
+  let stream=null;
+  const RM=matchMedia("(prefers-reduced-motion: reduce)");
+  function flush(){ if(stream){ const s=stream; stream=null; s.finish(); } }
+  function streamLast(done){
+    const blk=out.lastElementChild; const lines=blk?[...blk.children].slice(1):[];
+    if(!lines.length||RM.matches||window.TERM_INSTANT){ done(); return; }
+    let timer=0, i=0;
+    const n=lines.length, per=Math.min(15,Math.max(8,900/n)), chunk=Math.max(1,Math.ceil(n*8/900));
+    // a single short plain line is typed; anything longer streams line by line (in small chunks if huge)
+    const typed = n===1 && !lines[0].querySelector(".lab") && lines[0].textContent.length<=90;
+    let nodes=[], full=[];
+    const finish=()=>{ clearTimeout(timer); lines.forEach(l=>l.classList.remove("pend")); nodes.forEach((t,k)=>t.data=full[k]); scroll(); done(); };
+    stream={finish}; blk.classList.add("streaming");
+    if(typed){
+      const w=document.createTreeWalker(lines[0],NodeFilter.SHOW_TEXT,{acceptNode:t=>t.parentElement.closest(".sr-only")?2:1});
+      while(w.nextNode()) nodes.push(w.currentNode); full=nodes.map(t=>t.data); nodes.forEach(t=>t.data="");
+      const total=full.reduce((a,t)=>a+t.length,0), step=Math.max(1,Math.ceil(total/60)); let c=0, k=0, off=0;
+      const tick=()=>{ c+=step; while(k<nodes.length&&c-off>=full[k].length){ nodes[k].data=full[k]; off+=full[k].length; k++; }
+        if(k<nodes.length) nodes[k].data=full[k].slice(0,c-off);
+        if(k>=nodes.length){ stream=null; finish(); return; } timer=setTimeout(tick,4); };
+      tick(); return;
+    }
+    lines.forEach(l=>l.classList.add("pend"));
+    const tick=()=>{ for(let j=0;j<chunk&&i<n;j++) lines[i++].classList.remove("pend"); scroll();
+      if(i>=n){ stream=null; finish(); return; } timer=setTimeout(tick,per); };
+    tick();
+  }
+  // any key finishes the stream first (registered before the Esc/backtick handlers, so they still run after it)
+  window.addEventListener("keydown",()=>flush(),true);
+  function renderAll(){ flush(); out.innerHTML=blocks.map(renderBlock).join(""); scroll(); }
   function push(lines,echo){
+    flush();
     const b={lines:echo?[[...PROMPT(),U(echo,"fg")],...lines]:lines}; blocks.push(b);
     if(blocks.length>80) blocks=blocks.slice(-80), renderAll();
     else { out.insertAdjacentHTML("beforeend",renderBlock(b)); scroll(); }
@@ -977,7 +1010,7 @@ const TERM=(function(){
     const text=l=>l.map(s=>s.t).join("").replace(/\s+/g," ").trim();
     let msg;
     if(judged){ const bad=lieMode?out.querySelectorAll(".blk:last-child .lab").length:0; msg=`${cmd}: ${lines.length} lines of sample output`+(lieMode?`, ${bad} contrast ${bad===1?"problem":"problems"} marked`:""); }
-    else msg=lines.slice(0,2).map(text).filter(Boolean).join(". ").slice(0,220);
+    else msg=(lines.slice(0,2).map(l=>text(l).replace(/[.:]$/,"")).filter(Boolean).join(". ")+".").slice(0,220);
     live.textContent=""; setTimeout(()=>{ live.textContent=msg; },30);
   }
   // what `fix` could not repair, from the fixed palette's real findings
@@ -991,7 +1024,7 @@ const TERM=(function(){
     const cmd=raw.trim(); push([],raw); if(!cmd) return;
     hist.push(cmd); if(hist.length>50) hist.shift(); hIdx=-1;
     const [w,...rest]=cmd.split(/\s+/); const arg=rest.join(" "); const lower=cmd.toLowerCase().replace(/\s+/g," ");
-    const add=(lines,judged)=>{ const b=blocks[blocks.length-1]; b.lines.push(...lines); if(judged) b.judged=true; renderAll(); announce(cmd,lines,judged); };
+    const add=(lines,judged)=>{ const b=blocks[blocks.length-1]; b.lines.push(...lines); if(judged) b.judged=true; renderAll(); streamLast(()=>announce(cmd,lines,judged)); };
     const W=cols();
     if(/^sudo\b/.test(lower)) return add([L(U("[sudo] password for you: ")),H(2,U("Nice try. This terminal has no root, only judgement. ","red"),U("This incident will be reported to your bright black, which won't see it."))]);
     if(/^rm\s+-[a-z]*r[a-z]*f|^rm\s+-[a-z]*f[a-z]*r/.test(lower)) return add([H(2,U("rm: refusing to delete ","red"),U(arg.replace(/^-\S+\s*/,"")||"/","fg"),U(". Your bright black already deleted itself visually."))]);
@@ -1138,7 +1171,7 @@ const TERM=(function(){
     H(2,U("Cross-examination is now in session. The demo commands use your theme's own colours.","fg")),
     H(2,U("Try "),U("help","green"),U(", "),U("git diff","green"),U(", then "),U("lie","red",{b:1}),U(". Press "),U("`","cyan"),U(" anywhere to open the drop-down.")),
   ]); }
-  return {fixPalette, get fixed(){return !!fixed;}, refresh(){ setColours(); renderAll(); drawInput(); fade(); }, init(){ setColours(); welcome(); drawInput(); }, exec, open, close, exportText, get lie(){return lieMode;}, get isOpen(){return dropOpen;}};
+  return {flush, get streaming(){return !!stream;}, fixPalette, get fixed(){return !!fixed;}, refresh(){ setColours(); renderAll(); drawInput(); fade(); }, init(){ setColours(); welcome(); drawInput(); }, exec, open, close, exportText, get lie(){return lieMode;}, get isOpen(){return dropOpen;}};
 })();
 
 // boot: /t/<slug> path, then #hash, else a random preset that would get a D or F (the guilty ones make better first impressions)
