@@ -380,6 +380,13 @@ async def design1(c, T, mob, vw):
       const d=document.createElement('i');d.style.color=bg;document.body.appendChild(d);const bgc=getComputedStyle(d).color;d.remove();out.push([k,+CR(c,bgc).toFixed(2)])}
       document.documentElement.classList.remove('boot');return out})()""")
     check(T + "hero grade letter >= 3:1 on all 17 themes", len(hl) == 17 and all(v >= 3 for _, v in hl), str([x for x in hl if x[1] < 3.2]))
+    tv = await pg.evaluate("Object.entries(THEMES).map(([k,t])=>{const d=deriveSkin(t),sk=d.skin;const txt=['fg','muted','red','green','yellow','blue','magenta','cyan'].map(x=>Math.min(contrast(sk[x],sk.tint),contrast(sk[x],t.bg)));return [k,+contrast(t.bg,sk.tint).toFixed(3),+Math.min(...txt).toFixed(2),oklch(t.bg).L<0.25&&!d.light?lum(sk.tint)>lum(t.bg):true]})")
+    check(T + "band visibly distinct from bg on all themes (near-black lifted)", all(x[1] >= 1.06 and x[3] for x in tv), str([x for x in tv if x[1] < 1.06 or not x[3]]))
+    check(T + "page text >= 4.6 on band and bg, all themes", all(x[2] >= 4.6 for x in tv), str([x for x in tv if x[2] < 4.6]))
+    ul = await pg.evaluate("(()=>{const a=document.querySelector('#miniGrade .mg-s a'),c=getComputedStyle(a);return [c.borderBottomWidth,c.borderBottomStyle,c.textDecorationLine]})()")
+    check(T + "no stray underline under findings link", (ul[0] == "0px" or ul[1] == "none") and ul[2] == "none", str(ul))
+    gb = await pg.evaluate("gradeVar('B')===gradeVar('A')")
+    check(T + "B uses green like A", gb)
     pool = await pg.evaluate("firstPool()")
     check(T + "first-load pool: D/F themes whose own fg reads", set(pool) == {"catppuccin-mocha", "catppuccin-latte", "nord", "one-light", "rose-pine-dawn"}, str(pool))
     # findings: worst 5, rest behind an accessible toggle; no repeated punchlines in any preset
