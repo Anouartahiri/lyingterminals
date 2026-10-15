@@ -673,8 +673,9 @@ function renderRoast(A){
   const lab={fail:"FAIL",lol:"LIE",warn:"MEH",ok:"OK"};
   const col=gradeVar(A.grade);
   $("grade").innerHTML=`<div class="g" style="color:${col}">${A.grade}</div><div><div class="v">${esc(A.verdict)}</div><div class="s"><span>${esc(A.theme.name)}</span><span>honesty ${A.score}/100</span><span>${A.findings.filter(f=>f.sev!=="ok").length} findings</span></div><div class="meter" style="color:${col}"><i style="width:${A.score}%"></i></div></div>`;
-  const SHOW=5, extra=Math.max(0,A.findings.length-SHOW);
-  $("roast").innerHTML=A.findings.map((f,i)=>`<li class="${f.sev}${i>=SHOW?" more":""}"${i>=SHOW?" hidden":""} style="animation-delay:${(i%SHOW)*40}ms"><span class="tx">${esc(f.text)}</span><span class="dt"><span class="lab ${f.sev}">${lab[f.sev]}</span>${esc(f.detail)}</span></li>`).join("");
+  // real findings first (worst 5 shown, the rest behind "+ N more"); praise rows don't count and always show last
+  const SHOW=5, real=A.findings.filter(f=>f.sev!=="ok"), extra=Math.max(0,real.length-SHOW), rows=[...real,...A.findings.filter(f=>f.sev==="ok")];
+  $("roast").innerHTML=rows.map((f,i)=>{ const h=f.sev!=="ok"&&i>=SHOW; return `<li class="${f.sev}${h?" more":""}"${h?" hidden":""} style="animation-delay:${(i%SHOW)*40}ms"><span class="tx">${esc(f.text)}</span><span class="dt"><span class="lab ${f.sev}">${lab[f.sev]}</span>${esc(f.detail)}</span></li>`; }).join("");
   { const mb=$("roastMore"); mb.hidden=!extra; mb.setAttribute("aria-expanded","false"); mb.dataset.n=extra; mb.textContent=`+ ${extra} more`; }
   $("metaSubject").textContent=`Re: ${A.theme.name} — grade ${A.grade}`;
   $("miniGrade").innerHTML=`<span class="mg-l">Verdict:</span> <b class="mg-g" style="color:${col}">${A.grade}</b> <span class="mg-s">honesty ${A.score}/100</span> <span class="mg-go">see why ↓</span>`;

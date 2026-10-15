@@ -359,15 +359,22 @@ async def design1(c, T, mob, vw):
     check(T + "mini grade updates on theme click", after[0] == after[1] and after[2] != before, f"{before} -> {after}")
     # findings: worst 5, rest behind an accessible toggle; no repeated punchlines in any preset
     await pg.goto("about:blank"); await pg.goto(URL + "#solarized-light", timeout=120000); await pg.wait_for_timeout(700)
-    st = await pg.evaluate("(()=>{const li=[...document.querySelectorAll('#roast li')];const b=document.getElementById('roastMore');return {n:li.length,vis:li.filter(l=>!l.hidden&&getComputedStyle(l).display!=='none').length,btn:!b.hidden,txt:b.textContent,exp:b.getAttribute('aria-expanded'),tag:b.tagName}})()")
-    check(T + "findings: 5 visible + toggle", st["vis"] == min(5, st["n"]) and (st["n"] <= 5 or (st["btn"] and st["txt"] == f"+ {st['n']-5} more" and st["exp"] == "false" and st["tag"] == "BUTTON")), str(st))
-    if st["n"] > 5:
-        await pg.focus("#roastMore"); await pg.keyboard.press("Enter"); await pg.wait_for_timeout(150)
-        o = await pg.evaluate("[[...document.querySelectorAll('#roast li')].filter(l=>!l.hidden).length, document.getElementById('roastMore').getAttribute('aria-expanded')]")
-        check(T + "findings toggle expands (keyboard)", o[0] == st["n"] and o[1] == "true", str(o))
-        await pg.click("#roastMore"); await pg.wait_for_timeout(100)
-        o = await pg.evaluate("[[...document.querySelectorAll('#roast li')].filter(l=>!l.hidden).length, document.getElementById('roastMore').textContent]")
-        check(T + "findings toggle collapses", o[0] == 5 and o[1].startswith("+ "), str(o))
+    Q = "(()=>{const li=[...document.querySelectorAll('#roast li')],real=li.filter(l=>!l.classList.contains('ok')),b=document.getElementById('roastMore');return {n:real.length,ok:li.length-real.length,vis:real.filter(l=>!l.hidden&&getComputedStyle(l).display!=='none').length,okvis:li.filter(l=>l.classList.contains('ok')&&!l.hidden).length,stated:+(document.querySelector('#grade .s span:last-child').textContent.match(/(\\d+) findings?/)||[0,-1])[1],btn:!b.hidden,txt:b.textContent,exp:b.getAttribute('aria-expanded'),tag:b.tagName}})()"
+    for k in ["solarized-light", "nord", "github-light", "gruvbox-dark"]:
+        await pg.goto("about:blank"); await pg.goto(URL + "#" + k, timeout=120000); await pg.wait_for_timeout(600)
+        q = await pg.evaluate(Q)
+        check(T + f"{k}: stated count excludes praise and matches 5 + N", q["stated"] == q["n"] and q["okvis"] == q["ok"] and q["vis"] == min(5, q["n"]) and ((q["n"] <= 5 and not q["btn"]) or (q["btn"] and q["txt"] == f"+ {q['n']-5} more")), str(q))
+    await pg.goto("about:blank"); await pg.goto(URL + "#solarized-light", timeout=120000); await pg.wait_for_timeout(700)
+    st = await pg.evaluate(Q)
+    check(T + "findings: 5 visible + toggle", st["vis"] == 5 and st["btn"] and st["exp"] == "false" and st["tag"] == "BUTTON", str(st))
+    await pg.focus("#roastMore"); await pg.keyboard.press("Enter"); await pg.wait_for_timeout(150)
+    o = await pg.evaluate(Q)
+    check(T + "findings toggle expands (keyboard)", o["vis"] == st["n"] and o["exp"] == "true", str(o))
+    await pg.click("#roastMore"); await pg.wait_for_timeout(100)
+    o = await pg.evaluate(Q)
+    check(T + "findings toggle collapses", o["vis"] == 5 and o["txt"].startswith("+ "), str(o))
+    jt = await pg.evaluate("(async()=>{const j=await (await fetch(new URL('lib/themes.json',location.href))).json();const bad=[];for(const [k,t] of Object.entries(THEMES)){const A=analyze(t),top=(A.findings.find(f=>f.sev!=='ok')||{}).text||A.verdict;if(!j[k]||j[k].top!==top||j[k].grade!==A.grade||j[k].score!==A.score)bad.push(k)}return bad})()")
+    check(T + "lib/themes.json share text matches page findings", not jt, str(jt))
     rep = await pg.evaluate(r"""(()=>{const bad=[];for(const [k,t] of Object.entries(THEMES)){const tx=analyze(t).findings.map(f=>f.text);
       for(const re of [/Visible only to cats/,/name tag/,/neither bright nor/,/HR has been notified/,/syntax hiding/,/more of a vibe/]){const n=tx.filter(x=>re.test(x)).length;if(n>1)bad.push(k+':'+re.source+'x'+n)}}return bad})()""")
     check(T + "no repeated punchlines within a theme", not rep, str(rep))
