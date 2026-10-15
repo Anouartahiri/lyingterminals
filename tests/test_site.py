@@ -333,7 +333,105 @@ async def run(b, vw):
         check(T + "first wheel tick at terminal bottom scrolls page", await pg.evaluate("scrollY") - y0 >= 90)
     check(T + "no console errors", not errs, str(errs))
     await fbar(c, T, mob, vw)
+    await design1(c, T, mob, vw)
     await fs_test(c, T, mob)
+    await c.close()
+
+PROSE_CR = r"""()=>{const P=c=>c.match(/[\d.]+/g).slice(0,3).map(Number);const lin=v=>{v/=255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
+ const L=c=>{const[r,g,b]=P(c);return .2126*lin(r)+.7152*lin(g)+.0722*lin(b)};const CR=(a,b)=>{const x=L(a),y=L(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+ let m=99,w='';
+ document.querySelectorAll('.lede, p.prose, .mg-v, .mg-s, #roast .tx, #roast .dt, figcaption, .legend, .sw .d .r, .sw .d .hx, .verdict .s').forEach(e=>{if(!e.textContent.trim())return;const sec=e.closest('#evidence,#verdict'),bg=getComputedStyle(sec||document.body).backgroundColor;const v=CR(getComputedStyle(e).color,bg); if(v<m){m=v;w=e.className+' '+getComputedStyle(e).color+' on '+bg;}}); return [+m.toFixed(2),w];}"""
+async def design1(c, T, mob, vw):
+    pg = await c.new_page(); pg.set_default_timeout(120000); errs = []
+    pg.on("pageerror", lambda e: errs.append(str(e)))
+    for k in ["solarized-light", "solarized-dark", "nord", "rose-pine-dawn"]:
+        await pg.goto("about:blank"); await pg.goto(URL + "#" + k, timeout=120000); await pg.wait_for_timeout(700)
+        m, w = await pg.evaluate(PROSE_CR); w += " theme=" + await pg.evaluate("document.querySelector('#grade .s span').textContent"); check(T + f"{k}: prose >= 4.6:1", m >= 4.6, f"{m} {w}")
+    # compact grade under picker: matches the verdict, updates on click, links to #verdict
+    g = await pg.evaluate("[document.querySelector('#miniGrade .mg-g').textContent, document.querySelector('#grade .g').textContent, document.querySelector('#miniGrade a').getAttribute('href'), document.querySelector('#miniGrade .mg-s').textContent, document.querySelectorAll('.verdict .v').length, document.querySelector('#miniGrade .mg-v').textContent.trim()]")
+    check(T + "early grade matches verdict, links to #verdict, one verdict line", g[0] == g[1] and g[2] == "#verdict" and "honesty" in g[3] and "/100" in g[3] and g[4] == 0 and len(g[5]) > 10, str(g))
+    big = await pg.evaluate("""(()=>{const e=document.querySelector('#miniGrade .mg-g'),fs=parseFloat(getComputedStyle(e).fontSize);let other=0;document.querySelectorAll('main *:not(h1):not(h1 *):not(.mg-g)').forEach(x=>{if(x.offsetParent&&x.childNodes.length&&[...x.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()))other=Math.max(other,parseFloat(getComputedStyle(x).fontSize))});
+      const p=document.getElementById('presets').getBoundingClientRect().bottom+scrollY,t=e.getBoundingClientRect().top+scrollY,ev=document.getElementById('evidence').getBoundingClientRect().top+scrollY;return {fs,other,col:getComputedStyle(e).color,red:getComputedStyle(document.documentElement).getPropertyValue('--red').trim(),early:t>p&&t<ev,dir:getComputedStyle(e.parentElement).flexDirection}})()""")
+    check(T + "early grade: big, red, before the evidence", (big["fs"] >= 190 if vw > 640 else big["fs"] >= 110) and big["fs"] > big["other"] and big["early"] and big["dir"] == ("row" if vw > 640 else "column"), str(big))
+    before = await pg.evaluate("document.querySelector('#miniGrade .mg-s').textContent")
+    await pg.click("#presets .chip[data-k='github-light']")
+    await pg.wait_for_timeout(300)
+    after = await pg.evaluate("[document.querySelector('#miniGrade .mg-g').textContent, document.querySelector('#grade .g').textContent, document.querySelector('#miniGrade .mg-s').textContent]")
+    check(T + "early grade updates on theme click", after[0] == after[1] and after[2] != before, f"{before} -> {after}")
+    lk = await pg.evaluate("""(()=>{const F=e=>getComputedStyle(e).fontFamily;const serif=['h1','.lede','h2','p.prose','#roast .tx','.mg-v'].map(q=>document.querySelector(q)).filter(Boolean).every(e=>/Newsreader/.test(F(e)));
+      const mono=['.sw .d .r','.sw .d .hx','.sw .aa','.chip .nm','.lab','.kicker','#tmInput','.legend','.mg-s'].map(q=>document.querySelector(q)).filter(Boolean).every(e=>/Departure Mono/.test(F(e))&&!/Newsreader/.test(F(e)));
+      const sw=document.querySelector('.sw'),bar=sw.querySelector('.bar');const tb=getComputedStyle(document.body).backgroundColor,te=getComputedStyle(document.getElementById('evidence')).backgroundColor,tv=getComputedStyle(document.getElementById('verdict')).backgroundColor;
+      const L=['h1','#presets','#miniGrade','#palette','#roast','#card-sec h2','.lede','#verdict .kicker','#evidence .kicker'].map(q=>Math.round(document.querySelector(q).getBoundingClientRect().left));
+      const W=[...document.querySelectorAll('main > .col, main > .wide')].filter(e=>e.offsetParent).map(e=>Math.round(e.getBoundingClientRect().width));
+      const pb=document.getElementById('customToggle');const solid=getComputedStyle(pb).backgroundColor;
+      return {serif,mono,rad:getComputedStyle(sw).borderTopLeftRadius,third:bar.offsetHeight/sw.offsetHeight,tb,te,tv,L:[...new Set(L)],W:[...new Set(W)],pb:[pb.tagName,pb.textContent,pb.offsetParent!==null,pb.classList.contains('solid'),pb.getAttribute('aria-expanded'),solid],chip:!!document.querySelector('#presets .custom')}})()""")
+    check(T + "fonts: serif for reading, mono for data", lk["serif"] and lk["mono"], str(lk))
+    check(T + "evidence + verdict on the same tint, not bg", lk["te"] == lk["tv"] and lk["te"] != lk["tb"], str(lk))
+    check(T + "tiles: square corners, swatch ~top third", lk["rad"] == "0px" and 0.25 <= lk["third"] <= 0.42, str(lk))
+    check(T + "one left edge across sections", len(lk["L"]) == 1, str(lk["L"]))
+    check(T + "two section widths at most", len(lk["W"]) <= 2, str(lk["W"]))
+    check(T + "paste-your-own is a real outlined button", lk["pb"][0] == "BUTTON" and "Paste your own" in lk["pb"][1] and lk["pb"][2] and not lk["pb"][3] and not lk["chip"], str(lk["pb"]))
+    await pg.click("#customToggle"); await pg.wait_for_timeout(150)
+    op = await pg.evaluate("[document.getElementById('customBox').classList.contains('open'), document.getElementById('customToggle').getAttribute('aria-expanded'), document.activeElement.id]")
+    check(T + "paste button opens the box", op == [True, "true", "custom"], str(op))
+    hl = await pg.evaluate(r"""(async()=>{const P=c=>c.match(/[\d.]+/g).slice(0,3).map(Number);const lin=v=>{v/=255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4)};const Lm=c=>{const[r,g,b]=P(c);return .2126*lin(r)+.7152*lin(g)+.0722*lin(b)};const CR=(a,b)=>{const x=Lm(a),y=Lm(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+      const out=[];for(const k of Object.keys(THEMES)){document.querySelector(`#presets .chip[data-k='${k}']`).click();await new Promise(r=>setTimeout(r,20));document.documentElement.classList.add('boot');
+      const e=document.querySelector('#miniGrade .mg-g');const sec=e.closest('section');const bg=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();const c=getComputedStyle(e).color;
+      const d=document.createElement('i');d.style.color=bg;document.body.appendChild(d);const bgc=getComputedStyle(d).color;d.remove();out.push([k,+CR(c,bgc).toFixed(2)])}
+      document.documentElement.classList.remove('boot');return out})()""")
+    check(T + "hero grade letter >= 3:1 on all 17 themes", len(hl) == 17 and all(v >= 3 for _, v in hl), str([x for x in hl if x[1] < 3.2]))
+    tv = await pg.evaluate("Object.entries(THEMES).map(([k,t])=>{const d=deriveSkin(t),sk=d.skin;const txt=['fg','muted','red','green','yellow','blue','magenta','cyan'].map(x=>Math.min(contrast(sk[x],sk.tint),contrast(sk[x],t.bg)));return [k,+contrast(t.bg,sk.tint).toFixed(3),+Math.min(...txt).toFixed(2),oklch(t.bg).L<0.25&&!d.light?lum(sk.tint)>lum(t.bg):true]})")
+    check(T + "band visibly distinct from bg on all themes (near-black lifted)", all(x[1] >= 1.06 and x[3] for x in tv), str([x for x in tv if x[1] < 1.06 or not x[3]]))
+    check(T + "page text >= 4.6 on band and bg, all themes", all(x[2] >= 4.6 for x in tv), str([x for x in tv if x[2] < 4.6]))
+    ul = await pg.evaluate("(()=>{const a=document.querySelector('#miniGrade .mg-s a'),c=getComputedStyle(a);return [c.borderBottomWidth,c.borderBottomStyle,c.textDecorationLine]})()")
+    check(T + "no stray underline under findings link", (ul[0] == "0px" or ul[1] == "none") and ul[2] == "none", str(ul))
+    gb = await pg.evaluate("gradeVar('B')===gradeVar('A')")
+    check(T + "B uses green like A", gb)
+    th = await pg.evaluate("""(async()=>{const bad=[];for(const k of Object.keys(THEMES)){document.querySelector(`#presets .chip[data-k='${k}']`).click();await new Promise(r=>setTimeout(r,30));
+      const h=[...document.querySelectorAll('#palette .sw')].map(e=>Math.round(e.getBoundingClientRect().height)),b=[...document.querySelectorAll('#palette .sw .bar')].map(e=>Math.round(e.getBoundingClientRect().height));
+      const bb=document.querySelectorAll('#palette .pair')[0].children[1].querySelector('.delta');if(new Set(h).size!==1||new Set(b).size!==1||!bb)bad.push([k,[...new Set(h)],[...new Set(b)],!!bb])}return bad})()""")
+    check(T + "evidence tiles equal height + br black has comparison line, all themes", not th, str(th))
+    pool = await pg.evaluate("firstPool()")
+    check(T + "first-load pool: D/F themes whose own fg reads", set(pool) == {"catppuccin-mocha", "catppuccin-latte", "nord", "one-light", "rose-pine-dawn"}, str(pool))
+    # findings: worst 5, rest behind an accessible toggle; no repeated punchlines in any preset
+    await pg.goto("about:blank"); await pg.goto(URL + "#solarized-light", timeout=120000); await pg.wait_for_timeout(700)
+    Q = "(()=>{const li=[...document.querySelectorAll('#roast li')],real=li.filter(l=>!l.classList.contains('ok')),b=document.getElementById('roastMore');return {n:real.length,ok:li.length-real.length,vis:real.filter(l=>!l.hidden&&getComputedStyle(l).display!=='none').length,okvis:li.filter(l=>l.classList.contains('ok')&&!l.hidden).length,stated:+(document.querySelector('#grade .s span:last-child').textContent.match(/(\\d+) findings?/)||[0,-1])[1],btn:!b.hidden,txt:b.textContent,exp:b.getAttribute('aria-expanded'),tag:b.tagName}})()"
+    for k in ["solarized-light", "nord", "github-light", "gruvbox-dark"]:
+        await pg.goto("about:blank"); await pg.goto(URL + "#" + k, timeout=120000); await pg.wait_for_timeout(600)
+        q = await pg.evaluate(Q)
+        check(T + f"{k}: stated count excludes praise and matches 5 + N", q["stated"] == q["n"] and q["okvis"] == q["ok"] and q["vis"] == min(5, q["n"]) and ((q["n"] <= 5 and not q["btn"]) or (q["btn"] and q["txt"] == f"+ {q['n']-5} more")), str(q))
+    await pg.goto("about:blank"); await pg.goto(URL + "#solarized-light", timeout=120000); await pg.wait_for_timeout(700)
+    st = await pg.evaluate(Q)
+    check(T + "findings: 5 visible + toggle", st["vis"] == 5 and st["btn"] and st["exp"] == "false" and st["tag"] == "BUTTON", str(st))
+    await pg.focus("#roastMore"); await pg.keyboard.press("Enter"); await pg.wait_for_timeout(150)
+    o = await pg.evaluate(Q)
+    check(T + "findings toggle expands (keyboard)", o["vis"] == st["n"] and o["exp"] == "true", str(o))
+    await pg.click("#roastMore"); await pg.wait_for_timeout(100)
+    o = await pg.evaluate(Q)
+    check(T + "findings toggle collapses", o["vis"] == 5 and o["txt"].startswith("+ "), str(o))
+    jt = await pg.evaluate("(async()=>{const j=await (await fetch(new URL('lib/themes.json',location.href))).json();const bad=[];for(const [k,t] of Object.entries(THEMES)){const A=analyze(t),top=(A.findings.find(f=>f.sev!=='ok')||{}).text||A.verdict;if(!j[k]||j[k].top!==top||j[k].grade!==A.grade||j[k].score!==A.score)bad.push(k)}return bad})()")
+    check(T + "lib/themes.json share text matches page findings", not jt, str(jt))
+    rep = await pg.evaluate(r"""(()=>{const bad=[];for(const [k,t] of Object.entries(THEMES)){const tx=analyze(t).findings.map(f=>f.text);
+      for(const re of [/Visible only to cats/,/name tag/,/neither bright nor/,/HR has been notified/,/syntax hiding/,/more of a vibe/]){const n=tx.filter(x=>re.test(x)).length;if(n>1)bad.push(k+':'+re.source+'x'+n)}}return bad})()""")
+    check(T + "no repeated punchlines within a theme", not rep, str(rep))
+    # top nav: no Terminal link on phones, nothing clipped
+    nav = await pg.evaluate("(()=>{const n=document.querySelector('.top nav');const t=n.querySelector('a[href=\"#console\"]');return {term:getComputedStyle(t).display!=='none',over:n.scrollWidth>n.clientWidth+1,right:Math.max(...[...n.querySelectorAll('a')].filter(a=>getComputedStyle(a).display!=='none').map(a=>a.getBoundingClientRect().right))}})()")
+    check(T + "top nav Terminal link " + ("hidden" if vw <= 640 else "shown"), nav["term"] == (vw > 640), str(nav))
+    check(T + "top nav fits viewport", not nav["over"] and nav["right"] <= vw, str(nav))
+    # tiles: ratio louder than hex
+    sz = await pg.evaluate("(()=>{const r=document.querySelector('.sw .d .r'),h=document.querySelector('.sw .d .hx');const R=getComputedStyle(r),H=getComputedStyle(h);return [parseFloat(R.fontSize),parseFloat(H.fontSize),R.fontWeight,R.color,H.color]})()")
+    check(T + "tile ratio bigger than hex, hex muted", sz[0] >= sz[1] + 2 and sz[3] != sz[4], str(sz))
+    solid = await pg.evaluate("[...document.querySelectorAll('.btn.solid')].filter(b=>b.offsetParent).map(b=>b.textContent.trim())")
+    check(T + "only one visible filled button", len(solid) == 1 and "PNG" in solid[0], str(solid))
+    check(T + "design1: no page errors", not errs, str(errs))
+    await pg.close()
+
+async def tiles1920(b):
+    c = await b.new_context(viewport={"width": 1920, "height": 1080}); pg = await c.new_page(); pg.set_default_timeout(120000)
+    await pg.goto(URL + "#nord", timeout=120000); await pg.wait_for_timeout(700)
+    th = await pg.evaluate("""(async()=>{const bad=[];for(const k of Object.keys(THEMES)){document.querySelector(`#presets .chip[data-k='${k}']`).click();await new Promise(r=>setTimeout(r,30));
+      const h=[...document.querySelectorAll('#palette .sw')].map(e=>Math.round(e.getBoundingClientRect().height));if(new Set(h).size!==1)bad.push([k,[...new Set(h)]])}return bad})()""")
+    check("[1920] evidence tiles equal height, all themes", not th, str(th))
     await c.close()
 
 async def main():
@@ -341,6 +439,7 @@ async def main():
         kw = {"executable_path": os.environ["CHROME_PATH"]} if os.environ.get("CHROME_PATH") else {}
         b = await p.chromium.launch(args=["--no-sandbox"], **kw)
         for vw in (1366, 390): await run(b, vw); await stream_test(b, vw)
+        await tiles1920(b)
         await b.close()
     print(f"\n{len(FAILS)} failed" if FAILS else "\nall passed"); sys.exit(1 if FAILS else 0)
 asyncio.run(main())
