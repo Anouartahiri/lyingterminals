@@ -339,8 +339,8 @@ async def run(b, vw):
 
 PROSE_CR = r"""()=>{const P=c=>c.match(/[\d.]+/g).slice(0,3).map(Number);const lin=v=>{v/=255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
  const L=c=>{const[r,g,b]=P(c);return .2126*lin(r)+.7152*lin(g)+.0722*lin(b)};const CR=(a,b)=>{const x=L(a),y=L(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
- const bg=getComputedStyle(document.body).backgroundColor; let m=99,w='';
- document.querySelectorAll('.lede, p.prose, .verdict .v, #roast .tx, figcaption, .mini-grade .mg-s').forEach(e=>{if(!e.textContent.trim())return;const v=CR(getComputedStyle(e).color,bg); if(v<m){m=v;w=e.className+' '+getComputedStyle(e).color;}}); return [+m.toFixed(2),w];}"""
+ let m=99,w='';
+ document.querySelectorAll('.lede, p.prose, .mg-v, .mg-s, #roast .tx, #roast .dt, figcaption, .legend, .sw .d .r, .sw .d .hx, .verdict .s').forEach(e=>{if(!e.textContent.trim())return;const sec=e.closest('#evidence,#verdict'),bg=getComputedStyle(sec||document.body).backgroundColor;const v=CR(getComputedStyle(e).color,bg); if(v<m){m=v;w=e.className+' '+getComputedStyle(e).color+' on '+bg;}}); return [+m.toFixed(2),w];}"""
 async def design1(c, T, mob, vw):
     pg = await c.new_page(); pg.set_default_timeout(120000); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
@@ -348,15 +348,34 @@ async def design1(c, T, mob, vw):
         await pg.goto("about:blank"); await pg.goto(URL + "#" + k, timeout=120000); await pg.wait_for_timeout(700)
         m, w = await pg.evaluate(PROSE_CR); w += " theme=" + await pg.evaluate("document.querySelector('#grade .s span').textContent"); check(T + f"{k}: prose >= 4.6:1", m >= 4.6, f"{m} {w}")
     # compact grade under picker: matches the verdict, updates on click, links to #verdict
-    g = await pg.evaluate("[document.querySelector('#miniGrade .mg-g').textContent, document.querySelector('#grade .g').textContent, document.getElementById('miniGrade').getAttribute('href'), document.querySelector('#miniGrade .mg-s').textContent]")
-    check(T + "mini grade matches verdict", g[0] == g[1] and g[2] == "#verdict" and "honesty" in g[3] and "/100" in g[3], str(g))
-    pos = await pg.evaluate("(()=>{const p=document.getElementById('presets').getBoundingClientRect(),m=document.getElementById('miniGrade').getBoundingClientRect();return m.top-p.bottom})()")
-    check(T + "mini grade sits right under the picker", 0 <= pos < 40, str(pos))
+    g = await pg.evaluate("[document.querySelector('#miniGrade .mg-g').textContent, document.querySelector('#grade .g').textContent, document.querySelector('#miniGrade a').getAttribute('href'), document.querySelector('#miniGrade .mg-s').textContent, document.querySelectorAll('.verdict .v').length, document.querySelector('#miniGrade .mg-v').textContent.trim()]")
+    check(T + "early grade matches verdict, links to #verdict, one verdict line", g[0] == g[1] and g[2] == "#verdict" and "honesty" in g[3] and "/100" in g[3] and g[4] == 0 and len(g[5]) > 10, str(g))
+    big = await pg.evaluate("""(()=>{const e=document.querySelector('#miniGrade .mg-g'),fs=parseFloat(getComputedStyle(e).fontSize);let other=0;document.querySelectorAll('main *:not(h1):not(h1 *):not(.mg-g)').forEach(x=>{if(x.offsetParent&&x.childNodes.length&&[...x.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()))other=Math.max(other,parseFloat(getComputedStyle(x).fontSize))});
+      const p=document.getElementById('presets').getBoundingClientRect().bottom+scrollY,t=e.getBoundingClientRect().top+scrollY,ev=document.getElementById('evidence').getBoundingClientRect().top+scrollY;return {fs,other,col:getComputedStyle(e).color,red:getComputedStyle(document.documentElement).getPropertyValue('--red').trim(),early:t>p&&t<ev,dir:getComputedStyle(e.parentElement).flexDirection}})()""")
+    check(T + "early grade: big, red, before the evidence", (big["fs"] >= 190 if vw > 640 else big["fs"] >= 110) and big["fs"] > big["other"] and big["early"] and big["dir"] == ("row" if vw > 640 else "column"), str(big))
     before = await pg.evaluate("document.querySelector('#miniGrade .mg-s').textContent")
     await pg.click("#presets .chip[data-k='github-light']")
     await pg.wait_for_timeout(300)
     after = await pg.evaluate("[document.querySelector('#miniGrade .mg-g').textContent, document.querySelector('#grade .g').textContent, document.querySelector('#miniGrade .mg-s').textContent]")
-    check(T + "mini grade updates on theme click", after[0] == after[1] and after[2] != before, f"{before} -> {after}")
+    check(T + "early grade updates on theme click", after[0] == after[1] and after[2] != before, f"{before} -> {after}")
+    lk = await pg.evaluate("""(()=>{const F=e=>getComputedStyle(e).fontFamily;const serif=['h1','.lede','h2','p.prose','#roast .tx','.mg-v'].map(q=>document.querySelector(q)).filter(Boolean).every(e=>/Newsreader/.test(F(e)));
+      const mono=['.sw .d .r','.sw .d .hx','.sw .aa','.chip .nm','.lab','.kicker','#tmInput','.legend','.mg-s'].map(q=>document.querySelector(q)).filter(Boolean).every(e=>/Departure Mono/.test(F(e))&&!/Newsreader/.test(F(e)));
+      const sw=document.querySelector('.sw'),bar=sw.querySelector('.bar');const tb=getComputedStyle(document.body).backgroundColor,te=getComputedStyle(document.getElementById('evidence')).backgroundColor,tv=getComputedStyle(document.getElementById('verdict')).backgroundColor;
+      const L=['h1','#presets','#miniGrade','#palette','#roast','#card-sec h2','.lede','#verdict .kicker','#evidence .kicker'].map(q=>Math.round(document.querySelector(q).getBoundingClientRect().left));
+      const W=[...document.querySelectorAll('main > .col, main > .wide')].filter(e=>e.offsetParent).map(e=>Math.round(e.getBoundingClientRect().width));
+      const pb=document.getElementById('customToggle');const solid=getComputedStyle(pb).backgroundColor;
+      return {serif,mono,rad:getComputedStyle(sw).borderTopLeftRadius,third:bar.offsetHeight/sw.offsetHeight,tb,te,tv,L:[...new Set(L)],W:[...new Set(W)],pb:[pb.tagName,pb.textContent,pb.offsetParent!==null,pb.classList.contains('solid'),pb.getAttribute('aria-expanded'),solid],chip:!!document.querySelector('#presets .custom')}})()""")
+    check(T + "fonts: serif for reading, mono for data", lk["serif"] and lk["mono"], str(lk))
+    check(T + "evidence + verdict on the same tint, not bg", lk["te"] == lk["tv"] and lk["te"] != lk["tb"], str(lk))
+    check(T + "tiles: square corners, swatch ~top third", lk["rad"] == "0px" and 0.25 <= lk["third"] <= 0.42, str(lk))
+    check(T + "one left edge across sections", len(lk["L"]) == 1, str(lk["L"]))
+    check(T + "two section widths at most", len(lk["W"]) <= 2, str(lk["W"]))
+    check(T + "paste-your-own is a real outlined button", lk["pb"][0] == "BUTTON" and "Paste your own" in lk["pb"][1] and lk["pb"][2] and not lk["pb"][3] and not lk["chip"], str(lk["pb"]))
+    await pg.click("#customToggle"); await pg.wait_for_timeout(150)
+    op = await pg.evaluate("[document.getElementById('customBox').classList.contains('open'), document.getElementById('customToggle').getAttribute('aria-expanded'), document.activeElement.id]")
+    check(T + "paste button opens the box", op == [True, "true", "custom"], str(op))
+    pool = await pg.evaluate("firstPool()")
+    check(T + "first-load pool: D/F themes whose own fg reads", set(pool) == {"catppuccin-mocha", "catppuccin-latte", "nord", "one-light", "rose-pine-dawn"}, str(pool))
     # findings: worst 5, rest behind an accessible toggle; no repeated punchlines in any preset
     await pg.goto("about:blank"); await pg.goto(URL + "#solarized-light", timeout=120000); await pg.wait_for_timeout(700)
     Q = "(()=>{const li=[...document.querySelectorAll('#roast li')],real=li.filter(l=>!l.classList.contains('ok')),b=document.getElementById('roastMore');return {n:real.length,ok:li.length-real.length,vis:real.filter(l=>!l.hidden&&getComputedStyle(l).display!=='none').length,okvis:li.filter(l=>l.classList.contains('ok')&&!l.hidden).length,stated:+(document.querySelector('#grade .s span:last-child').textContent.match(/(\\d+) findings?/)||[0,-1])[1],btn:!b.hidden,txt:b.textContent,exp:b.getAttribute('aria-expanded'),tag:b.tagName}})()"

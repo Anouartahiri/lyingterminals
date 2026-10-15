@@ -111,6 +111,10 @@ This needs `wrangler login` with access to the account in `wrangler.toml`. The W
 
 `/t/<slug>` (for example `/t/nord`) serves the page opened on that theme, with its own `og:title`, description and card at `/og/<slug>.png`. It's a Pages Function (`functions/t/[slug].js`, data in `lib/themes.json`); cards are rendered by `og/gen_cards.py` from the built page. Unknown slugs redirect to `/`. **Production note:** lyingterminals.com is served by the Worker, which needs the same `/t/<slug>` route before this ships there.
 
+### First-load theme
+
+With no `/t/<slug>` or `#theme` in the URL, the page opens on a random preset from `firstPool()`: themes graded D or F (so the first verdict is a roast) whose own foreground already clears 7:1, so the page reads well without swapping its text colour. Today that is Catppuccin Mocha, Catppuccin Latte, Nord, One Light and Rosé Pine Dawn. Solarized Light and Solarized Dark are left out: their foreground fails, so the page has to replace it.
+
 ### Tests
 
 `python tests/test_site.py http://localhost:8000/index.html` (serve the repo root first). Runs desktop + 390px checks, axe-core, the terminal commands, `fix`, focus handling and touch/wheel scrolling. CI runs it on every push and PR.

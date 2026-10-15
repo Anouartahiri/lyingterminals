@@ -108,6 +108,24 @@ html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
 .mini-grade .mg-s{color:var(--fg)}
 .mini-grade:hover .mg-go{color:var(--fg);text-decoration:underline;text-underline-offset:4px}
 .roast-more{margin-top:18px;min-height:44px} ol.roast li[hidden],.roast-more[hidden]{display:none}
+/* look pass: two columns, one left edge */
+.col{width:min(100% - 2*var(--gutter),var(--wide))}
+.col>*,.intro{max-width:var(--col)} .intro{margin-inline:0}
+.top,.fbar{padding-inline:max(var(--gutter),(100% - var(--wide))/2)}
+/* tinted panels: full-bleed band, content edges unchanged */
+#evidence,#verdict{background:var(--tint);box-shadow:0 0 0 100vmax var(--tint);clip-path:inset(0 -100vmax);padding-block:clamp(36px,5vw,64px);transition:background var(--t),box-shadow var(--t)}
+/* early verdict */
+.early{margin-top:clamp(28px,4vw,44px)}
+.early-v{display:flex;align-items:center;gap:clamp(18px,3vw,40px)}
+.early-v .mg-g{font:400 clamp(120px,24vw,200px)/.8 var(--serif);letter-spacing:-.05em;color:var(--red);flex:none;transition:color var(--t)}
+.early-v .mg-v{font:italic 400 clamp(24px,1.2rem + 1.3vw,36px)/1.2 var(--serif);text-wrap:balance;max-width:22em}
+.early-v .mg-s{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:max(13.5px,var(--small));color:var(--muted)}
+.early-v .mg-s a{color:var(--fg);display:inline-flex;align-items:center;min-height:44px;margin-block:-14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media (max-width:640px){.early-v{flex-direction:column;align-items:flex-start;gap:12px}}
+.pick-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:16px}
+.paste-btn{min-height:44px;color:var(--fg);border-color:var(--fg)}
+.paste-note{font-size:var(--small);color:var(--muted)}
 /* hero */
 .hero{margin-top:clamp(56px,11vw,140px)}
 .meta{display:grid;grid-template-columns:max-content 1fr;column-gap:1ch;font-size:max(13.5px,var(--small));line-height:1.55;margin-bottom:clamp(28px,5vw,44px)}
@@ -157,9 +175,9 @@ textarea::placeholder{color:var(--muted)}
 .sw .s{display:none}
 @media (max-width:600px){.sw .l{display:none}.sw .s{display:inline}.sw .d{padding:0 8px 9px}.sw .aa{padding:10px 8px 2px}}
 .pair{display:flex;flex-direction:column;gap:10px}
-.sw{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
-.sw .bar{height:7px}
-.sw .aa{font:400 clamp(28px,3.4vw,38px)/1 var(--serif);padding:12px 12px 4px;letter-spacing:-.01em}
+.sw{position:relative;border:1px solid var(--line);border-radius:0;overflow:hidden;background:var(--bg)}
+.sw .bar{height:clamp(52px,5vw,64px)}
+.sw .aa{font:400 clamp(24px,2.8vw,32px)/1 var(--mono);padding:12px 12px 4px;letter-spacing:-.01em}
 .sw .d{padding:0 12px 11px;font-size:var(--small);line-height:1.45;color:var(--muted)}
 .sw .d .r{color:var(--fg);font-size:clamp(16px,1.35vw,19px);font-weight:700;letter-spacing:-.01em;line-height:1.25}
 .sw .d .hx{font-size:var(--small);letter-spacing:.03em;font-weight:400}
@@ -175,10 +193,10 @@ textarea::placeholder{color:var(--muted)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:var(--small);color:var(--muted);margin-top:14px}
 
 /* verdict */
-.verdict{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,44px);align-items:center;padding:clamp(22px,4vw,36px) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.verdict .g{font:400 clamp(96px,16vw,168px)/.8 var(--serif);letter-spacing:-.05em;transition:color var(--t)}
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:clamp(16px,3vw,28px);align-items:center;padding:clamp(16px,3vw,24px) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.verdict .g{font:400 clamp(44px,6vw,64px)/.8 var(--serif);letter-spacing:-.05em;transition:color var(--t)}
 .verdict .v{font:italic 400 clamp(22px,2.4vw,30px)/1.25 var(--serif);text-wrap:balance}
-.verdict .s{font-size:var(--small);color:var(--muted);margin-top:12px;display:flex;gap:16px;flex-wrap:wrap}
+.verdict .s{font-size:var(--small);color:var(--muted);margin-top:0;display:flex;gap:16px;flex-wrap:wrap}
 .meter{height:3px;background:var(--line);border-radius:3px;margin-top:14px;overflow:hidden;max-width:360px}
 .meter i{display:block;height:100%;background:currentColor;transition:width var(--t)}
 ol.roast{list-style:none;counter-reset:r;margin-top:8px}
@@ -297,7 +315,7 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
 .tm-arr.l{left:0} .tm-arr.r{right:0}  /* overlaid on the fades: the row and chip sizes never change */
 </style>
 <script>/* apply the URL's theme (or a random D/F preset) before first paint: no flash of another theme */
-(function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#fdf6e3", "muted": "#9da9a1", "line": "#284b52", "panel": "#0b343e", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#575279", "muted": "#6e6a7e", "line": "#e0dada", "panel": "#f3ede8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#073642", "muted": "#597373", "line": "#d6d7c9", "panel": "#f2eddc", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
+(function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "tint": "#1f1f1f", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "tint": "#171724", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "tint": "#e7e9ec", "muted": "#646777", "line": "#d5d7df", "panel": "#e8eaef", "red": "#c1253b", "green": "#217608", "yellow": "#905909", "blue": "#245fd3", "magenta": "#a93a8f", "cyan": "#117177"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "tint": "#14151e", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "tint": "#242932", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "tint": "#1f212a", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#fdf6e3", "tint": "#00222a", "muted": "#9da9a1", "line": "#284b52", "panel": "#0b343e", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "tint": "#1a1d22", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "tint": "#f0f0f0", "muted": "#6b6b6f", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#c9312a", "green": "#237c1f", "yellow": "#81672e", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#237c1f"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "tint": "#1e1f1b", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "tint": "#0a0d12", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "tint": "#f6f6f6", "muted": "#6b6e71", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#167980"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "tint": "#14121c", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#575279", "tint": "#f1ebe5", "muted": "#696478", "line": "#e0dada", "panel": "#f3ede8", "red": "#9d4f66", "green": "#286983", "yellow": "#945d00", "blue": "#31707b", "magenta": "#75608d", "cyan": "#a25250"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "tint": "#18181f", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#073642", "tint": "#f4eddb", "muted": "#536d6d", "line": "#d6d7c9", "panel": "#f2eddc", "red": "#c72e2b", "green": "#586e75", "yellow": "#576c74", "blue": "#036fb0", "magenta": "#bd2c73", "cyan": "#147770"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "tint": "#1b2124", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "one-light", "rose-pine-dawn"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
 if(m&&S.s[m[1]])k=m[1];else if(S.s[h])k=h;else if(!/^p=/.test(h))k=S.df[Math.floor(Math.random()*S.df.length)];
 window.__BOOT=k;if(!k)return;var v=S.s[k],r=document.documentElement;for(var n in v.v)r.style.setProperty("--"+n,v.v[n]);if(v.l)r.classList.add("is-light");
 var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",v.v.bg);}catch(e){}})();</script>
@@ -329,7 +347,7 @@ var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute(
   <section class="wide" id="pick">
     <div class="kicker">I. Pick a defendant</div>
     <div class="chips" id="presets" role="group" aria-label="Terminal theme presets"></div>
-    <a class="mini-grade" id="miniGrade" href="#verdict" aria-live="polite"></a>
+    <div class="pick-actions"><button type="button" class="btn paste-btn" id="customToggle" aria-expanded="false" aria-controls="customBox">+ Paste your own palette</button><span class="paste-note">Ghostty, kitty or 18 hex codes</span></div>
     <div class="paste" id="customBox">
       <textarea id="custom" spellcheck="false" aria-label="Paste your palette" placeholder="background = #1e1e2e
 foreground = #cdd6f4
@@ -342,6 +360,10 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
       <div class="row-actions"><button class="btn solid" id="roastBtn">Roast it</button><span class="err" id="err" role="alert"></span></div>
     </div>
     <figcaption>Fig. 1. Choose a theme and the whole page changes into it. Or paste your own from Ghostty or kitty.</figcaption>
+  </section>
+
+  <section class="wide early" id="early" aria-label="Verdict at a glance">
+    <div class="early-v" id="miniGrade" aria-live="polite"></div>
   </section>
 
   <section class="wide" id="evidence">
@@ -623,18 +645,22 @@ function mix(a,b,t){ const A=rgb(a),B=rgb(b); return "#"+A.map((v,i)=>Math.round
 
 function deriveSkin(t){
   const bg=t.bg, light=lum(bg)>0.4, fixes=[];
+  // panel tint for evidence/verdict: the theme's own bg nudged (toward black on dark, a touch darker on light)
+  const tint=light?mix(bg,"#000000",0.035):mix(bg,"#000000",0.22), ref=light?tint:bg; // text must clear 4.6 on the harder of the two
   // body text: the theme's own fg if it reads, else its best real palette text colour (bright white / white on dark, black / bright black on light), else an OKLCH nudge
   const cand=[t.fg,...(light?[t.c[0],t.c[8]]:[t.c[15],t.c[7]])];
-  const fg=cand.find(h=>contrast(h,bg)>=7) || cand.filter(h=>contrast(h,bg)>=4.6).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0] || ensure(t.fg,bg,7);
+  const fg=cand.find(h=>contrast(h,ref)>=7) || cand.filter(h=>contrast(h,ref)>=4.6).sort((a,b)=>contrast(b,ref)-contrast(a,ref))[0] || ensure(t.fg,ref,7);
   if(fg!==t.fg) fixes.push(["foreground",t.fg,fg]);
-  const skin={bg,fg,muted:ensure(mix(fg,bg,0.38),bg,4.6),line:mix(fg,bg,0.84),panel:mix(fg,bg,0.955)};
+  const skin={bg,fg,tint,muted:ensure(mix(fg,bg,0.38),ref,4.6),line:mix(fg,bg,0.84),panel:mix(fg,bg,0.955)};
   if(contrast(skin.line,bg)<1.25) skin.line=mix(fg,bg,0.76);
   [["red",1],["green",2],["yellow",3],["blue",4],["magenta",5],["cyan",6]].forEach(([k,i])=>{
-    const a=t.c[i], b=t.c[i+8], base=contrast(a,bg)>=contrast(b,bg)?a:b, safe=ensure(base,bg,4.6);
+    const a=t.c[i], b=t.c[i+8], base=contrast(a,bg)>=contrast(b,bg)?a:b, safe=ensure(base,ref,4.6);
     if(safe!==base) fixes.push([k,base,safe]); skin[k]=safe;
   });
   return {skin,fixes,light};
 }
+/* first-load pool: D/F themes (a roast lands) whose page reads well as-is: the theme's own foreground clears 7:1 so the page needn't swap it */
+const firstPool=()=>Object.keys(THEMES).filter(k=>/^[DF]/.test(analyze(THEMES[k]).grade)&&!deriveSkin(THEMES[k]).fixes.some(f=>f[0]==="foreground"));
 function applySkin(t){
   const {skin,fixes,light}=deriveSkin(t), R=document.documentElement;
   for(const [k,v] of Object.entries(skin)) R.style.setProperty("--"+k,v);
@@ -672,14 +698,14 @@ function renderPalette(A){
 function renderRoast(A){
   const lab={fail:"FAIL",lol:"LIE",warn:"MEH",ok:"OK"};
   const col=gradeVar(A.grade);
-  $("grade").innerHTML=`<div class="g" style="color:${col}">${A.grade}</div><div><div class="v">${esc(A.verdict)}</div><div class="s"><span>${esc(A.theme.name)}</span><span>honesty ${A.score}/100</span><span>${A.findings.filter(f=>f.sev!=="ok").length} findings</span></div><div class="meter" style="color:${col}"><i style="width:${A.score}%"></i></div></div>`;
+  $("grade").innerHTML=`<div class="g" style="color:${col}">${A.grade}</div><div><div class="s"><span>${esc(A.theme.name)}</span><span>honesty ${A.score}/100</span><span>${A.findings.filter(f=>f.sev!=="ok").length} findings</span></div><div class="meter" style="color:${col}"><i style="width:${A.score}%"></i></div></div>`;
   // real findings first (worst 5 shown, the rest behind "+ N more"); praise rows don't count and always show last
   const SHOW=5, real=A.findings.filter(f=>f.sev!=="ok"), extra=Math.max(0,real.length-SHOW), rows=[...real,...A.findings.filter(f=>f.sev==="ok")];
   $("roast").innerHTML=rows.map((f,i)=>{ const h=f.sev!=="ok"&&i>=SHOW; return `<li class="${f.sev}${h?" more":""}"${h?" hidden":""} style="animation-delay:${(i%SHOW)*40}ms"><span class="tx">${esc(f.text)}</span><span class="dt"><span class="lab ${f.sev}">${lab[f.sev]}</span>${esc(f.detail)}</span></li>`; }).join("");
   { const mb=$("roastMore"); mb.hidden=!extra; mb.setAttribute("aria-expanded","false"); mb.dataset.n=extra; mb.textContent=`+ ${extra} more`; }
   $("metaSubject").textContent=`Re: ${A.theme.name} — grade ${A.grade}`;
-  $("miniGrade").innerHTML=`<span class="mg-l">Verdict:</span> <b class="mg-g" style="color:${col}">${A.grade}</b> <span class="mg-s">honesty ${A.score}/100</span> <span class="mg-go">see why ↓</span>`;
-  $("miniGrade").setAttribute("aria-label",`${A.theme.name}: grade ${A.grade}, honesty ${A.score} out of 100. Jump to the verdict.`);
+  const nReal=A.findings.filter(f=>f.sev!=="ok").length;
+  $("miniGrade").innerHTML=`<div class="mg-g" aria-hidden="true">${A.grade}</div><div class="mg-b"><p class="mg-v"><span class="sr">${esc(A.theme.name)} gets grade ${A.grade}. </span>${esc(A.verdict)}</p><p class="mg-s"><span>${esc(A.theme.name)}</span><span>honesty ${A.score}/100</span><a href="#verdict">${nReal} finding${nReal===1?"":"s"} ↓</a></p></div>`;
 }
 
 $("roastMore").addEventListener("click",e=>{ const b=e.currentTarget, open=b.getAttribute("aria-expanded")!=="true";
@@ -791,10 +817,8 @@ for(const [k,t] of Object.entries(THEMES)){
   b.innerHTML=`<span class="mini">${t.c.map(c=>`<i style="background:${c}"></i>`).join("")}</span><span class="nm">${t.name}</span>`;
   b.onclick=()=>{ run(t,k); hit(k); }; P.appendChild(b);
 }
-const cb=document.createElement("button"); cb.className="chip custom"; cb.id="customToggle"; cb.setAttribute("aria-expanded","false");
-cb.innerHTML=`<span class="plus">+</span><span class="nm">Paste your own</span>`;
+const cb=$("customToggle");
 cb.onclick=()=>{ const o=$("customBox").classList.toggle("open"); cb.setAttribute("aria-expanded",String(o)); if(o) $("custom").focus(); };
-P.appendChild(cb);
 
 $("roastBtn").onclick=()=>{ try{ $("err").textContent=""; run(parsePalette($("custom").value),"custom"); hit("custom"); $("evidence").scrollIntoView({behavior:"smooth"}); }catch(e){ $("err").textContent=e.message; } };
 $("dlBtn").onclick=()=>{
@@ -1415,7 +1439,7 @@ const TERM=(function(){
 // boot: /t/<slug> path, then #hash, else a random preset that would get a D or F (the guilty ones make better first impressions)
 (function(){
   const m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/), h=decodeURIComponent(location.hash.slice(1));
-  const guilty=()=>{ if(window.__BOOT&&THEMES[window.__BOOT]&&!m&&!THEMES[h]) return window.__BOOT; const ks=Object.keys(THEMES).filter(k=>/^[DF]/.test(analyze(THEMES[k]).grade)); return ks[Math.floor(Math.random()*ks.length)]||"gruvbox-dark"; };
+  const guilty=()=>{ if(window.__BOOT&&THEMES[window.__BOOT]&&!m&&!THEMES[h]) return window.__BOOT; const ks=firstPool(); return ks[Math.floor(Math.random()*ks.length)]||"gruvbox-dark"; };
   if(m&&THEMES[m[1]]) run(THEMES[m[1]],m[1],{boot:1});
   else if(THEMES[h]) run(THEMES[h],h,{boot:1});
   else if(h.startsWith("p=")){ try{ const hs=h.slice(2).split("-").map(s=>"#"+s); const t=parsePalette(hs.join("\n")); $("custom").value=hs.join(" "); run(t,"custom",{boot:1}); }catch(e){ const k=guilty(); run(THEMES[k],k,{boot:1}); } }
