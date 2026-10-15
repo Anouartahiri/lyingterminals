@@ -333,8 +333,55 @@ async def run(b, vw):
         check(T + "first wheel tick at terminal bottom scrolls page", await pg.evaluate("scrollY") - y0 >= 90)
     check(T + "no console errors", not errs, str(errs))
     await fbar(c, T, mob, vw)
+    await design1(c, T, mob, vw)
     await fs_test(c, T, mob)
     await c.close()
+
+PROSE_CR = r"""()=>{const P=c=>c.match(/[\d.]+/g).slice(0,3).map(Number);const lin=v=>{v/=255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
+ const L=c=>{const[r,g,b]=P(c);return .2126*lin(r)+.7152*lin(g)+.0722*lin(b)};const CR=(a,b)=>{const x=L(a),y=L(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+ const bg=getComputedStyle(document.body).backgroundColor; let m=99,w='';
+ document.querySelectorAll('.lede, p.prose, .verdict .v, #roast .tx, figcaption, .mini-grade .mg-s').forEach(e=>{if(!e.textContent.trim())return;const v=CR(getComputedStyle(e).color,bg); if(v<m){m=v;w=e.className+' '+getComputedStyle(e).color;}}); return [+m.toFixed(2),w];}"""
+async def design1(c, T, mob, vw):
+    pg = await c.new_page(); pg.set_default_timeout(120000); errs = []
+    pg.on("pageerror", lambda e: errs.append(str(e)))
+    for k in ["solarized-light", "solarized-dark", "nord", "rose-pine-dawn"]:
+        await pg.goto("about:blank"); await pg.goto(URL + "#" + k, timeout=120000); await pg.wait_for_timeout(700)
+        m, w = await pg.evaluate(PROSE_CR); w += " theme=" + await pg.evaluate("document.querySelector('#grade .s span').textContent"); check(T + f"{k}: prose >= 4.6:1", m >= 4.6, f"{m} {w}")
+    # compact grade under picker: matches the verdict, updates on click, links to #verdict
+    g = await pg.evaluate("[document.querySelector('#miniGrade .mg-g').textContent, document.querySelector('#grade .g').textContent, document.getElementById('miniGrade').getAttribute('href'), document.querySelector('#miniGrade .mg-s').textContent]")
+    check(T + "mini grade matches verdict", g[0] == g[1] and g[2] == "#verdict" and "honesty" in g[3] and "/100" in g[3], str(g))
+    pos = await pg.evaluate("(()=>{const p=document.getElementById('presets').getBoundingClientRect(),m=document.getElementById('miniGrade').getBoundingClientRect();return m.top-p.bottom})()")
+    check(T + "mini grade sits right under the picker", 0 <= pos < 40, str(pos))
+    before = await pg.evaluate("document.querySelector('#miniGrade .mg-s').textContent")
+    await pg.click("#presets .chip[data-k='github-light']")
+    await pg.wait_for_timeout(300)
+    after = await pg.evaluate("[document.querySelector('#miniGrade .mg-g').textContent, document.querySelector('#grade .g').textContent, document.querySelector('#miniGrade .mg-s').textContent]")
+    check(T + "mini grade updates on theme click", after[0] == after[1] and after[2] != before, f"{before} -> {after}")
+    # findings: worst 5, rest behind an accessible toggle; no repeated punchlines in any preset
+    await pg.goto("about:blank"); await pg.goto(URL + "#solarized-light", timeout=120000); await pg.wait_for_timeout(700)
+    st = await pg.evaluate("(()=>{const li=[...document.querySelectorAll('#roast li')];const b=document.getElementById('roastMore');return {n:li.length,vis:li.filter(l=>!l.hidden&&getComputedStyle(l).display!=='none').length,btn:!b.hidden,txt:b.textContent,exp:b.getAttribute('aria-expanded'),tag:b.tagName}})()")
+    check(T + "findings: 5 visible + toggle", st["vis"] == min(5, st["n"]) and (st["n"] <= 5 or (st["btn"] and st["txt"] == f"+ {st['n']-5} more" and st["exp"] == "false" and st["tag"] == "BUTTON")), str(st))
+    if st["n"] > 5:
+        await pg.focus("#roastMore"); await pg.keyboard.press("Enter"); await pg.wait_for_timeout(150)
+        o = await pg.evaluate("[[...document.querySelectorAll('#roast li')].filter(l=>!l.hidden).length, document.getElementById('roastMore').getAttribute('aria-expanded')]")
+        check(T + "findings toggle expands (keyboard)", o[0] == st["n"] and o[1] == "true", str(o))
+        await pg.click("#roastMore"); await pg.wait_for_timeout(100)
+        o = await pg.evaluate("[[...document.querySelectorAll('#roast li')].filter(l=>!l.hidden).length, document.getElementById('roastMore').textContent]")
+        check(T + "findings toggle collapses", o[0] == 5 and o[1].startswith("+ "), str(o))
+    rep = await pg.evaluate(r"""(()=>{const bad=[];for(const [k,t] of Object.entries(THEMES)){const tx=analyze(t).findings.map(f=>f.text);
+      for(const re of [/Visible only to cats/,/name tag/,/neither bright nor/,/HR has been notified/,/syntax hiding/,/more of a vibe/]){const n=tx.filter(x=>re.test(x)).length;if(n>1)bad.push(k+':'+re.source+'x'+n)}}return bad})()""")
+    check(T + "no repeated punchlines within a theme", not rep, str(rep))
+    # top nav: no Terminal link on phones, nothing clipped
+    nav = await pg.evaluate("(()=>{const n=document.querySelector('.top nav');const t=n.querySelector('a[href=\"#console\"]');return {term:getComputedStyle(t).display!=='none',over:n.scrollWidth>n.clientWidth+1,right:Math.max(...[...n.querySelectorAll('a')].filter(a=>getComputedStyle(a).display!=='none').map(a=>a.getBoundingClientRect().right))}})()")
+    check(T + "top nav Terminal link " + ("hidden" if vw <= 640 else "shown"), nav["term"] == (vw > 640), str(nav))
+    check(T + "top nav fits viewport", not nav["over"] and nav["right"] <= vw, str(nav))
+    # tiles: ratio louder than hex
+    sz = await pg.evaluate("(()=>{const r=document.querySelector('.sw .d .r'),h=document.querySelector('.sw .d .hx');const R=getComputedStyle(r),H=getComputedStyle(h);return [parseFloat(R.fontSize),parseFloat(H.fontSize),R.fontWeight,R.color,H.color]})()")
+    check(T + "tile ratio bigger than hex, hex muted", sz[0] >= sz[1] + 2 and sz[3] != sz[4], str(sz))
+    solid = await pg.evaluate("[...document.querySelectorAll('.btn.solid')].filter(b=>b.offsetParent).map(b=>b.textContent.trim())")
+    check(T + "only one visible filled button", len(solid) == 1 and "PNG" in solid[0], str(solid))
+    check(T + "design1: no page errors", not errs, str(errs))
+    await pg.close()
 
 async def main():
     async with async_playwright() as p:

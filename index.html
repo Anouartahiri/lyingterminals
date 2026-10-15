@@ -101,6 +101,13 @@ html.tm-lock .fbar{transform:translateY(-100%);visibility:hidden}
 .fbar nav a{color:var(--fg);line-height:44px} .fbar nav a:hover{text-decoration:underline;text-underline-offset:4px}
 @media (max-width:640px){.fbar{gap:10px}.fbar .brand .full{display:none}.fbar .dollar{display:inline}.fbar nav{gap:10px;justify-content:space-between;margin:0 -5px;padding:0 5px}.fbar nav a:first-child{margin-left:0}.fbar nav.over{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}}
 
+@media (max-width:640px){.top nav a[href="#console"]{display:none}}
+/* compact grade under the picker */
+.mini-grade{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:16px;padding:6px 0;min-height:44px;border:0;font-size:max(13.5px,var(--small));color:var(--muted)}
+.mini-grade .mg-g{font:400 34px/1 var(--serif);letter-spacing:-.03em}
+.mini-grade .mg-s{color:var(--fg)}
+.mini-grade:hover .mg-go{color:var(--fg);text-decoration:underline;text-underline-offset:4px}
+.roast-more{margin-top:18px;min-height:44px} ol.roast li[hidden],.roast-more[hidden]{display:none}
 /* hero */
 .hero{margin-top:clamp(56px,11vw,140px)}
 .meta{display:grid;grid-template-columns:max-content 1fr;column-gap:1ch;font-size:max(13.5px,var(--small));line-height:1.55;margin-bottom:clamp(28px,5vw,44px)}
@@ -154,7 +161,8 @@ textarea::placeholder{color:var(--muted)}
 .sw .bar{height:7px}
 .sw .aa{font:400 clamp(28px,3.4vw,38px)/1 var(--serif);padding:12px 12px 4px;letter-spacing:-.01em}
 .sw .d{padding:0 12px 11px;font-size:var(--small);line-height:1.45;color:var(--muted)}
-.sw .d .r{color:var(--fg);font-size:max(13.5px,var(--small))}
+.sw .d .r{color:var(--fg);font-size:clamp(16px,1.35vw,19px);font-weight:700;letter-spacing:-.01em;line-height:1.25}
+.sw .d .hx{font-size:var(--small);letter-spacing:.03em;font-weight:400}
 .sw .rl{display:flex;align-items:center;min-height:22px;margin:2px 0 3px}
 .sw .badge.none{color:var(--muted);border-color:var(--line)}
 .sw .r{display:block}
@@ -289,7 +297,7 @@ kbd{font:var(--small) var(--mono);padding:0 6px;border:1px solid var(--line);bor
 .tm-arr.l{left:0} .tm-arr.r{right:0}  /* overlaid on the fades: the row and chip sizes never change */
 </style>
 <script>/* apply the URL's theme (or a random D/F preset) before first paint: no flash of another theme */
-(function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#a5b6b8", "muted": "#7b969c", "line": "#1a414b", "panel": "#07313c", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#524c73", "muted": "#716c80", "line": "#dfd9d9", "panel": "#f2ece8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#41565d", "muted": "#68726f", "line": "#dfdcce", "panel": "#f5efdd", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
+(function(){try{var S={"s": {"gruvbox-dark": {"v": {"bg": "#282828", "fg": "#ebdbb2", "muted": "#a1977e", "line": "#47453e", "panel": "#31302e", "red": "#f75f4b", "green": "#b8bb26", "yellow": "#fabd2f", "blue": "#83a598", "magenta": "#d3869b", "cyan": "#8ec07c"}, "l": false}, "catppuccin-mocha": {"v": {"bg": "#1e1e2e", "fg": "#cdd6f4", "muted": "#8b90a9", "line": "#3a3b4e", "panel": "#262637", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5"}, "l": false}, "catppuccin-latte": {"v": {"bg": "#eff1f5", "fg": "#4c4f69", "muted": "#676a7a", "line": "#d5d7df", "panel": "#e8eaef", "red": "#d20f39", "green": "#207d02", "yellow": "#995e02", "blue": "#2a65da", "magenta": "#b04095", "cyan": "#0a787e"}, "l": true}, "tokyo-night": {"v": {"bg": "#1a1b26", "fg": "#c0caf5", "muted": "#8188a6", "line": "#353747", "panel": "#21232f", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff"}, "l": false}, "nord": {"v": {"bg": "#2e3440", "fg": "#d8dee9", "muted": "#9aa0ac", "line": "#494f5b", "panel": "#363c48", "red": "#e4828a", "green": "#a3be8c", "yellow": "#ebcb8b", "blue": "#81a1c1", "magenta": "#ba94b3", "cyan": "#88c0d0"}, "l": false}, "dracula": {"v": {"bg": "#282a36", "fg": "#f8f8f2", "muted": "#a9aaab", "line": "#494b54", "panel": "#31333e", "red": "#ff6e6e", "green": "#69ff94", "yellow": "#ffffa5", "blue": "#d6acff", "magenta": "#ff92df", "cyan": "#a4ffff"}, "l": false}, "solarized-dark": {"v": {"bg": "#002b36", "fg": "#fdf6e3", "muted": "#9da9a1", "line": "#284b52", "panel": "#0b343e", "red": "#eb6839", "green": "#859900", "yellow": "#b58900", "blue": "#839496", "magenta": "#8389df", "cyan": "#93a1a1"}, "l": false}, "one-dark": {"v": {"bg": "#21252b", "fg": "#abb2bf", "muted": "#898e99", "line": "#373c43", "panel": "#272b32", "red": "#e06c75", "green": "#98c379", "yellow": "#e5c07b", "blue": "#61afef", "magenta": "#c678dd", "cyan": "#56b6c2"}, "l": false}, "one-light": {"v": {"bg": "#f9f9f9", "fg": "#2a2c33", "muted": "#707175", "line": "#d8d8d9", "panel": "#f0f0f0", "red": "#d03830", "green": "#277f23", "yellow": "#876d34", "blue": "#2f5af3", "magenta": "#950095", "cyan": "#277f23"}, "l": true}, "monokai": {"v": {"bg": "#272822", "fg": "#fdfff1", "muted": "#acada2", "line": "#494a43", "panel": "#31322b", "red": "#f45b83", "green": "#a6e22e", "yellow": "#e6db74", "blue": "#fd971f", "magenta": "#ae81ff", "cyan": "#66d9ef"}, "l": false}, "github-dark": {"v": {"bg": "#0d1117", "fg": "#e6edf3", "muted": "#94999f", "line": "#30343a", "panel": "#171b21", "red": "#ffa198", "green": "#56d364", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#56d4dd"}, "l": false}, "github-light": {"v": {"bg": "#ffffff", "fg": "#1f2328", "muted": "#717477", "line": "#dbdcdd", "panel": "#f5f5f5", "red": "#a40e26", "green": "#116329", "yellow": "#4d2d00", "blue": "#0969da", "magenta": "#8250df", "cyan": "#1b7c83"}, "l": true}, "rose-pine": {"v": {"bg": "#191724", "fg": "#e0def4", "muted": "#9492a5", "line": "#393745", "panel": "#22202d", "red": "#eb6f92", "green": "#4a8ca8", "yellow": "#f6c177", "blue": "#9ccfd8", "magenta": "#c4a7e7", "cyan": "#ebbcba"}, "l": false}, "rose-pine-dawn": {"v": {"bg": "#faf4ed", "fg": "#575279", "muted": "#6e6a7e", "line": "#e0dada", "panel": "#f3ede8", "red": "#a4546b", "green": "#286983", "yellow": "#9a620e", "blue": "#377681", "magenta": "#7b6693", "cyan": "#a55553"}, "l": true}, "kanagawa-wave": {"v": {"bg": "#1f1f28", "fg": "#dcd7ba", "muted": "#949183", "line": "#3d3c3f", "panel": "#28272f", "red": "#ef574b", "green": "#98bb6c", "yellow": "#e6c384", "blue": "#7fb4ca", "magenta": "#938aa9", "cyan": "#7aa89f"}, "l": false}, "solarized-light": {"v": {"bg": "#fdf6e3", "fg": "#073642", "muted": "#597373", "line": "#d6d7c9", "panel": "#f2eddc", "red": "#ce3631", "green": "#586e75", "yellow": "#5c727a", "blue": "#0b72b3", "magenta": "#c43379", "cyan": "#0f7d76"}, "l": true}, "everforest-dark": {"v": {"bg": "#232a2e", "fg": "#d3c6aa", "muted": "#969181", "line": "#3f4342", "panel": "#2b3134", "red": "#e67e80", "green": "#a7c080", "yellow": "#dbbc7f", "blue": "#7fbbb3", "magenta": "#d699b6", "cyan": "#83c092"}, "l": false}}, "df": ["catppuccin-mocha", "catppuccin-latte", "nord", "solarized-dark", "one-light", "rose-pine-dawn", "solarized-light"]};if(!S)return;var m=location.pathname.match(/^\/t\/([a-z0-9-]+)\/?$/),h=decodeURIComponent(location.hash.slice(1)),k=null;
 if(m&&S.s[m[1]])k=m[1];else if(S.s[h])k=h;else if(!/^p=/.test(h))k=S.df[Math.floor(Math.random()*S.df.length)];
 window.__BOOT=k;if(!k)return;var v=S.s[k],r=document.documentElement;for(var n in v.v)r.style.setProperty("--"+n,v.v[n]);if(v.l)r.classList.add("is-light");
 var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",v.v.bg);}catch(e){}})();</script>
@@ -321,6 +329,7 @@ var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute(
   <section class="wide" id="pick">
     <div class="kicker">I. Pick a defendant</div>
     <div class="chips" id="presets" role="group" aria-label="Terminal theme presets"></div>
+    <a class="mini-grade" id="miniGrade" href="#verdict" aria-live="polite"></a>
     <div class="paste" id="customBox">
       <textarea id="custom" spellcheck="false" aria-label="Paste your palette" placeholder="background = #1e1e2e
 foreground = #cdd6f4
@@ -352,6 +361,7 @@ Ghostty (palette = N=#hex), kitty (color0 #hex) or just 18 hex codes: bg, fg, co
     <div class="kicker">III. The verdict</div>
     <div class="verdict" id="grade"></div>
     <ol class="roast" id="roast"></ol>
+    <button type="button" class="btn roast-more" id="roastMore" aria-controls="roast" aria-expanded="false" hidden></button>
   </section>
 
   <section class="wide" id="card-sec">
@@ -460,6 +470,9 @@ const fmt = r => (Math.floor(r*100)/100).toFixed(2); // one rule everywhere: flo
 /* ---------- deterministic "randomness" so the roast is stable per theme ---------- */
 function seedOf(s){ let h=2166136261; for(const ch of s){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619);} return h>>>0; }
 function pick(arr, seed, salt){ return arr[(seedOf(seed+"|"+salt))%arr.length]; }
+/* like pick, but never reuses a variant already used for `group` in this analysis (falls through the list from the seeded start) */
+function pickU(used, group, arr, seed, salt){ const n=arr.length, st=seedOf(seed+"|"+salt)%n, u=used[group]||(used[group]=new Set());
+  for(let k=0;k<n;k++){ const j=(st+k)%n; if(!u.has(j)){ u.add(j); return arr[j]; } } return arr[st]; }
 
 /* ---------- parsing ---------- */
 function parsePalette(text){
@@ -488,7 +501,7 @@ function analyze(theme){
   const {bg,fg,c}=theme, seed=theme.name, light=lum(bg)>0.4;
   const r=c.map(h=>contrast(h,bg)), ok=c.map(oklch);
   const F=[]; let score=100;
-  const add=(sev,text,detail,pts,weight)=>{ F.push({sev,text,detail,w:weight??pts}); score-=pts; };
+  const add=(sev,text,detail,pts,weight)=>{ const f={sev,text,detail,w:weight??pts}; F.push(f); score-=pts; return f; }, used={};
 
   // foreground
   const rf=contrast(fg,bg);
@@ -510,7 +523,7 @@ function analyze(theme){
     const n=i, b=i+8, nm=NAMES[i];
     if(c[n]===c[b]){ trench.push(nm); continue; }
     if(i>=1&&i<=6 && ok[n].C>0.06 && ok[b].C<0.035){
-      add("lol", pick([`Your bright ${nm} is grey. It is neither bright nor ${nm}. It's a bright-${nm}-shaped hole.`,`bright ${nm} (${c[b]}) is a shade of grey wearing a "${nm}" name tag.`],seed,"grey"+i), `${nm} ${c[n]} → bright ${nm} ${c[b]}, chroma ${ok[n].C.toFixed(3)} → ${ok[b].C.toFixed(3)}`, 7, 20); continue;
+      add("lol", pickU(used,"grey",[`Your bright ${nm} is grey. It is neither bright nor ${nm}. It's a bright-${nm}-shaped hole.`,`bright ${nm} (${c[b]}) is a shade of grey wearing a "${nm}" name tag.`,`bright ${nm} (${c[b]}) had all the ${nm} drained out. What's left is office-carpet grey.`,`bright ${nm} is grey with a job title. HR has been notified.`,`bright ${nm} (${c[b]}): ${nm} in name only. The hue left; the grey stayed for the paperwork.`,`bright ${nm} resembles ${nm} the way a photocopy of a photocopy resembles the original.`,`bright ${nm} (${c[b]}) is what ${nm} looks like on a Monday morning: grey and unavailable.`],seed,"grey"+i), `${nm} ${c[n]} → bright ${nm} ${c[b]}, chroma ${ok[n].C.toFixed(3)} → ${ok[b].C.toFixed(3)}`, 7, 20).grey=nm; continue;
     }
     const dn=r[n], db=r[b];
     if(db < dn - 0.05){ dimmer.push({nm,n,b,dn,db}); }
@@ -546,7 +559,7 @@ function analyze(theme){
   }
   ghosts.sort((a,b)=>r[a]-r[b]);
   for(const i of ghosts.slice(0,3)){
-    add("fail", pick([`${cname(i)}: ${fmt(r[i])}:1. Fails even the 3:1 UI bar. Visible only to cats.`,`${cname(i)}: ${fmt(r[i])}:1. Error messages in this colour are more of a vibe.`,`${cname(i)}: ${fmt(r[i])}:1. That's not syntax highlighting, that's syntax hiding.`],seed,"ghost"+i), `${c[i]} on ${bg}`, 5, 14+(3-r[i])*5);
+    add("fail", pickU(used,"ghost",[`${cname(i)}: ${fmt(r[i])}:1. Fails even the 3:1 UI bar. Visible only to cats.`,`${cname(i)}: ${fmt(r[i])}:1. Error messages in this colour are more of a vibe.`,`${cname(i)}: ${fmt(r[i])}:1. That's not syntax highlighting, that's syntax hiding.`,`${cname(i)}: ${fmt(r[i])}:1. Readable by moonlight, with a magnifier, if you already know what it says.`,`${cname(i)}: ${fmt(r[i])}:1. Under the 3:1 UI bar. Legally this is a watermark.`,`${cname(i)}: ${fmt(r[i])}:1. Your warnings in this colour run on the honour system.`,`${cname(i)}: ${fmt(r[i])}:1. Text in this colour is less "printed" and more "rumoured".`],seed,"ghost"+i), `${c[i]} on ${bg}`, 5, 14+(3-r[i])*5);
   }
   if(ghosts.length>3) add("fail", `…and ${ghosts.length-3} more colour${ghosts.length-3>1?"s":""} under 3:1 (${ghosts.slice(3).map(i=>`${cname(i)} ${fmt(r[i])}`).join(", ")}). At this point it's a ${light?"whiteout":"dark-mode séance"}.`, ghosts.slice(3).map(cname).join(", "), 3*(ghosts.length-3), 15);
   if(uiOnly.length) add("warn", `${uiOnly.length} colour${uiOnly.length>1?"s":""} pass 3:1 but not 4.5:1: good enough for a border, not for a word.`, uiOnly.map(i=>`${cname(i)} ${fmt(r[i])}`).join(" · "), Math.min(uiOnly.length*1.5,12), 6+uiOnly.length);
@@ -610,7 +623,10 @@ function mix(a,b,t){ const A=rgb(a),B=rgb(b); return "#"+A.map((v,i)=>Math.round
 
 function deriveSkin(t){
   const bg=t.bg, light=lum(bg)>0.4, fixes=[];
-  const fg=ensure(t.fg,bg,7); if(fg!==t.fg) fixes.push(["foreground",t.fg,fg]);
+  // body text: the theme's own fg if it reads, else its best real palette text colour (bright white / white on dark, black / bright black on light), else an OKLCH nudge
+  const cand=[t.fg,...(light?[t.c[0],t.c[8]]:[t.c[15],t.c[7]])];
+  const fg=cand.find(h=>contrast(h,bg)>=7) || cand.filter(h=>contrast(h,bg)>=4.6).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0] || ensure(t.fg,bg,7);
+  if(fg!==t.fg) fixes.push(["foreground",t.fg,fg]);
   const skin={bg,fg,muted:ensure(mix(fg,bg,0.38),bg,4.6),line:mix(fg,bg,0.84),panel:mix(fg,bg,0.955)};
   if(contrast(skin.line,bg)<1.25) skin.line=mix(fg,bg,0.76);
   [["red",1],["green",2],["yellow",3],["blue",4],["magenta",5],["cyan",6]].forEach(([k,i])=>{
@@ -643,7 +659,7 @@ function tile(A,j){
   const badge=r<3?`<span class="badge ghost">GHOST</span>`:r<4.5?`<span class="badge ui">UI</span>`:"";
   let delta="";
   if(j>=9&&j<=15){ const n=j-8; delta = hex===t.c[n]?`<span class="delta eq">= same</span>`: r<A.r[n]-0.05?`<span class="delta dn">↓ <span class="l">dimmer</span><span class="s">less</span></span>`:`<span class="delta up">↑ <span class="l">brighter</span><span class="s">more</span></span>`; }
-  return `<div class="sw" title="${cname(j)} ${hex}"><div class="bar" style="background:${hex}"></div><div class="aa" style="color:${hex}" aria-hidden="true">Aa</div><div class="d"><span class="r">${fmt(r)}:1</span><div class="rl">${badge||`<span class="badge none">PASS</span>`}</div><span class="nmh">${j>=8?`<span class="l">br ${NAMES[j%8]}</span><span class="s">br ${SHORT[j%8]}</span>`:NAMES[j%8]}</span><span class="nmh">${hex}</span>${delta}</div></div>`;
+  return `<div class="sw" title="${cname(j)} ${hex}"><div class="bar" style="background:${hex}"></div><div class="aa" style="color:${hex}" aria-hidden="true">Aa</div><div class="d"><span class="r">${fmt(r)}:1</span><div class="rl">${badge||`<span class="badge none">PASS</span>`}</div><span class="nmh">${j>=8?`<span class="l">br ${NAMES[j%8]}</span><span class="s">br ${SHORT[j%8]}</span>`:NAMES[j%8]}</span><span class="nmh hx">${hex}</span>${delta}</div></div>`;
 }
 function renderPalette(A){
   const t=A.theme; let h="";
@@ -657,10 +673,18 @@ function renderRoast(A){
   const lab={fail:"FAIL",lol:"LIE",warn:"MEH",ok:"OK"};
   const col=gradeVar(A.grade);
   $("grade").innerHTML=`<div class="g" style="color:${col}">${A.grade}</div><div><div class="v">${esc(A.verdict)}</div><div class="s"><span>${esc(A.theme.name)}</span><span>honesty ${A.score}/100</span><span>${A.findings.filter(f=>f.sev!=="ok").length} findings</span></div><div class="meter" style="color:${col}"><i style="width:${A.score}%"></i></div></div>`;
-  $("roast").innerHTML=A.findings.map((f,i)=>`<li class="${f.sev}" style="animation-delay:${i*40}ms"><span class="tx">${esc(f.text)}</span><span class="dt"><span class="lab ${f.sev}">${lab[f.sev]}</span>${esc(f.detail)}</span></li>`).join("");
+  const SHOW=5, extra=Math.max(0,A.findings.length-SHOW);
+  $("roast").innerHTML=A.findings.map((f,i)=>`<li class="${f.sev}${i>=SHOW?" more":""}"${i>=SHOW?" hidden":""} style="animation-delay:${(i%SHOW)*40}ms"><span class="tx">${esc(f.text)}</span><span class="dt"><span class="lab ${f.sev}">${lab[f.sev]}</span>${esc(f.detail)}</span></li>`).join("");
+  { const mb=$("roastMore"); mb.hidden=!extra; mb.setAttribute("aria-expanded","false"); mb.dataset.n=extra; mb.textContent=`+ ${extra} more`; }
   $("metaSubject").textContent=`Re: ${A.theme.name} — grade ${A.grade}`;
+  $("miniGrade").innerHTML=`<span class="mg-l">Verdict:</span> <b class="mg-g" style="color:${col}">${A.grade}</b> <span class="mg-s">honesty ${A.score}/100</span> <span class="mg-go">see why ↓</span>`;
+  $("miniGrade").setAttribute("aria-label",`${A.theme.name}: grade ${A.grade}, honesty ${A.score} out of 100. Jump to the verdict.`);
 }
 
+$("roastMore").addEventListener("click",e=>{ const b=e.currentTarget, open=b.getAttribute("aria-expanded")!=="true";
+  document.querySelectorAll("#roast li.more").forEach(li=>li.hidden=!open);
+  b.setAttribute("aria-expanded",String(open)); b.textContent=open?"Show fewer":`+ ${b.dataset.n} more`;
+  if(open){ const f=document.querySelector("#roast li.more"); if(f){ f.tabIndex=-1; f.focus({preventScroll:true}); } } });
 /* ---------- verdict card (1200×630, drawn by hand) ---------- */
 function wrap(ctx,text,maxW){ const words=text.split(" "), lines=[]; let cur=""; for(const w of words){ const t=cur?cur+" "+w:w; if(ctx.measureText(t).width>maxW&&cur){ lines.push(cur); cur=w; } else cur=t; } if(cur) lines.push(cur); return lines; }
 function rr(ctx,x,y,w,h,rad){ ctx.beginPath(); ctx.moveTo(x+rad,y); ctx.arcTo(x+w,y,x+w,y+h,rad); ctx.arcTo(x+w,y+h,x,y+h,rad); ctx.arcTo(x,y+h,x,y,rad); ctx.arcTo(x,y,x+w,y,rad); ctx.closePath(); }
@@ -1040,7 +1064,7 @@ const TERM=(function(){
   // what `fix` could not repair, from the fixed palette's real findings
   function remaining(A){
     const left=A.findings.filter(f=>f.sev!=="ok"); if(!left.length) return "No charges remain.";
-    const grey=left.map(f=>(f.text.match(/bright (\w+) \(#[0-9a-f]{6}\) is a shade of grey|Your bright (\w+) is grey/)||[]).slice(1).find(Boolean)).filter(Boolean);
+    const grey=left.map(f=>f.grey).filter(Boolean);
     if(grey.length===left.length) return `${grey.length} ${grey.length===1?"bright is":"brights are"} still grey (${grey.join(", ")}): lightness alone can't give ${grey.length===1?"it":"them"} a hue.`;
     return `${left.length} ${left.length===1?"charge remains":"charges remain"}: ${left.slice(0,3).map(f=>f.text.split(/[.:]/)[0]).join("; ")}.`;
   }
