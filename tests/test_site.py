@@ -374,6 +374,12 @@ async def design1(c, T, mob, vw):
     await pg.click("#customToggle"); await pg.wait_for_timeout(150)
     op = await pg.evaluate("[document.getElementById('customBox').classList.contains('open'), document.getElementById('customToggle').getAttribute('aria-expanded'), document.activeElement.id]")
     check(T + "paste button opens the box", op == [True, "true", "custom"], str(op))
+    hl = await pg.evaluate(r"""(async()=>{const P=c=>c.match(/[\d.]+/g).slice(0,3).map(Number);const lin=v=>{v/=255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4)};const Lm=c=>{const[r,g,b]=P(c);return .2126*lin(r)+.7152*lin(g)+.0722*lin(b)};const CR=(a,b)=>{const x=Lm(a),y=Lm(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+      const out=[];for(const k of Object.keys(THEMES)){document.querySelector(`#presets .chip[data-k='${k}']`).click();await new Promise(r=>setTimeout(r,20));document.documentElement.classList.add('boot');
+      const e=document.querySelector('#miniGrade .mg-g');const sec=e.closest('section');const bg=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();const c=getComputedStyle(e).color;
+      const d=document.createElement('i');d.style.color=bg;document.body.appendChild(d);const bgc=getComputedStyle(d).color;d.remove();out.push([k,+CR(c,bgc).toFixed(2)])}
+      document.documentElement.classList.remove('boot');return out})()""")
+    check(T + "hero grade letter >= 3:1 on all 17 themes", len(hl) == 17 and all(v >= 3 for _, v in hl), str([x for x in hl if x[1] < 3.2]))
     pool = await pg.evaluate("firstPool()")
     check(T + "first-load pool: D/F themes whose own fg reads", set(pool) == {"catppuccin-mocha", "catppuccin-latte", "nord", "one-light", "rose-pine-dawn"}, str(pool))
     # findings: worst 5, rest behind an accessible toggle; no repeated punchlines in any preset

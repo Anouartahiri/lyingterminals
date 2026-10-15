@@ -705,7 +705,9 @@ function renderRoast(A){
   { const mb=$("roastMore"); mb.hidden=!extra; mb.setAttribute("aria-expanded","false"); mb.dataset.n=extra; mb.textContent=`+ ${extra} more`; }
   $("metaSubject").textContent=`Re: ${A.theme.name} — grade ${A.grade}`;
   const nReal=A.findings.filter(f=>f.sev!=="ok").length;
-  $("miniGrade").innerHTML=`<div class="mg-g" aria-hidden="true">${A.grade}</div><div class="mg-b"><p class="mg-v"><span class="sr">${esc(A.theme.name)} gets grade ${A.grade}. </span>${esc(A.verdict)}</p><p class="mg-s"><span>${esc(A.theme.name)}</span><span>honesty ${A.score}/100</span><a href="#verdict">${nReal} finding${nReal===1?"":"s"} ↓</a></p></div>`;
+  // hero letter: the theme's raw grade colour (A green, B blue, C/D yellow, F red) if it clears 3:1 on the page bg, else its bright twin, else the page text colour
+  const gi={"A+":2,"A":2,"B":4,"C":3,"D":3,"F":1}[A.grade], gbg=A.theme.bg, hc=[A.theme.c[gi],A.theme.c[gi+8]].find(h=>contrast(h,gbg)>=3)||"var(--fg)";
+  $("miniGrade").innerHTML=`<div class="mg-g" aria-hidden="true" style="color:${hc}">${A.grade}</div><div class="mg-b"><p class="mg-v"><span class="sr">${esc(A.theme.name)} gets grade ${A.grade}. </span>${esc(A.verdict)}</p><p class="mg-s"><span>${esc(A.theme.name)}</span><span>honesty ${A.score}/100</span><a href="#verdict">${nReal} finding${nReal===1?"":"s"} ↓</a></p></div>`;
 }
 
 $("roastMore").addEventListener("click",e=>{ const b=e.currentTarget, open=b.getAttribute("aria-expanded")!=="true";
