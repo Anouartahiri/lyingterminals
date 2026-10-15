@@ -387,6 +387,10 @@ async def design1(c, T, mob, vw):
     check(T + "no stray underline under findings link", (ul[0] == "0px" or ul[1] == "none") and ul[2] == "none", str(ul))
     gb = await pg.evaluate("gradeVar('B')===gradeVar('A')")
     check(T + "B uses green like A", gb)
+    th = await pg.evaluate("""(async()=>{const bad=[];for(const k of Object.keys(THEMES)){document.querySelector(`#presets .chip[data-k='${k}']`).click();await new Promise(r=>setTimeout(r,30));
+      const h=[...document.querySelectorAll('#palette .sw')].map(e=>Math.round(e.getBoundingClientRect().height)),b=[...document.querySelectorAll('#palette .sw .bar')].map(e=>Math.round(e.getBoundingClientRect().height));
+      const bb=document.querySelectorAll('#palette .pair')[0].children[1].querySelector('.delta');if(new Set(h).size!==1||new Set(b).size!==1||!bb)bad.push([k,[...new Set(h)],[...new Set(b)],!!bb])}return bad})()""")
+    check(T + "evidence tiles equal height + br black has comparison line, all themes", not th, str(th))
     pool = await pg.evaluate("firstPool()")
     check(T + "first-load pool: D/F themes whose own fg reads", set(pool) == {"catppuccin-mocha", "catppuccin-latte", "nord", "one-light", "rose-pine-dawn"}, str(pool))
     # findings: worst 5, rest behind an accessible toggle; no repeated punchlines in any preset
@@ -422,11 +426,20 @@ async def design1(c, T, mob, vw):
     check(T + "design1: no page errors", not errs, str(errs))
     await pg.close()
 
+async def tiles1920(b):
+    c = await b.new_context(viewport={"width": 1920, "height": 1080}); pg = await c.new_page(); pg.set_default_timeout(120000)
+    await pg.goto(URL + "#nord", timeout=120000); await pg.wait_for_timeout(700)
+    th = await pg.evaluate("""(async()=>{const bad=[];for(const k of Object.keys(THEMES)){document.querySelector(`#presets .chip[data-k='${k}']`).click();await new Promise(r=>setTimeout(r,30));
+      const h=[...document.querySelectorAll('#palette .sw')].map(e=>Math.round(e.getBoundingClientRect().height));if(new Set(h).size!==1)bad.push([k,[...new Set(h)]])}return bad})()""")
+    check("[1920] evidence tiles equal height, all themes", not th, str(th))
+    await c.close()
+
 async def main():
     async with async_playwright() as p:
         kw = {"executable_path": os.environ["CHROME_PATH"]} if os.environ.get("CHROME_PATH") else {}
         b = await p.chromium.launch(args=["--no-sandbox"], **kw)
         for vw in (1366, 390): await run(b, vw); await stream_test(b, vw)
+        await tiles1920(b)
         await b.close()
     print(f"\n{len(FAILS)} failed" if FAILS else "\nall passed"); sys.exit(1 if FAILS else 0)
 asyncio.run(main())
