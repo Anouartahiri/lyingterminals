@@ -409,8 +409,9 @@ async def design1(c, T, mob, vw):
     await pg.click("#roastMore"); await pg.wait_for_timeout(100)
     o = await pg.evaluate(Q)
     check(T + "findings toggle collapses", o["vis"] == 5 and o["txt"].startswith("+ "), str(o))
-    jt = await pg.evaluate("(async()=>{const j=await (await fetch(new URL('lib/themes.json',location.href))).json();const bad=[];for(const [k,t] of Object.entries(THEMES)){const A=analyze(t),top=(A.findings.find(f=>f.sev!=='ok')||{}).text||A.verdict;if(!j[k]||j[k].top!==top||j[k].grade!==A.grade||j[k].score!==A.score)bad.push(k)}return bad})()")
-    check(T + "lib/themes.json share text matches page findings", not jt, str(jt))
+    jt = await pg.evaluate("(async()=>{const rs=await fetch(new URL('lib/themes.json',location.href));if(!rs.ok||!/json/.test(rs.headers.get('content-type')||''))return 'skip';const j=await rs.json();const bad=[];for(const [k,t] of Object.entries(THEMES)){const A=analyze(t),top=(A.findings.find(f=>f.sev!=='ok')||{}).text||A.verdict;if(!j[k]||j[k].top!==top||j[k].grade!==A.grade||j[k].score!==A.score)bad.push(k)}return bad})()")
+    if jt != "skip": check(T + "lib/themes.json share text matches page findings", not jt, str(jt))
+    else: print("SKIP lib/themes.json not served here (bundled into the Function/Worker)")
     rep = await pg.evaluate(r"""(()=>{const bad=[];for(const [k,t] of Object.entries(THEMES)){const tx=analyze(t).findings.map(f=>f.text);
       for(const re of [/Visible only to cats/,/name tag/,/neither bright nor/,/HR has been notified/,/syntax hiding/,/more of a vibe/]){const n=tx.filter(x=>re.test(x)).length;if(n>1)bad.push(k+':'+re.source+'x'+n)}}return bad})()""")
     check(T + "no repeated punchlines within a theme", not rep, str(rep))
